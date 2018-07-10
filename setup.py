@@ -6,13 +6,13 @@ with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='LightDP',
+    name='StatDP',
     version='0.1',
-    description='LightDP - A Light-Weight Imperative Language That Provides Differential Privacy Proofs.',
+    description='Counterexample Detection Using Statistical Methods for Incorrect Differential-Privacy Algorithms.',
     long_description=long_description,
     url='',
-    author='Danfeng Zhang/Daniel Kifer/Yuin Wang/Ding Ding',
-    author_email='{dkifer,zhang,yxwang}@psu.edu,dingsquared@gmail.com',
+    author='Yuin Wang/Ding Ding/Danfeng Zhang/Daniel Kifer',
+    author_email='{yxwang,dkifer,zhang}@cse.psu.edu,dxd437@psu.edu',
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -23,6 +23,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7'
     ],
     keywords='Programming Language, Differential Privacy',
     packages=find_packages(exclude=['tests']),
@@ -32,7 +33,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'lightdp=lightdp.__main__:main',
+            'statdp=statdp.__main__:main',
         ],
     },
 )

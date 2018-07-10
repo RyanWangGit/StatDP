@@ -9,7 +9,7 @@ def simple_generator(algorithm, args, kwargs, num_input, search_space):
     assert isinstance(args, tuple)
     assert isinstance(kwargs, dict)
     from .core import hypothesis_test
-    from .selectors import fisher_s_selector
+    from .selectors import event_selector
     import numpy as np
     # assume maximum distance is 1
     d1 = [1 for _ in range(num_input)]
@@ -34,7 +34,7 @@ def simple_generator(algorithm, args, kwargs, num_input, search_space):
             steady_epsilon = algorithm_epsilon + 2.0
             previous_p = [0.0, 0.0]
             for test_epsilon in np.arange(max(algorithm_epsilon - 0.5, 0.1), algorithm_epsilon + 2.0, 0.1):
-                s = fisher_s_selector(algorithm, args, kwargs, d1, d2, test_epsilon, search_space=search_space)
+                s = event_selector(algorithm, args, kwargs, d1, d2, test_epsilon, search_space=search_space)
                 p1= hypothesis_test(algorithm, args, kwargs, d1, d2, s, test_epsilon, iterations=100000, cores=0)
 
                 rising_epsilon = test_epsilon if p1 < 0.05 and previous_p < [0.05, 0.05] else rising_epsilon

@@ -1,5 +1,4 @@
-from lightdp.stattest import hypothesis_test, simple_generator, fisher_s_selector, difference_s_selector
-from lightdp.stattest.algorithms import *
+from statdp import *
 from intervals import Interval
 from math import inf
 import time

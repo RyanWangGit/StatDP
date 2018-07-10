@@ -7,7 +7,6 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7"
 
 install:
   - pip install -r requirements-dev.txt
@@ -24,7 +23,7 @@ script:
 jobs:
   include:
     - stage: codecov
-      python: 3.7
+      python: 3.6
       script:
         - tox
         - pip install codecov && codecov --token=$CODECOV_TOKEN

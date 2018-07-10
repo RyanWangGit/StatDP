@@ -37,7 +37,8 @@ def main():
         library_files.append('Microsoft.Z3.xml')
 
     # read from GitHub apis
-    releases = json.loads(urlrequest.urlopen('https://api.github.com/repos/Z3Prover/z3/releases').read().decode('utf-8'))[0]
+    releases = json.loads(urlrequest.urlopen('https://api.github.com/repos/Z3Prover/z3/releases')
+                          .read().decode('utf-8'))[0]
 
     for asset in releases['assets']:
         if system in asset['name'] and 'x64' in asset['name']:

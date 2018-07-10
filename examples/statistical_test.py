@@ -1,4 +1,5 @@
 from statdp import *
+from statdp.algorithms import *
 from intervals import Interval
 from math import inf
 import time
@@ -54,59 +55,36 @@ def main():
             "algorithm": noisy_max_v1a,
             "D1": lambda eps: [0] + [2 for _ in range(4)],
             "D2": lambda eps: [1 for _ in range(5)],
-            "S": lambda: fisher_s_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                           search_space=[[i] for i in range(5)])
+            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
+                                        search_space=[[i] for i in range(5)])
         },
         {
             "algorithm": noisy_max_v1b,
             "D1": lambda eps: [2 for _ in range(5)],
             "D2": lambda eps: [1 for _ in range(5)],
-            "S": lambda: fisher_s_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                           search_space=[Interval([-inf, alpha]) for alpha in range(-5, 6)])
+            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
+                                        search_space=[Interval([-inf, alpha]) for alpha in range(-5, 6)])
         },
         {
             "algorithm": noisy_max_v2a,
             "D1": lambda eps: [0] + [2 for _ in range(4)],
             "D2": lambda eps: [1 for _ in range(5)],
-            "S": lambda: fisher_s_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                           search_space=[[i] for i in range(5)])
+            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
+                                        search_space=[[i] for i in range(5)])
         },
         {
             "algorithm": noisy_max_v2b,
             "D1": lambda eps: [2] + [0 for _ in range(4)],
             "D2": lambda eps: [1 for _ in range(5)],
-            "S": lambda: fisher_s_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                           search_space=[Interval([-inf, 1 + alpha / 10.0]) for alpha in range(0, 80, 2)])
-        },
-        {
-            "algorithm": sparse_vector_v1,
-            "kwargs": {'T': 1, 'N': 1},
-            "D1": lambda eps: [2 for _ in range(10)],
-            "D2": lambda eps: [1 for _ in range(10)],
-            "S": lambda: fisher_s_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                           search_space=[Interval([alpha, inf]) for alpha in range(1, 11)])
-        },
-        {
-            "algorithm": sparse_vector,
-            "kwargs": {'T': 1, 'N': 1},
-            "D1": lambda eps: [2 for _ in range(10)],
-            "D2": lambda eps: [1 for _ in range(10)],
-            "S": lambda: fisher_s_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                           search_space=[Interval([alpha / 10.0, inf]) for alpha in range(0, 30, 4)])
-        },
-        {
-            "algorithm": sparse_vector_v4,
-            "kwargs": {'T': 2, 'N': 1},
-            "D1": lambda eps: [2 - 1.0 / eps for _ in range(10)],
-            "D2": lambda eps: [1 - 1.0 / eps for _ in range(10)],
-            "S": lambda: [1]
+            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
+                                        search_space=[Interval([-inf, 1 + alpha / 10.0]) for alpha in range(0, 80, 2)])
         },
         {
             "algorithm": histogram,
             "D1": lambda eps: [2 for _ in range(5)],
             "D2": lambda eps: [1] + [2 for _ in range(4)],
-            "S": lambda: fisher_s_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                           search_space=[Interval([2 + alpha / 10.0, inf]) for alpha in range(0, 20, 2)])
+            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
+                                        search_space=[Interval([2 + alpha / 10.0, inf]) for alpha in range(0, 20, 2)])
         }
     ]
 

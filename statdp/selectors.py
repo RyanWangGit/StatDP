@@ -26,7 +26,6 @@ _process_pool = mp.Pool(mp.cpu_count())
 def event_selector(algorithm, args, kwargs, D1, D2, epsilon, iterations=100000, search_space=(), cores=0):
     assert isfunction(algorithm)
     from .core import test_statistics
-    import math
 
     a = [algorithm(D1, *args, **kwargs) for _ in range(iterations)]
     b = [algorithm(D2, *args, **kwargs) for _ in range(iterations)]
@@ -40,9 +39,10 @@ def event_selector(algorithm, args, kwargs, D1, D2, epsilon, iterations=100000, 
         else _process_pool.map(__EvaluateEvent(a, b, epsilon, iterations), search_space)
 
     p_values = [test_statistics(x[0], x[1], epsilon, iterations)
-                if x[0] + x[1] > threshold else math.inf for x in results]
+                if x[0] + x[1] > threshold else float('inf') for x in results]
 
     for i, (s, (cx, cy), p) in enumerate(zip(search_space, results, p_values)):
-        logger.debug('Event: %s p: %f cx: %d cy: %d ratio: %f' % (s, p, cx, cy, float(cy) / cx if cx != 0 else math.inf))
+        logger.debug('Event: %s p: %f cx: %d cy: %d ratio: %f' %
+                     (s, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
 
     return search_space[np.argmin(p_values)]

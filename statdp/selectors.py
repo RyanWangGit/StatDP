@@ -32,7 +32,7 @@ def event_selector(algorithm, args, kwargs, D1, D2, epsilon, iterations=100000, 
 
     global _process_pool
 
-    # find S which has minimum p value from search space
+    # find an event which has minimum p value from search space
     threshold = 0.001 * iterations * np.exp(epsilon)
 
     results = list(map(__EvaluateEvent(a, b, epsilon, iterations), search_space)) if cores == 1 \

@@ -16,3 +16,6 @@ You are encouraged to cite the following [paper](https://arxiv.org/pdf/1805.1027
   year={2018}
 }
 ```
+
+# License
+[MIT](https://github.com/RyanWangGit/StatDP/blob/master/LICENSE).

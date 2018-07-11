@@ -45,7 +45,7 @@ debug.txt
 runo.py
 
 # Coverage reports
-.coverage
+.coverage.*
 
 # pytest cache
 .pytest_cache

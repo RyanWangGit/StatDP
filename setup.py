@@ -17,7 +17,7 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'Topic :: Programming Language :: Differential Privacy',
+        'Topic :: Differential Privacy :: Statistics',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
@@ -25,11 +25,11 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
-    keywords='Programming Language, Differential Privacy',
+    keywords='Differential Privacy, Hypothesis Test, Statistics',
     packages=find_packages(exclude=['tests']),
-    install_requires=['ply', 'numpy', 'scipy', 'astunparse', 'intervals'],
+    install_requires=['numpy', 'scipy', 'intervals'],
     extras_require={
-        'test': ['pytest-cov', 'pytest', 'coverage', 'jsonpickle'],
+        'test': ['pytest-cov', 'pytest', 'coverage'],
     },
     entry_points={
         'console_scripts': [

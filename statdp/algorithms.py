@@ -61,31 +61,31 @@ def sparse_vector_no_threshold_noise(Q, eps, N, T):
 def sparse_vector_lyu(Q, eps, N, T):
     out = []
     eta1 = np.random.laplace(scale=2.0 / eps)
-    Tbar = T + eta1
-    c1, c2, i = 0, 0, 0
-    while i < len(Q) and c1 < N:
+    noisy_T = T + eta1
+    c1 = 0
+    for q in Q:
         eta2 = np.random.laplace(scale=4.0 * N / eps)
-        if Q[i] + eta2 >= Tbar:
+        if q + eta2 >= noisy_T:
             out.append(True)
             c1 += 1
+            if c1 >= N:
+                break
         else:
             out.append(False)
-            c2 += 1
-        i += 1
-    return c2
+    return out.count(False)
 
 
 def sparse_vector_1(Q, eps, N, T):
     out = []
     eta1 = np.random.laplace(scale=2.0 / eps)
     noisy_T = T + eta1
-    count = 0
+    c1 = 0
     for q in Q:
         eta2 = np.random.laplace(scale=2.0 * N / eps)
         if q + eta2 > noisy_T:
-            out.append(q+eta2)
-            count += 1
-            if count >= N:
+            out.append(q + eta2)
+            c1 += 1
+            if c1 >= N:
                 break
         else:
             out.append(False)
@@ -97,23 +97,19 @@ def sparse_vector_2(Q, eps, N, T):
     delta = 1
     eta1 = np.random.laplace(scale=4.0 * delta / eps)
     noisy_T = T + eta1
-    count = 0
+    c1 = 0
     for q in Q:
         eta2 = np.random.laplace(scale=(4.0 * delta) / (3.0 * eps))
-        if (q + eta2) > noisy_T:
+        if q + eta2 > noisy_T:
             out.append(True)
-            count += 1
-            if count >= N:
+            c1 += 1
+            if c1 >= N:
                 break
         else:
             out.append(False)
-    hdist = 0
-    for index, value in enumerate(out):
-        if index < len(Q) / 2 and value == True:
-            hdist += 1
-        if index >= len(Q) / 2 and value == False:
-            hdist += 1
-    return hdist
+
+    true_count = int(len(Q) / 2)
+    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
 
 
 def sparse_vector_3(Q, eps, N, T):
@@ -127,13 +123,9 @@ def sparse_vector_3(Q, eps, N, T):
             out.append(True)
         else:
             out.append(False)
-    hdist = 0
-    for index, value in enumerate(out):
-        if index < len(Q) / 2 and value == True:
-            hdist += 1
-        if index >= len(Q) / 2 and value == False:
-            hdist += 1
-    return hdist
+
+    true_count = int(len(Q) / 2)
+    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
 
 
 def sparse_vector_4(Q, eps, N, T):
@@ -147,10 +139,6 @@ def sparse_vector_4(Q, eps, N, T):
             out.append(True)
         else:
             out.append(False)
-    hdist = 0
-    for index, value in enumerate(out):
-        if index < len(Q) / 2 and value == True:
-            hdist += 1
-        if index >= len(Q) / 2 and value == False:
-            hdist += 1
-    return hdist
+
+    true_count = int(len(Q) / 2)
+    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))

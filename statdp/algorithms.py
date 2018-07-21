@@ -24,40 +24,23 @@ def noisy_max_v2b(Q, eps):
     return max(noisy_array)
 
 
-def histogrameps(Q, eps):
+def histogram_eps(Q, eps):
     noisy_array = [a + np.random.laplace(scale=eps) for a in Q]
     return noisy_array[0]
 
 
 def histogram(Q, eps):
-    noisy_array = [a + np.random.laplace(scale=1/eps) for a in Q]
+    noisy_array = [a + np.random.laplace(scale=1.0 / eps) for a in Q]
     return noisy_array[0]
 
 
-def laplace_mechanismq_eps(Q, eps):
+def laplace_mechanism(Q, eps):
     noisy_array = [a + np.random.laplace(scale=len(Q)/eps) for a in Q]
-    # floor=np.mean(noisy_array)-np.std(noisy_array)/len(Q)
-    # ceiling=np.mean(noisy_array)+np.std(noisy_array)/len(Q)
-    floor=1-0.27
-    ceiling=1+0.75
-    count=0
-    for i in noisy_array:
-        if i>=floor and i <=ceiling:
-            count+=1
-    return count
-
-
-def laplace_mechanismeps_q(Q, eps):
-    noisy_array = [a + np.random.laplace(scale=eps/len(Q)) for a in Q]
-    # floor=np.mean(noisy_array)-np.std(noisy_array)/len(Q)
-    # ceiling=np.mean(noisy_array)+np.std(noisy_array)/len(Q)
-    floor = 1-0.27
-    ceiling = 1+0.75
-    count = 0
-    for i in noisy_array:
-        if i>=floor and i <=ceiling:
-            count+=1
-    return count
+    # lower = np.mean(noisy_array) - np.std(noisy_array) / len(Q)
+    # upper = np.mean(noisy_array) + np.std(noisy_array) / len(Q)
+    lower = 1 - 0.27
+    upper = 1 + 0.75
+    return sum(1 for element in noisy_array if lower <= element <= upper)
 
 
 def sparse_vector_no_threshold_noise(Q, eps, N, T):
@@ -81,7 +64,7 @@ def sparse_vector_lyu(Q, eps, N, T):
     Tbar = T + eta1
     c1, c2, i = 0, 0, 0
     while i < len(Q) and c1 < N:
-        eta2 = np.random.laplace(scale=4 * N / eps)
+        eta2 = np.random.laplace(scale=4.0 * N / eps)
         if Q[i] + eta2 >= Tbar:
             out.append(True)
             c1 += 1

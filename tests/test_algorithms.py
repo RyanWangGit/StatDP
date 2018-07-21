@@ -20,5 +20,5 @@ def test_sparsevector():
 def test_histogram():
     assert histogram([1, 2], float('inf')) == 1
     assert isinstance(histogram([1, 2], 1), float)
-    assert histogrameps([1, 2], 0) == 1
-    assert isinstance(histogrameps([1, 2], 1), float)
+    assert histogram_eps([1, 2], 0) == 1
+    assert isinstance(histogram_eps([1, 2], 1), float)

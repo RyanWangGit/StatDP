@@ -15,6 +15,7 @@ def test_sparsevector():
     assert sparse_vector_3([1, 2, 3, 4], float('inf'), 1, 2.5) == 0
     assert sparse_vector_4([1, 2, 3, 4], float('inf'), 1, 2.5) == 0
     assert sparse_vector_no_threshold_noise([1, 2, 3, 4], float('inf'), 1, 2.5) == 2
+    assert sparse_vector_lyu([1, 2, 3, 4], float('inf'), 1, 2.5) == 2
 
 
 def test_histogram():
@@ -22,3 +23,7 @@ def test_histogram():
     assert isinstance(histogram([1, 2], 1), float)
     assert histogram_eps([1, 2], 0) == 1
     assert isinstance(histogram_eps([1, 2], 1), float)
+
+
+def test_laplace_mechanism():
+    assert laplace_mechanism([1, 2, 3], float('inf')) == 1

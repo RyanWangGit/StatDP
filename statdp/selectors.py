@@ -27,16 +27,16 @@ def select_event(algorithm, args, kwargs, D1, D2, epsilon, iterations=100000, se
     assert isfunction(algorithm)
     from .core import test_statistics
 
-    a = [algorithm(D1, *args, **kwargs) for _ in range(iterations)]
-    b = [algorithm(D2, *args, **kwargs) for _ in range(iterations)]
+    result_d1 = [algorithm(D1, *args, **kwargs) for _ in range(iterations)]
+    result_d2 = [algorithm(D2, *args, **kwargs) for _ in range(iterations)]
 
     global _process_pool
 
     # find an event which has minimum p value from search space
     threshold = 0.001 * iterations * np.exp(epsilon)
 
-    results = list(map(__EvaluateEvent(a, b, epsilon, iterations), search_space)) if cores == 1 \
-        else _process_pool.map(__EvaluateEvent(a, b, epsilon, iterations), search_space)
+    results = list(map(__EvaluateEvent(result_d1, result_d2, epsilon, iterations), search_space)) if cores == 1 \
+        else _process_pool.map(__EvaluateEvent(result_d1, result_d2, epsilon, iterations), search_space)
 
     p_values = [test_statistics(x[0], x[1], epsilon, iterations)
                 if x[0] + x[1] > threshold else float('inf') for x in results]

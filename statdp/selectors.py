@@ -42,7 +42,7 @@ def event_selector(algorithm, args, kwargs, D1, D2, epsilon, iterations=100000, 
                 if x[0] + x[1] > threshold else float('inf') for x in results]
 
     for i, (s, (cx, cy), p) in enumerate(zip(search_space, results, p_values)):
-        logger.debug('Event: %s p: %f cx: %d cy: %d ratio: %f' %
+        logger.debug('event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
                      (s, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
 
     return search_space[np.argmin(p_values)]

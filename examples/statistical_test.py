@@ -55,36 +55,36 @@ def main():
             "algorithm": noisy_max_v1a,
             "D1": lambda eps: [0] + [2 for _ in range(4)],
             "D2": lambda eps: [1 for _ in range(5)],
-            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                        search_space=[[i] for i in range(5)])
+            "S": lambda: select_event(algorithm, (), kwargs, D1, D2, epsilon,
+                                      search_space=[[i] for i in range(5)])
         },
         {
             "algorithm": noisy_max_v1b,
             "D1": lambda eps: [2 for _ in range(5)],
             "D2": lambda eps: [1 for _ in range(5)],
-            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                        search_space=[Interval([-inf, alpha]) for alpha in range(-5, 6)])
+            "S": lambda: select_event(algorithm, (), kwargs, D1, D2, epsilon,
+                                      search_space=[Interval([-inf, alpha]) for alpha in range(-5, 6)])
         },
         {
             "algorithm": noisy_max_v2a,
             "D1": lambda eps: [0] + [2 for _ in range(4)],
             "D2": lambda eps: [1 for _ in range(5)],
-            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                        search_space=[[i] for i in range(5)])
+            "S": lambda: select_event(algorithm, (), kwargs, D1, D2, epsilon,
+                                      search_space=[[i] for i in range(5)])
         },
         {
             "algorithm": noisy_max_v2b,
             "D1": lambda eps: [2] + [0 for _ in range(4)],
             "D2": lambda eps: [1 for _ in range(5)],
-            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                        search_space=[Interval([-inf, 1 + alpha / 10.0]) for alpha in range(0, 80, 2)])
+            "S": lambda: select_event(algorithm, (), kwargs, D1, D2, epsilon,
+                                      search_space=[Interval([-inf, 1 + alpha / 10.0]) for alpha in range(0, 80, 2)])
         },
         {
             "algorithm": histogram,
             "D1": lambda eps: [2 for _ in range(5)],
             "D2": lambda eps: [1] + [2 for _ in range(4)],
-            "S": lambda: event_selector(algorithm, (), kwargs, D1, D2, epsilon,
-                                        search_space=[Interval([2 + alpha / 10.0, inf]) for alpha in range(0, 20, 2)])
+            "S": lambda: select_event(algorithm, (), kwargs, D1, D2, epsilon,
+                                      search_space=[Interval([2 + alpha / 10.0, inf]) for alpha in range(0, 20, 2)])
         }
     ]
 

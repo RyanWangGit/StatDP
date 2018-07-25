@@ -8,14 +8,11 @@ python:
   - "3.5"
   - "3.6"
 
-install:
-  - pip install -r requirements-dev.txt
-
 cache: pip
 
 install:
   - pip install tox-travis
-# - python ./scripts/install_z3.py
+  - travis_retry python ./scripts/install_z3.py
 
 script:
   - tox

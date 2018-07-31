@@ -36,8 +36,6 @@ def histogram(Q, eps):
 
 def laplace_mechanism(Q, eps):
     noisy_array = [a + np.random.laplace(scale=len(Q)/eps) for a in Q]
-    # lower = np.mean(noisy_array) - np.std(noisy_array) / len(Q)
-    # upper = np.mean(noisy_array) + np.std(noisy_array) / len(Q)
     lower = 1 - 0.27
     upper = 1 + 0.75
     return sum(1 for element in noisy_array if lower <= element <= upper)
@@ -143,12 +141,3 @@ def sparse_vector_4(Q, eps, N, T):
     true_count = int(len(Q) / 2)
     return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
 
-def laplace_mechanism(Q, eps):
-    noisy_array = [a + np.random.laplace(scale=len(Q)/eps) for a in Q]
-    floor=1-0.27
-    ceiling=1+0.75
-    count=0
-    for i in noisy_array:
-        if i>=floor and i <=ceiling:
-            count+=1
-    return count

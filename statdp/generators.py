@@ -12,10 +12,11 @@ def argument_generator(algorithm, d1, d2):
     return ()
 
 
-def simple_generator(algorithm, num_input):
+def simple_generator(algorithm, num_input, default_kwargs=None):
     """
     :param algorithm: The algorithm to test for.
     :param num_input: The number of inputs to be generated
+    :param default_args: The default arguments that are given or have a default value.
     :return: List of (d1, d2, args) with length num_input
     """
 

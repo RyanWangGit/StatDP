@@ -9,10 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class __EvaluateEvent:
-    def __init__(self, a, b, epsilon, iterations):
+    def __init__(self, a, b, iterations):
         self.a = a
         self.b = b
-        self.epsilon = epsilon
         self.iterations = iterations
 
     def __call__(self, s):
@@ -59,8 +58,8 @@ def select_event(algorithm, args, kwargs, D1, D2, epsilon, iterations=100000, se
     # find an event which has minimum p value from search space
     threshold = 0.001 * iterations * np.exp(epsilon)
 
-    results = list(map(__EvaluateEvent(result_d1, result_d2, epsilon, iterations), search_space)) if cores == 1 \
-        else _process_pool.map(__EvaluateEvent(result_d1, result_d2, epsilon, iterations), search_space)
+    results = list(map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)) if cores == 1 \
+        else _process_pool.map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)
 
     p_values = [test_statistics(x[0], x[1], epsilon, iterations)
                 if x[0] + x[1] > threshold else float('inf') for x in results]

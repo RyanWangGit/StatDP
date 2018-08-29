@@ -24,7 +24,7 @@ class __EvaluateEvent:
 _process_pool = mp.Pool(mp.cpu_count())
 
 
-def select_event(algorithm, args, kwargs, D1, D2, epsilon, iterations=100000, search_space=None, cores=0):
+def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, cores=0):
     assert isfunction(algorithm)
     from .core import test_statistics
 

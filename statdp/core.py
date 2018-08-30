@@ -24,7 +24,7 @@ class __RunAlgorithm:
     """
     Used by hypothesis_test to run algorithm using different database concurrently.
     """
-    def __init__(self, algorithm, args, kwargs, D1, D2, event):
+    def __init__(self, algorithm,kwargs, D1, D2, event):
         self.algorithm = algorithm
         self.args = args
         self.kwargs = kwargs
@@ -64,10 +64,9 @@ def test_statistics(cx, cy, epsilon, iterations):
                                      chunksize=int(1000 / mp.cpu_count())))
 
 
-def hypothesis_test(algorithm, args, kwargs, D1, D2, event, epsilon, iterations, cores=0):
+def hypothesis_test(algorithm, kwargs, D1, D2, event, epsilon, iterations, cores=0):
     """
     :param algorithm: The algorithm to run on
-    :param args: The arguments the algorithm needs
     :param kwargs: The keyword arguments the algorithm needs
     :param D1: Database 1
     :param D2: Database 2
@@ -79,7 +78,7 @@ def hypothesis_test(algorithm, args, kwargs, D1, D2, event, epsilon, iterations,
     """
     np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
     if cores == 1:
-        cx, cy = __RunAlgorithm(algorithm, args, kwargs, D1, D2, event).run(iterations)
+        cx, cy = __RunAlgorithm(algorithm, kwargs, D1, D2, event).run(iterations)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
         return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
     else:
@@ -90,7 +89,7 @@ def hypothesis_test(algorithm, args, kwargs, D1, D2, event, epsilon, iterations,
         # add the remaining iterations to the last index
         process_iterations[process_count - 1] += iterations % process_iterations[process_count - 1]
 
-        result = _process_pool.map(__RunAlgorithm(algorithm, args, kwargs, D1, D2, event), process_iterations)
+        result = _process_pool.map(__RunAlgorithm(algorithm, kwargs, D1, D2, event), process_iterations)
 
         cx, cy = 0, 0
         for process_cx, process_cy in result:

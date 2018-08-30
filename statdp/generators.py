@@ -1,22 +1,23 @@
 import math
 
 
-def argument_generator(algorithm, d1, d2):
+def argument_generator(algorithm, d1, d2, default_kwargs):
     """
     :param algorithm: The algorithm to test for.
     :param d1: The database 1
     :param d2: The database 2
+    :param default_kwargs: The default arguments that are given or have a default value.
     :return: Extra argument needed for the algorithm besides Q and epsilon.
     """
     # TODO: implement argument_generator
     return ()
 
 
-def simple_generator(algorithm, num_input, default_kwargs=None):
+def simple_generator(algorithm, num_input, default_kwargs):
     """
     :param algorithm: The algorithm to test for.
     :param num_input: The number of inputs to be generated
-    :param default_args: The default arguments that are given or have a default value.
+    :param default_kwargs: The default arguments that are given or have a default value.
     :return: List of (d1, d2, args) with length num_input
     """
 
@@ -37,7 +38,7 @@ def simple_generator(algorithm, num_input, default_kwargs=None):
 
     input_list = []
     for d1, d2 in candidates:
-        args = argument_generator(algorithm, d1, d2)
-        input_list.append((d1, d2, args))
+        kwargs = argument_generator(algorithm, d1, d2, default_kwargs)
+        input_list.append((d1, d2, kwargs))
 
     return input_list

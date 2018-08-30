@@ -24,9 +24,8 @@ class __RunAlgorithm:
     """
     Used by hypothesis_test to run algorithm using different database concurrently.
     """
-    def __init__(self, algorithm,kwargs, D1, D2, event):
+    def __init__(self, algorithm, kwargs, D1, D2, event):
         self.algorithm = algorithm
-        self.args = args
         self.kwargs = kwargs
         self.D1 = D1
         self.D2 = D2
@@ -37,8 +36,8 @@ class __RunAlgorithm:
 
     def run(self, iterations):
         np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
-        cx = sum(1 for _ in range(iterations) if self.algorithm(self.D1, *self.args, **self.kwargs) in self.event)
-        cy = sum(1 for _ in range(iterations) if self.algorithm(self.D2, *self.args, **self.kwargs) in self.event)
+        cx = sum(1 for _ in range(iterations) if self.algorithm(self.D1, **self.kwargs) in self.event)
+        cy = sum(1 for _ in range(iterations) if self.algorithm(self.D2, **self.kwargs) in self.event)
         return cx, cy
 
 

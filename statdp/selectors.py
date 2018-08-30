@@ -28,6 +28,9 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
     assert isfunction(algorithm)
     from .core import test_statistics
 
+    input_event_pairs = []
+    p_values = []
+
     for (d1, d2, kwargs) in input_list:
         result_d1 = [algorithm(d1, **kwargs) for _ in range(iterations)]
         result_d2 = [algorithm(d2, **kwargs) for _ in range(iterations)]
@@ -56,17 +59,20 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
 
         global _process_pool
 
-        # find an event which has minimum p value from search space
         threshold = 0.001 * iterations * np.exp(epsilon)
 
         results = list(map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)) if cores == 1 \
             else _process_pool.map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)
 
-        p_values = [test_statistics(cx, cy, epsilon, iterations)
-                    if cx + cy > threshold else float('inf') for (cx, cy) in results]
+        input_p_values = [test_statistics(cx, cy, epsilon, iterations)
+                          if cx + cy > threshold else float('inf') for (cx, cy) in results]
 
-        for i, (s, (cx, cy), p) in enumerate(zip(search_space, results, p_values)):
-            logger.debug('event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
-                         (s, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
+        for (s, (cx, cy), p) in zip(search_space, results, input_p_values):
+            logger.debug('d1: %s | d2: %s | event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
+                         (d1, d2, s, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
 
-    return search_space[np.argmin(p_values)]
+        input_event_pairs.extend(list((d1, d2, kwargs, event) for event in search_space))
+        p_values.extend(input_p_values)
+
+    # find an (d1, d2, kwargs, event) pair which has minimum p value from search space
+    return input_event_pairs[np.argmin(p_values)]

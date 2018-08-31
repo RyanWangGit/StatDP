@@ -3,7 +3,7 @@ from statdp.generators import simple_generator
 
 
 def test_database_generator():
-    input_list = simple_generator(noisy_max_v1a, 5)
+    input_list = simple_generator(noisy_max_v1a, 5, {'eps': 0.5})
     assert isinstance(input_list, list) and len(input_list) >= 1
     for input_ in input_list:
         assert isinstance(input_, (list, tuple)) and len(input_) == 3

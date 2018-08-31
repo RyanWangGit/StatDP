@@ -36,7 +36,7 @@ def detect_counter_example(algorithm, test_epsilon, default_kwargs,
         p1, _ = hypothesis_test(algorithm, kwargs, d1, d2, event, test_epsilon, detect_iterations, cores=cores)
         result.append((epsilon, p1))
 
-    return
+    return result
 
 
 

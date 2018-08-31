@@ -10,7 +10,7 @@ def argument_generator(algorithm, d1, d2, default_kwargs):
     :return: Extra argument needed for the algorithm besides Q and epsilon.
     """
     # TODO: implement argument_generator
-    return {}
+    return default_kwargs
 
 
 def simple_generator(algorithm, num_input, default_kwargs):

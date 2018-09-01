@@ -7,6 +7,6 @@ def test_select_event():
     d2 = [1 for _ in range(5)]
     _, _, _, event = select_event(noisy_max_v1a, [(d1, d2, {'eps': 0.5})], 0.5, 100000, cores=0)
     assert 0 in event
-    event = select_event(noisy_max_v1b, [(d1, d2, {'eps': 0.5})], 0.5, 100000, cores=0)
+    _, _, _, event = select_event(noisy_max_v1b, [(d1, d2, {'eps': 0.5})], 0.5, 100000, cores=0)
     assert 0 in event
 

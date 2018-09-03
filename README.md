@@ -3,7 +3,7 @@
 Counterexample Detection Using Statistical Methods for Incorrect Differential-Privacy Algorithms.
 
 # Usage
-You have to define your algorithm wit the fisrt two arguments being (Querys, Privacy Budget), and the privacy budget should be named 'epsilon'.
+You have to define your algorithm wit the fisrt two arguments being (Queries, Privacy Budget), and the privacy budget should be named 'epsilon'.
 
 Then you can simply call the detection tool with automatic database generation and event selection:
 ```python

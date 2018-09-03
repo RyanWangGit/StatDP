@@ -9,6 +9,18 @@ def detect_counter_example(algorithm, test_epsilon, default_kwargs,
                            event_search_space=None, databases=None,
                            event_iterations=100000, detect_iterations=500000, cores=0,
                            loglevel=logging.INFO):
+    """
+    :param algorithm: The algorithm to test for.
+    :param test_epsilon: The privacy budget to test for, can either be a number or a tuple/list.
+    :param default_kwargs: The default arguments the algorithm needs except the first Queries argument, 'epsilon' must be provided.
+    :param event_search_space: The search space for event selector to reduce search time, optional.
+    :param databases: The databases to run for detection, optional.
+    :param event_iterations: The iterations for event selector to run, default is 100000.
+    :param detect_iterations: The iterations for detector to run, default is 500000.
+    :param cores: The cores to utilize, 0 means auto-detection.
+    :param loglevel: The loglevel for logging package.
+    :return: [(epsilon, p)] The epsilon-p pairs.
+    """
     logging.basicConfig(loglevel=loglevel)
     logger.info('Starting to find counter example on algorithm {0} with test epsilon {1}\n'
                 .format(algorithm.__name__, test_epsilon))

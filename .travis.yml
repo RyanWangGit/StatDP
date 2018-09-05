@@ -15,7 +15,7 @@ install:
   - travis_retry python ./scripts/get_z3.py
 
 script:
-  - tox
+  - travis_wait tox
 
 jobs:
   include:

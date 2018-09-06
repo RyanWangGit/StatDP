@@ -12,7 +12,6 @@ cache: pip
 
 install:
   - pip install tox-travis
-  #- travis_retry python ./scripts/get_z3.py
 
 script:
   - travis_wait tox

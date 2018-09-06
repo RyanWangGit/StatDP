@@ -7,21 +7,22 @@ You have to define your algorithm wit the fisrt two arguments being (Queries, Pr
 
 Then you can simply call the detection tool with automatic database generation and event selection:
 ```python
-from statdp import detect_counter_example
+from statdp import detect_counterexample
 
 def your_algorithm(Q, epsilon, ...):
      # your algorithm implementation here
  
 if __name__ == '__main__':
-    result = detect_counter_example(your_algorithm, test_epsilon)
+    # algorithm `epsilon` argument is required
+    result = detect_counterexample(your_algorithm, {'epsilon': algorithm_epsilon}, test_epsilon)
 ```
 
 The result is returned in variable `result`, which is stored as `[(epsilon, p)]` pairs. 
 
-The `detect_counter_example` accepts multiple extra arguments to customize the process, check the signature and notes of `detect_counter_example` method to see how to use.
+The `detect_counterexample` accepts multiple extra arguments to customize the process, check the signature and notes of `detect_counterexample` method to see how to use.
 
 ```python
-def detect_counter_example(algorithm, test_epsilon, default_kwargs,
+def detect_counterexample(algorithm, test_epsilon, default_kwargs,
                            event_search_space=None, databases=None,
                            event_iterations=100000, detect_iterations=500000, cores=0,
                            loglevel=logging.INFO):

@@ -5,10 +5,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def detect_counter_example(algorithm, test_epsilon, default_kwargs,
-                           event_search_space=None, databases=None,
-                           event_iterations=100000, detect_iterations=500000, cores=0,
-                           loglevel=logging.INFO):
+def detect_counterexample(algorithm, test_epsilon, default_kwargs,
+                          event_search_space=None, databases=None,
+                          event_iterations=100000, detect_iterations=500000, cores=0,
+                          loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
     :param test_epsilon: The privacy budget to test for, can either be a number or a tuple/list.

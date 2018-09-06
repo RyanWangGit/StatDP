@@ -27,7 +27,7 @@ setup(
     ],
     keywords='Differential Privacy, Hypothesis Test, Statistics',
     packages=find_packages(exclude=['tests']),
-    install_requires=['numpy', 'scipy', 'intervals'],
+    install_requires=['numpy', 'scipy', 'intervals', 'z3-solver'],
     extras_require={
         'test': ['pytest-cov', 'pytest', 'coverage'],
     },

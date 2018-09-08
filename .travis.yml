@@ -21,7 +21,7 @@ jobs:
     - stage: codecov
       python: 3.6
       script:
-        - tox
+        - travis_wait 30 tox
         - pip install codecov && codecov
 
 notifications:

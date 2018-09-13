@@ -31,7 +31,7 @@ def draw_graph(xlabel, ylabel, data, title, output_filename):
     plt.axhline(y=0.05, color='black', linestyle='dashed', linewidth=1.2)
     plt.xlabel('\\Large{ ' + xlabel + '}')
     plt.ylabel('\\Large{' + ylabel + '}')
-    if not title == '' and title is not None:
+    if title is not None and not title == '':
         plt.title(title)
     plt.legend()
     plt.savefig(output_filename, bbox_inches='tight')

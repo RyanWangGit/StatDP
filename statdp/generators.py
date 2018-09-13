@@ -1,4 +1,6 @@
 import math
+import logging
+logger = logging.getLogger(__name__)
 
 
 def argument_generator(algorithm, d1, d2, default_kwargs):
@@ -10,6 +12,11 @@ def argument_generator(algorithm, d1, d2, default_kwargs):
     :return: Extra argument needed for the algorithm besides Q and epsilon.
     """
     # TODO: implement argument_generator
+    arguments = algorithm.__code__.co_varnames[algorithm.__code__.co_argcount]
+    if arguments[1] not in default_kwargs:
+        logger.error('The second argument {0} (privacy budget) is not provided!'.format(arguments[1]))
+        return None
+
     return default_kwargs
 
 

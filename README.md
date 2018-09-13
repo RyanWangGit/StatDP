@@ -1,6 +1,6 @@
 # StatDP [![Build Status](https://travis-ci.com/RyanWangGit/StatDP.svg?token=6D8zTzZr7SPui6PzhT2a&branch=master)](https://travis-ci.com/RyanWangGit/StatDP)  [![codecov](https://codecov.io/gh/RyanWangGit/StatDP/branch/master/graph/badge.svg?token=1esLM0E5BZ)](https://codecov.io/gh/RyanWangGit/StatDP)
 
-Counterexample Detection Using Statistical Methods for Incorrect Differential-Privacy Algorithms.
+Statistical Counterexample Detector for Differential Privacy.
 
 # Usage
 You have to define your algorithm wit the fisrt two arguments being (Queries, Privacy Budget), and the privacy budget should be named 'epsilon'.

@@ -11,13 +11,13 @@ def test_noisymax():
 
 def test_sparsevector():
     assert SVT([1, 2, 3, 4], float('inf'), 1, 2.5) == 2
-    assert sparse_vector_1([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
-    assert sparse_vector_1([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
-    assert sparse_vector_2([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
-    assert sparse_vector_2([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
-    assert sparse_vector_3([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
-    assert sparse_vector_3([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
-    assert sparse_vector_4([1, 2, 3, 4], float('inf'), 1, 2) == 2
+    assert iSVT1([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
+    assert iSVT1([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
+    assert iSVT2([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
+    assert iSVT2([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
+    assert iSVT3([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
+    assert iSVT3([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
+    assert iSVT4([1, 2, 3, 4], float('inf'), 1, 2) == 2
 
 
 def test_histogram():

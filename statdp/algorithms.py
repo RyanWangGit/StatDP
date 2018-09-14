@@ -58,7 +58,7 @@ def SVT(Q, epsilon, N, T):
     return out.count(False)
 
 
-def sparse_vector_1(Q, epsilon, N, T):
+def iSVT1(Q, epsilon, N, T):
     out = []
     delta = 1
     eta1 = np.random.laplace(scale=2.0 * delta / epsilon)
@@ -74,7 +74,7 @@ def sparse_vector_1(Q, epsilon, N, T):
     return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
 
 
-def sparse_vector_2(Q, epsilon, N, T):
+def iSVT2(Q, epsilon, N, T):
     out = []
     delta = 1
     eta1 = np.random.laplace(scale=2.0 * delta / epsilon)
@@ -90,7 +90,7 @@ def sparse_vector_2(Q, epsilon, N, T):
     return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
 
 
-def sparse_vector_3(Q, epsilon, N, T):
+def iSVT3(Q, epsilon, N, T):
     out = []
     delta = 1
     eta1 = np.random.laplace(scale=4.0 * delta / epsilon)
@@ -110,7 +110,7 @@ def sparse_vector_3(Q, epsilon, N, T):
     return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
 
 
-def sparse_vector_4(Q, epsilon, N, T):
+def iSVT4(Q, epsilon, N, T):
     out = []
     eta1 = np.random.laplace(scale=2.0 / epsilon)
     noisy_T = T + eta1

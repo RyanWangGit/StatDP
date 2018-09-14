@@ -36,9 +36,6 @@ z3/
 # Output figure
 *.pdf
 
-# Test run file
-run.py
-
 # Result data file
 result_*.json
 debug.txt

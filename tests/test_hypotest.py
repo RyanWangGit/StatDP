@@ -1,5 +1,5 @@
 from statdp.algorithms import noisy_max_v1a
-from statdp.core import hypothesis_test
+from statdp.hypotest import hypothesis_test
 
 
 def test_core_single():

@@ -1,5 +1,5 @@
 from .generators import simple_generator, argument_generator
-from .core import hypothesis_test
+from .hypotest import hypothesis_test
 from .selectors import select_event
 import logging
 logger = logging.getLogger(__name__)

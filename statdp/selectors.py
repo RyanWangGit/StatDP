@@ -26,7 +26,7 @@ _process_pool = mp.Pool(mp.cpu_count())
 
 def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, cores=0):
     assert isfunction(algorithm)
-    from .core import test_statistics
+    from .hypotest import test_statistics
 
     input_event_pairs = []
     p_values = []

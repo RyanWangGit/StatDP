@@ -51,33 +51,59 @@ def main():
     jobs = [
         {
             "algorithm": noisy_max_v1a,
+            "kwargs": {},
             "databases": ([0] + [2 for _ in range(4)], [1 for _ in range(5)]),
             "search_space": tuple([i] for i in range(5))
         },
         {
             "algorithm": noisy_max_v1b,
+            "kwargs": {},
             "databases": ([2 for _ in range(5)], [1 for _ in range(5)]),
             "search_space": tuple(Interval([-inf, alpha]) for alpha in range(-5, 6))
         },
         {
             "algorithm": noisy_max_v2a,
+            "kwargs": {},
             "databases": ([0] + [2 for _ in range(4)], [1 for _ in range(5)]),
             "S": tuple([i] for i in range(5))
         },
         {
             "algorithm": noisy_max_v2b,
+            "kwargs": {},
             "databases": ([2] + [0 for _ in range(4)], [1 for _ in range(5)]),
             "search_space": tuple(Interval([-inf, 1 + alpha / 10.0]) for alpha in range(0, 80, 2))
         },
         {
             "algorithm": histogram,
+            "kwargs": {},
             "databases": ([2 for _ in range(5)], [1] + [2 for _ in range(4)]),
             "search_space": [Interval([-inf, alpha]) for alpha in range(-17, 17)]
         },
         {
             "algorithm": histogram_eps,
+            "kwargs": {},
             "databases": ([0] + [1 for _ in range(4)], [1 for _ in range(5)]),
             "search_space": [Interval([-inf, alpha / 10]) for alpha in range(-30, 30, 2)]
+        },
+        {
+            "algorithm": iSVT1,
+            "kwargs": {'T': 1, 'N': 1},
+            "databases": ([1 for _ in range(10)], [0 for _ in range(5)] + [2 for _ in range(5)]),
+            "search_space": [[i] for i in range(10)]
+        },
+        {
+            "algorithm": iSVT2,
+            "kwargs": {'T': 1, 'N': 1},
+            "databases": ([1 for _ in range(5)] + [0 for _ in range(5)],
+                          [0 for _ in range(5)] + [1 for _ in range(5)]),
+            "search_space": [[i] for i in range(10)]
+        },
+        {
+            "algorithm": iSVT3,
+            "kwargs": {'T': 1, 'N': 1},
+            "databases": ([1 for _ in range(5)] + [0 for _ in range(5)],
+                          [0 for _ in range(5)] + [1 for _ in range(5)]),
+            "search_space": [[i] for i in range(10)]
         },
     ]
 
@@ -91,11 +117,12 @@ def main():
         algorithm = job['algorithm']
         search_space = job['search_space']
         databases = job['databases']
+        kwargs = job['kwargs']
         for algorithm_epsilon in [0.2, 0.5, 0.7] + list(range(1, 4)):
 
             results[algorithm_epsilon] = detect_counterexample(algorithm,
                                                                [x / 10.0 for x in range(1, 34, 1)],
-                                                               {'epsilon': algorithm_epsilon},
+                                                               {'epsilon': algorithm_epsilon}.update(kwargs),
                                                                search_space, databases)
 
         draw_graph('Test $\epsilon$', 'P Value', results,

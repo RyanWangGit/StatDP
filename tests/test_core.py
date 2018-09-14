@@ -1,4 +1,4 @@
-from statdp.__main__ import detect_counterexample
+from statdp.core import detect_counterexample
 from statdp.algorithms import noisy_max_v1a
 
 

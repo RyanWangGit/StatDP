@@ -24,8 +24,11 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs,
     logging.basicConfig(level=loglevel)
     logger.info('Starting to find counter example on algorithm {0} with test epsilon {1}\n'
                 .format(algorithm.__name__, test_epsilon))
-    logger.info('Extra arguments:\n'
-                '\t{0}\n\t{1}\n\t{2}\n\t{3}\n'.format(default_kwargs, event_search_space, databases, cores))
+    logger.info('\nExtra arguments:\n'
+                'default_kwargs: {}\n'
+                'event_search_space: {}\n'
+                'databases: {}\n'
+                'cores:{}\n'.format(default_kwargs, event_search_space, databases, cores))
 
     if databases is not None:
         d1, d2 = databases
@@ -38,15 +41,18 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs,
 
     test_epsilon = (test_epsilon, ) if isinstance(test_epsilon, (int, float)) else test_epsilon
 
-    for epsilon in test_epsilon:
-        d1, d2, kwargs, event = select_event(algorithm, input_list, test_epsilon, event_iterations,
+    for i, epsilon in enumerate(test_epsilon):
+        d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations,
                                              search_space=event_search_space, cores=cores)
 
         # fix the database and arguments if selected for performance
         input_list = ((d1, d2, kwargs),) if len(input_list) > 1 else input_list
 
-        p1, _ = hypothesis_test(algorithm, kwargs, d1, d2, event, test_epsilon, detect_iterations, cores=cores)
+        p1, _ = hypothesis_test(algorithm, kwargs, d1, d2, event, epsilon, detect_iterations, cores=cores)
         result.append((epsilon, p1, d1, d2, kwargs, event))
+        print('Epsilon: {} | p-value: {:5.3f} | Event: {} | {:5.1f}%'
+              .format(epsilon, p1, event, float(i + 1) / len(test_epsilon) * 100))
+        logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
 
     return result
 

@@ -19,7 +19,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs,
     :param detect_iterations: The iterations for detector to run, default is 500000.
     :param cores: The cores to utilize, 0 means auto-detection.
     :param loglevel: The loglevel for logging package.
-    :return: [(epsilon, p)] The epsilon-p pairs.
+    :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
     """
     logging.basicConfig(loglevel=loglevel)
     logger.info('Starting to find counter example on algorithm {0} with test epsilon {1}\n'

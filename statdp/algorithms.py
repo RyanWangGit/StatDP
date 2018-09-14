@@ -41,7 +41,7 @@ def laplace_mechanism(Q, epsilon):
     return sum(1 for element in noisy_array if lower <= element <= upper)
 
 
-def sparse_vector_lyu(Q, epsilon, N, T):
+def SVT(Q, epsilon, N, T):
     out = []
     eta1 = np.random.laplace(scale=2.0 / epsilon)
     noisy_T = T + eta1

@@ -46,7 +46,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs,
         input_list = ((d1, d2, kwargs),) if len(input_list) > 1 else input_list
 
         p1, _ = hypothesis_test(algorithm, kwargs, d1, d2, event, test_epsilon, detect_iterations, cores=cores)
-        result.append((epsilon, p1))
+        result.append((epsilon, p1, d1, d2, kwargs, event))
 
     return result
 

@@ -22,7 +22,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs,
     :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
     """
     logging.basicConfig(level=loglevel)
-    logger.info('Starting to find counter example on algorithm {0} with test epsilon {1}\n'
+    logger.info('Starting to find counter example on algorithm {} with test epsilon {}\n'
                 .format(algorithm.__name__, test_epsilon))
     logger.info('\nExtra arguments:\n'
                 'default_kwargs: {}\n'

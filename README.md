@@ -18,7 +18,7 @@ if __name__ == '__main__':
     result = detect_counterexample(your_algorithm, {'epsilon': algorithm_epsilon}, test_epsilon)
 ```
 
-The result is returned in variable `result`, which is stored as `[(epsilon, p)]` pairs. 
+The result is returned in variable `result`, which is stored as `[(epsilon, p, d1, d2, kwargs, event), (...)]`. 
 
 The `detect_counterexample` accepts multiple extra arguments to customize the process, check the signature and notes of `detect_counterexample` method to see how to use.
 
@@ -37,7 +37,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs,
     :param detect_iterations: The iterations for detector to run, default is 500000.
     :param cores: The cores to utilize, 0 means auto-detection.
     :param loglevel: The loglevel for logging package.
-    :return: [(epsilon, p)] The epsilon-p pairs.
+    :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
     """
 ```
 

@@ -119,10 +119,10 @@ def main():
         databases = job['databases']
         kwargs = job['kwargs']
         for algorithm_epsilon in [0.2, 0.5, 0.7] + list(range(1, 4)):
-
+            kwargs['epsilon'] = algorithm_epsilon
             results[algorithm_epsilon] = detect_counterexample(algorithm,
                                                                [x / 10.0 for x in range(1, 34, 1)],
-                                                               {'epsilon': algorithm_epsilon}.update(kwargs),
+                                                               kwargs,
                                                                search_space, databases)
 
         draw_graph('Test $\epsilon$', 'P Value', results,

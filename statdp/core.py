@@ -1,6 +1,6 @@
-from .generators import simple_generator, argument_generator
-from .hypotest import hypothesis_test
-from .selectors import select_event
+from statdp.generators import simple_generator, argument_generator
+from statdp.hypotest import hypothesis_test
+from statdp.selectors import select_event
 import logging
 logger = logging.getLogger(__name__)
 

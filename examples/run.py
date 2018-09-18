@@ -3,7 +3,7 @@ from statdp.algorithms import *
 from intervals import Interval
 from math import inf
 import time
-import json
+import jsonpickle
 
 
 def draw_graph(xlabel, ylabel, data, title, output_filename):
@@ -131,7 +131,9 @@ def main():
 
         # dump the results to file
         with open('./{}.json'.format(algorithm.__name__), 'w') as f:
-            json.dump(results, f)
+            # json.dump(results, f)
+            # cannot use json.dump since Interval class is not JSON-serializable
+            f.write(jsonpickle.encode(results))
 
         print('{} | D1: {} | D2: {} | Time: {}'.format(algorithm.__name__, databases[0], databases[1],
                                                        time.time() - start_time))

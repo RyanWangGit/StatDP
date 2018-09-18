@@ -65,7 +65,7 @@ def main():
             "algorithm": noisy_max_v2a,
             "kwargs": {},
             "databases": ([0] + [2 for _ in range(4)], [1 for _ in range(5)]),
-            "S": tuple([i] for i in range(5))
+            "search_space": tuple([i] for i in range(5))
         },
         {
             "algorithm": noisy_max_v2b,

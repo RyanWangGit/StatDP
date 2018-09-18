@@ -131,7 +131,7 @@ def main():
 
         # dump the results to file
         with open('./{}.json'.format(algorithm.__name__), 'w') as f:
-            json.dump(f, results)
+            json.dump(results, f)
 
         print('{} | D1: {} | D2: {} | Time: {}'.format(algorithm.__name__, databases[0], databases[1],
                                                        time.time() - start_time))

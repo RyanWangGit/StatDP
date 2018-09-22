@@ -11,3 +11,8 @@ def test_main():
     result = detect_counterexample(noisy_max_v1a, 0.2, {'epsilon': 0.5}, loglevel=logging.DEBUG)
     epsilon, p, *_ = result[0]
     assert epsilon == 0.2 and p <= 0.05
+    d1, d2 = [0] + [2 for _ in range(4)], [1 for _ in range(5)]
+    result = detect_counterexample(noisy_max_v1a, 0.2, {'epsilon': 0.5},
+                                   databases=(d1, d2), loglevel=logging.DEBUG)
+    epsilon, p, *_ = result[0]
+    assert epsilon == 0.2 and p <= 0.05

@@ -1,4 +1,4 @@
-from statdp.generators import simple_generator, argument_generator
+from statdp.generators import generate_databases, generate_arguments
 from statdp.hypotest import hypothesis_test
 from statdp.selectors import select_event
 import logging
@@ -32,10 +32,10 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs,
 
     if databases is not None:
         d1, d2 = databases
-        kwargs = argument_generator(algorithm, d1, d2, default_kwargs=default_kwargs)
+        kwargs = generate_arguments(algorithm, d1, d2, default_kwargs=default_kwargs)
         input_list = ((d1, d2, kwargs),)
     else:
-        input_list = simple_generator(algorithm, 5, default_kwargs=default_kwargs)
+        input_list = generate_databases(algorithm, 5, default_kwargs=default_kwargs)
 
     result = []
 

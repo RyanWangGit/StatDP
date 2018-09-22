@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def argument_generator(algorithm, d1, d2, default_kwargs):
+def generate_arguments(algorithm, d1, d2, default_kwargs):
     """
     :param algorithm: The algorithm to test for.
     :param d1: The database 1
@@ -20,7 +20,7 @@ def argument_generator(algorithm, d1, d2, default_kwargs):
     return default_kwargs
 
 
-def simple_generator(algorithm, num_input, default_kwargs):
+def generate_databases(algorithm, num_input, default_kwargs):
     """
     :param algorithm: The algorithm to test for.
     :param num_input: The number of inputs to be generated
@@ -45,7 +45,7 @@ def simple_generator(algorithm, num_input, default_kwargs):
 
     input_list = []
     for d1, d2 in candidates:
-        kwargs = argument_generator(algorithm, d1, d2, default_kwargs)
+        kwargs = generate_arguments(algorithm, d1, d2, default_kwargs)
         input_list.append((d1, d2, kwargs))
 
     return input_list

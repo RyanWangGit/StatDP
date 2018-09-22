@@ -1,5 +1,5 @@
 from statdp.algorithms import noisy_max_v1a
-from statdp.generators import simple_generator
+from statdp.generators import simple_generator, argument_generator
 
 
 def test_database_generator():
@@ -11,3 +11,8 @@ def test_database_generator():
         assert isinstance(d1, (tuple, list)) and isinstance(d2, (tuple, list))
         assert len(d1) == 5 and len(d2) == 5
         assert isinstance(args, (tuple, list, dict))
+
+
+def test_argument_generator():
+    d1, d2 = tuple(1 for _ in range(5)), tuple(2 for _ in range(5))
+    assert argument_generator(noisy_max_v1a, d1, d2, {}) is None

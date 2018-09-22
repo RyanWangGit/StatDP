@@ -3,39 +3,39 @@ import numpy as np
 
 def noisy_max_v1a(Q, epsilon):
     # add laplace noise
-    noisy_array = [a + np.random.laplace(scale=2.0 / epsilon) for a in Q]
+    noisy_array = tuple(a + np.random.laplace(scale=2.0 / epsilon) for a in Q)
 
     # find the largest noisy element and return its index
     return np.argmax(noisy_array)
 
 
 def noisy_max_v1b(Q, epsilon):
-    noisy_array = [a + np.random.laplace(scale=2.0 / epsilon) for a in Q]
+    noisy_array = tuple(a + np.random.laplace(scale=2.0 / epsilon) for a in Q)
     return max(noisy_array)
 
 
 def noisy_max_v2a(Q, epsilon):
-    noisy_array = [a + np.random.exponential(scale=2.0 / epsilon) for a in Q]
+    noisy_array = tuple(a + np.random.exponential(scale=2.0 / epsilon) for a in Q)
     return np.argmax(noisy_array)
 
 
 def noisy_max_v2b(Q, epsilon):
-    noisy_array = [a + np.random.exponential(scale=2.0 / epsilon) for a in Q]
+    noisy_array = tuple(a + np.random.exponential(scale=2.0 / epsilon) for a in Q)
     return max(noisy_array)
 
 
 def histogram_eps(Q, epsilon):
-    noisy_array = [a + np.random.laplace(scale=epsilon) for a in Q]
+    noisy_array = tuple(a + np.random.laplace(scale=epsilon) for a in Q)
     return noisy_array[0]
 
 
 def histogram(Q, epsilon):
-    noisy_array = [a + np.random.laplace(scale=1.0 / epsilon) for a in Q]
+    noisy_array = tuple(a + np.random.laplace(scale=1.0 / epsilon) for a in Q)
     return noisy_array[0]
 
 
 def laplace_mechanism(Q, epsilon):
-    noisy_array = [a + np.random.laplace(scale=len(Q)/epsilon) for a in Q]
+    noisy_array = tuple(a + np.random.laplace(scale=len(Q)/epsilon) for a in Q)
     lower = 1 - 0.27
     upper = 1 + 0.75
     return sum(1 for element in noisy_array if lower <= element <= upper)

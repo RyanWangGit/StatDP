@@ -114,10 +114,8 @@ def main():
     for job in jobs:
         results.clear()
 
-        algorithm = job['algorithm']
-        search_space = job['search_space']
-        databases = job['databases']
-        kwargs = job['kwargs']
+        algorithm, search_space,  = job['algorithm'], job['search_space']
+        databases, kwargs = job['databases'], job['kwargs']
         for algorithm_epsilon in [0.2, 0.5, 0.7] + list(range(1, 4)):
             kwargs['epsilon'] = algorithm_epsilon
             results[algorithm_epsilon] = detect_counterexample(algorithm,

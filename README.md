@@ -3,7 +3,7 @@
 
 Statistical Counterexample Detector for Differential Privacy.
 
-# Usage
+## Usage
 You have to define your algorithm with the fisrt two arguments being (Queries, Privacy Budget).
 
 Then you can simply call the detection tool with automatic database generation and event selection:
@@ -52,7 +52,7 @@ Then you can generate a figure like the iSVT 4 in our paper.
 ## Customizing the detection
 
 
-# Citing this work
+## Citing this work
 
 You are encouraged to cite the following [paper](https://arxiv.org/pdf/1805.10277.pdf) if you use this tool for academic research:
 
@@ -65,5 +65,5 @@ You are encouraged to cite the following [paper](https://arxiv.org/pdf/1805.1027
 }
 ```
 
-# License
+## License
 [MIT](https://github.com/RyanWangGit/StatDP/blob/master/LICENSE).

@@ -52,7 +52,7 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
                                         chunksize=int(1000 / mp.cpu_count())))
 
 
-def hypothesis_test(algorithm, kwargs, d1, d2, event, epsilon, iterations, process_pool=None):
+def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, process_pool=None):
     """
     :param algorithm: The algorithm to run on
     :param kwargs: The keyword arguments the algorithm needs

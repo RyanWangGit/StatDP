@@ -41,44 +41,40 @@ class __RunAlgorithm:
         return cx, cy
 
 
-# global process pool
-_process_pool = mp.Pool(mp.cpu_count())
+def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
+    if process_pool is None:
+        return np.mean(tuple(map(__HyperGeometric(cy, iterations),
+                                 np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000))))
+    else:
+        # use a multiprocessing.Pool to parallel average p value calculation
+        return np.mean(process_pool.map(__HyperGeometric(cy, iterations),
+                                        np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000),
+                                        chunksize=int(1000 / mp.cpu_count())))
 
 
-def test_statistics(cx, cy, epsilon, iterations):
-    global _process_pool
-    # use a multiprocessing.Pool to parallel average p value calculation
-    return np.mean(_process_pool.map(__HyperGeometric(cy, iterations),
-                                     np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000),
-                                     chunksize=int(1000 / mp.cpu_count())))
-
-
-def hypothesis_test(algorithm, kwargs, D1, D2, event, epsilon, iterations, cores=0):
+def hypothesis_test(algorithm, kwargs, d1, d2, event, epsilon, iterations, process_pool=None):
     """
     :param algorithm: The algorithm to run on
     :param kwargs: The keyword arguments the algorithm needs
-    :param D1: Database 1
-    :param D2: Database 2
+    :param d1: Database 1
+    :param d2: Database 2
     :param event: The event set
     :param iterations: Number of iterations to run
     :param epsilon: The epsilon value to test for
-    :param cores: Number of processes to run, default is 1 and 0 means utilizing all cores.
-    :return: p values.
+    :param process_pool: The process pool to use, run with single process if None
+    :return: p values
     """
     np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
-    if cores == 1:
-        cx, cy = __RunAlgorithm(algorithm, kwargs, D1, D2, event).run(iterations)
+    if process_pool is None:
+        cx, cy = __RunAlgorithm(algorithm, kwargs, d1, d2, event).run(iterations)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
         return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
     else:
-        global _process_pool
-        process_count = mp.cpu_count() if cores == 0 else cores
-
-        process_iterations = [int(math.floor(float(iterations) / process_count)) for _ in range(process_count)]
+        process_iterations = [int(math.floor(float(iterations) / mp.cpu_count())) for _ in range(mp.cpu_count())]
         # add the remaining iterations to the last index
-        process_iterations[process_count - 1] += iterations % process_iterations[process_count - 1]
+        process_iterations[mp.cpu_count() - 1] += iterations % process_iterations[mp.cpu_count() - 1]
 
-        result = _process_pool.map(__RunAlgorithm(algorithm, kwargs, D1, D2, event), process_iterations)
+        result = process_pool.map(__RunAlgorithm(algorithm, kwargs, d1, d2, event), process_iterations)
 
         cx, cy = 0, 0
         for process_cx, process_cy in result:

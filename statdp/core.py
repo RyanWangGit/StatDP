@@ -2,6 +2,7 @@ from statdp.generators import generate_databases, generate_arguments
 from statdp.hypotest import hypothesis_test
 from statdp.selectors import select_event
 import logging
+import multiprocessing as mp
 logger = logging.getLogger(__name__)
 
 
@@ -40,19 +41,29 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs,
     result = []
 
     test_epsilon = (test_epsilon, ) if isinstance(test_epsilon, (int, float)) else test_epsilon
+    pool = None
+    if cores == 0:
+        pool = mp.Pool(mp.cpu_count())
+    elif cores != 1:
+        pool = mp.Pool(cores)
+    try:
+        for i, epsilon in enumerate(test_epsilon):
+            d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations,
+                                                 search_space=event_search_space, process_pool=pool)
 
-    for i, epsilon in enumerate(test_epsilon):
-        d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations,
-                                             search_space=event_search_space, cores=cores)
+            # fix the database and arguments if selected for performance
+            input_list = ((d1, d2, kwargs),) if len(input_list) > 1 else input_list
 
-        # fix the database and arguments if selected for performance
-        input_list = ((d1, d2, kwargs),) if len(input_list) > 1 else input_list
-
-        p1, _ = hypothesis_test(algorithm, kwargs, d1, d2, event, epsilon, detect_iterations, cores=cores)
-        result.append((epsilon, p1, d1, d2, kwargs, event))
-        print('Epsilon: {} | p-value: {:5.3f} | Event: {} | {:5.1f}%'
-              .format(epsilon, p1, event, float(i + 1) / len(test_epsilon) * 100))
-        logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
+            p1, _ = hypothesis_test(algorithm, kwargs, d1, d2, event, epsilon, detect_iterations, process_pool=pool)
+            result.append((epsilon, p1, d1, d2, kwargs, event))
+            print('Epsilon: {} | p-value: {:5.3f} | Event: {} | {:5.1f}%'
+                  .format(epsilon, p1, event, float(i + 1) / len(test_epsilon) * 100))
+            logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
+    finally:
+        if pool is not None:
+            pool.close()
+        else:
+            pass
 
     return result
 

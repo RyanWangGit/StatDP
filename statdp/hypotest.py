@@ -3,51 +3,29 @@ import multiprocessing as mp
 import math
 import codecs
 import os
+from functools import partial
 from scipy import stats
 
 
-class __HyperGeometric:
-    """
-    Used by test_statistics function to pass hypergeometric function to multiprocessing.Pool().map,
-    which only accepts pickle-able functions or objects.
-    """
-    def __init__(self, cy, iterations):
-        self.cy = cy
-        self.iterations = iterations
-
-    def __call__(self, cx):
-        np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
-        return 1 - stats.hypergeom.cdf(cx, 2 * self.iterations, self.iterations, cx + self.cy)
+def _hypergeometric(cx, cy, iterations):
+    np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
+    return 1 - stats.hypergeom.cdf(cx, 2 * iterations, iterations, cx + cy)
 
 
-class __RunAlgorithm:
-    """
-    Used by hypothesis_test to run algorithm using different database concurrently.
-    """
-    def __init__(self, algorithm, kwargs, D1, D2, event):
-        self.algorithm = algorithm
-        self.kwargs = kwargs
-        self.D1 = D1
-        self.D2 = D2
-        self.event = event
-
-    def __call__(self, iterations):
-        return self.run(iterations)
-
-    def run(self, iterations):
-        np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
-        cx = sum(1 for _ in range(iterations) if self.algorithm(self.D1, **self.kwargs) in self.event)
-        cy = sum(1 for _ in range(iterations) if self.algorithm(self.D2, **self.kwargs) in self.event)
-        return cx, cy
+def _run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
+    np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
+    cx = sum(1 for _ in range(iterations) if algorithm(d1, **kwargs) in event)
+    cy = sum(1 for _ in range(iterations) if algorithm(d2, **kwargs) in event)
+    return cx, cy
 
 
 def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
+    # average p value
     if process_pool is None:
-        return np.mean(tuple(map(__HyperGeometric(cy, iterations),
-                                 np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000))))
+        return np.mean(tuple(_hypergeometric(cx, cy, iterations)
+                             for cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000)))
     else:
-        # use a multiprocessing.Pool to parallel average p value calculation
-        return np.mean(process_pool.map(__HyperGeometric(cy, iterations),
+        return np.mean(process_pool.map(partial(_hypergeometric, cy=cy, iterations=iterations),
                                         np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000),
                                         chunksize=int(1000 / mp.cpu_count())))
 
@@ -66,7 +44,7 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
     """
     np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
     if process_pool is None:
-        cx, cy = __RunAlgorithm(algorithm, kwargs, d1, d2, event).run(iterations)
+        cx, cy = _run_algorithm(algorithm, kwargs, d1, d2, event, iterations)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
         return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
     else:
@@ -74,7 +52,9 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
         # add the remaining iterations to the last index
         process_iterations[mp.cpu_count() - 1] += iterations % process_iterations[mp.cpu_count() - 1]
 
-        result = process_pool.map(__RunAlgorithm(algorithm, kwargs, d1, d2, event), process_iterations)
+        result = process_pool.map(partial(_run_algorithm,
+                                          algorithm, d1, d2, kwargs, event),
+                                  process_iterations)
 
         cx, cy = 0, 0
         for process_cx, process_cy in result:

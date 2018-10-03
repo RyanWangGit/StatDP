@@ -44,7 +44,7 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
     """
     np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
     if process_pool is None:
-        cx, cy = _run_algorithm(algorithm, kwargs, d1, d2, event, iterations)
+        cx, cy = _run_algorithm(algorithm, d1, d2, kwargs, event, iterations)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
         return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
     else:

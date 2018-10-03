@@ -21,10 +21,16 @@ class __EvaluateEvent:
         return cx, cy
 
 
-_process_pool = mp.Pool(mp.cpu_count())
-
-
-def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, cores=0):
+def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, process_pool=None):
+    """
+    :param algorithm: The algorithm to run on
+    :param input_list: list of (d1, d2, kwargs) input pair for the algorithm to run
+    :param epsilon: Test epsilon value
+    :param iterations: The iterations to run algorithms
+    :param search_space: The result search space to run on, auto-determine based on return type if None
+    :param process_pool: The process pool to use, run with single process if None
+    :return: (d1, d2, kwargs, event) pair which has minimum p value from search space
+    """
     assert isfunction(algorithm)
     from .hypotest import test_statistics
 
@@ -57,12 +63,10 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
 
             logger.info('search space is set to {0}'.format(search_space))
 
-        global _process_pool
-
         threshold = 0.001 * iterations * np.exp(epsilon)
 
-        results = list(map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)) if cores == 1 \
-            else _process_pool.map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)
+        results = list(map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)) if process_pool is None \
+            else process_pool.map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)
 
         input_p_values = [test_statistics(cx, cy, epsilon, iterations)
                           if cx + cy > threshold else float('inf') for (cx, cy) in results]

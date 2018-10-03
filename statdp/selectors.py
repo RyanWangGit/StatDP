@@ -1,4 +1,4 @@
-from inspect import isfunction、
+from inspect import isfunction
 import numpy as np
 from collections import Counter
 from intervals import Interval

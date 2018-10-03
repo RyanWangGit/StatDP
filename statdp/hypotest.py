@@ -46,16 +46,6 @@ _process_pool = mp.Pool(mp.cpu_count())
 
 
 def test_statistics(cx, cy, epsilon, iterations):
-    """ old test method
-    counter = 0
-    for i in range(iterations):
-        r = np.random.binomial(cx, 1.0 / (np.exp(epsilon)))
-        t = np.random.binomial(cy + r, 0.5)
-        if t >= r:
-            counter += 1
-
-    return counter
-    """
     global _process_pool
     # use a multiprocessing.Pool to parallel average p value calculation
     return np.mean(_process_pool.map(__HyperGeometric(cy, iterations),

@@ -51,7 +51,6 @@ Then you can generate a figure like the iSVT 4 in our paper.
 
 ## Customizing the detection
 
-
 ## Citing this work
 
 You are encouraged to cite the following [paper](https://arxiv.org/pdf/1805.10277.pdf) if you use this tool for academic research:

@@ -11,7 +11,6 @@ def generate_arguments(algorithm, d1, d2, default_kwargs):
     :param default_kwargs: The default arguments that are given or have a default value.
     :return: Extra argument needed for the algorithm besides Q and epsilon.
     """
-    # TODO: implement argument_generator
     arguments = algorithm.__code__.co_varnames[:algorithm.__code__.co_argcount]
     if arguments[1] not in default_kwargs:
         logger.error('The second argument {} (privacy budget) is not provided!'.format(arguments[1]))

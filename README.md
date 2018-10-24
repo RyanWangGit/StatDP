@@ -14,7 +14,7 @@ def your_algorithm(Q, epsilon, ...):
      # your algorithm implementation here
  
 if __name__ == '__main__':
-    # algorithm privacy budget argument(`epsilon`) is needed into the detector
+    # algorithm privacy budget argument(`epsilon`) is needed
     # otherwise detector won't work properly since it will try to generate a privacy budget
     result = detect_counterexample(your_algorithm, {'epsilon': privacy_budget}, test_epsilon)
 ```

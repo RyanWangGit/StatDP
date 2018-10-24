@@ -3,7 +3,7 @@ import multiprocessing as mp
 import math
 import codecs
 import os
-from functools import partial
+import functools
 from scipy import stats
 
 
@@ -25,7 +25,8 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
         return np.mean(tuple(_hypergeometric(cx, cy, iterations)
                              for cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000)))
     else:
-        return np.mean(process_pool.map(partial(_hypergeometric, cy=cy, iterations=iterations),
+        # bind cy and iterations to _hypergeometric function and feed different cx into it
+        return np.mean(process_pool.map(functools.partial(_hypergeometric, cy=cy, iterations=iterations),
                                         np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000),
                                         chunksize=int(1000 / mp.cpu_count())))
 
@@ -52,8 +53,7 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
         # add the remaining iterations to the last index
         process_iterations[mp.cpu_count() - 1] += iterations % process_iterations[mp.cpu_count() - 1]
 
-        result = process_pool.map(partial(_run_algorithm,
-                                          algorithm, d1, d2, kwargs, event),
+        result = process_pool.map(functools.partial(_run_algorithm, algorithm, d1, d2, kwargs, event),
                                   process_iterations)
 
         cx, cy = 0, 0

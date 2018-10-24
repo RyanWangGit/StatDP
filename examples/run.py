@@ -44,6 +44,8 @@ def draw_graph(xlabel, ylabel, data, title, output_filename):
     plt.legend()
     plt.savefig(output_filename, bbox_inches='tight')
     plt.draw()
+    plt.pause(0.001)
+    plt.gcf().clear()
     return
 
 

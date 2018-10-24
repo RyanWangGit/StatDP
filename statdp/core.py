@@ -6,14 +6,14 @@ import multiprocessing as mp
 logger = logging.getLogger(__name__)
 
 
-def detect_counterexample(algorithm, test_epsilon, default_kwargs,
+def detect_counterexample(algorithm, test_epsilon, default_kwargs={},
                           event_search_space=None, databases=None,
                           event_iterations=100000, detect_iterations=500000, cores=0,
                           loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
     :param test_epsilon: The privacy budget to test for, can either be a number or a tuple/list.
-    :param default_kwargs: The default arguments the algorithm needs except the first Queries argument, 'epsilon' must be provided.
+    :param default_kwargs: The default arguments the algorithm needs except the first Queries argument.
     :param event_search_space: The search space for event selector to reduce search time, optional.
     :param databases: The databases to run for detection, optional.
     :param event_iterations: The iterations for event selector to run, default is 100000.

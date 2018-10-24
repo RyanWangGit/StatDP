@@ -4,7 +4,7 @@
 Statistical Counterexample Detector for Differential Privacy.
 
 ## Usage
-You have to define your algorithm with the fisrt two arguments being (Queries, Privacy Budget).
+You have to define your algorithm with the first argument being `Queries`.
 
 Then you can simply call the detection tool with automatic database generation and event selection:
 ```python
@@ -14,8 +14,9 @@ def your_algorithm(Q, epsilon, ...):
      # your algorithm implementation here
  
 if __name__ == '__main__':
-    # algorithm privacy budget argument(`epsilon`) is required
-    result = detect_counterexample(your_algorithm, {'epsilon': algorithm_epsilon}, test_epsilon)
+    # algorithm privacy budget argument(`epsilon`) is needed into the detector
+    # otherwise detector won't work properly since it will try to generate a privacy budget
+    result = detect_counterexample(your_algorithm, {'epsilon': privacy_budget}, test_epsilon)
 ```
 
 The result is returned in variable `result`, which is stored as `[(epsilon, p, d1, d2, kwargs, event), (...)]`. 
@@ -23,7 +24,7 @@ The result is returned in variable `result`, which is stored as `[(epsilon, p, d
 The `detect_counterexample` accepts multiple extra arguments to customize the process, check the signature and notes of `detect_counterexample` method to see how to use.
 
 ```python
-def detect_counterexample(algorithm, test_epsilon, default_kwargs,
+def detect_counterexample(algorithm, test_epsilon, default_kwargs={},
                            event_search_space=None, databases=None,
                            event_iterations=100000, detect_iterations=500000, cores=0,
                            loglevel=logging.INFO):

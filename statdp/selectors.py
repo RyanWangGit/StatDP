@@ -8,9 +8,9 @@ import functools
 logger = logging.getLogger(__name__)
 
 
-def _evaluate_event(event, d1_results, d2_results):
-    cx = sum(1 for x in d1_results if x in event)
-    cy = sum(1 for y in d2_results if y in event)
+def _evaluate_event(event, result_d1, result_d2):
+    cx = sum(1 for x in result_d1 if x in event)
+    cy = sum(1 for y in result_d2 if y in event)
     cx, cy = (cx, cy) if cx > cy else (cy, cx)
     return cx, cy
 

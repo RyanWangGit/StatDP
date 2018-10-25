@@ -48,9 +48,14 @@ A nice python library `matplotlib` is recommended for visualizing your result.
 There's a python code snippet at `/examples/run.py`(`draw_graph` method) to show an example of plotting the results.
 
 Then you can generate a figure like the iSVT 4 in our paper.
-![iSVT4](https://raw.githubusercontent.com/RyanWangGit/StatDP/master/examples/isvt4.svg?sanitize=true)
+![iSVT4](https://raw.githubusercontent.com/RyanWangGit/StatDP/master/examples/iSVT4.svg?sanitize=true)
 
 ## Customizing the detection
+Our tool is designed to be modular and components are fully decoupled. You can write your own `input generator`/`event selector` and apply them to `hypothesis test`.
+
+In general the detection process is `generate_databases -> select_event -> hypothesis_test`, you can checkout the definition and docstrings of the functions respectively to define your own generator/selector.Basically the `detect_counterexample` function in `statdp.core` package is just shortcut function to take care of the above process for you.
+
+`hypothesis_test` function can be used universally by all algorithms, but you may need to design your own generator or selector for your own algorithm since our input generator and event selector are designed to work with numerical queries on databases.
 
 ## Citing this work
 

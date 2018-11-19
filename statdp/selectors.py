@@ -3,21 +3,16 @@ import numpy as np
 from collections import Counter
 from intervals import Interval
 import logging
+import functools
 
 logger = logging.getLogger(__name__)
 
 
-class __EvaluateEvent:
-    def __init__(self, a, b, iterations):
-        self.a = a
-        self.b = b
-        self.iterations = iterations
-
-    def __call__(self, s):
-        cx = sum(1 for x in self.a if x in s)
-        cy = sum(1 for y in self.b if y in s)
-        cx, cy = (cx, cy) if cx > cy else (cy, cx)
-        return cx, cy
+def _evaluate_event(event, result_d1, result_d2):
+    cx = sum(1 for x in result_d1 if x in event)
+    cy = sum(1 for y in result_d2 if y in event)
+    cx, cy = (cx, cy) if cx > cy else (cy, cx)
+    return cx, cy
 
 
 def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, process_pool=None):
@@ -64,8 +59,11 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
 
         threshold = 0.001 * iterations * np.exp(epsilon)
 
-        results = list(map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)) if process_pool is None \
-            else process_pool.map(__EvaluateEvent(result_d1, result_d2, iterations), search_space)
+        # bind the result_d1 and result_d2 to _evaluate_event, leaving out `event` argument to be filled
+        partial_evaluate_event = functools.partial(_evaluate_event, result_d1=result_d1, result_d2=result_d2)
+
+        results = list(map(partial_evaluate_event, search_space)) if process_pool is None else \
+            process_pool.map(partial_evaluate_event, search_space)
 
         input_p_values = [test_statistics(cx, cy, epsilon, iterations)
                           if cx + cy > threshold else float('inf') for (cx, cy) in results]

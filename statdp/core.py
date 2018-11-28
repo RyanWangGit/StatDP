@@ -6,7 +6,7 @@ import multiprocessing as mp
 logger = logging.getLogger(__name__)
 
 
-def detect_counterexample(algorithm, test_epsilon, default_kwargs={},
+def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
                           event_search_space=None, databases=None,
                           event_iterations=100000, detect_iterations=500000, cores=0,
                           loglevel=logging.INFO):
@@ -22,6 +22,9 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs={},
     :param loglevel: The loglevel for logging package.
     :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
     """
+    # initialize an empty default kwargs if None is given
+    default_kwargs = default_kwargs if default_kwargs else {}
+
     logging.basicConfig(level=loglevel)
     logger.info('Starting to find counter example on algorithm {} with test epsilon {}\n'
                 .format(algorithm.__name__, test_epsilon))

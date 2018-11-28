@@ -24,7 +24,7 @@ The result is returned in variable `result`, which is stored as `[(epsilon, p, d
 The `detect_counterexample` accepts multiple extra arguments to customize the process, check the signature and notes of `detect_counterexample` method to see how to use.
 
 ```python
-def detect_counterexample(algorithm, test_epsilon, default_kwargs={},
+def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
                            event_search_space=None, databases=None,
                            event_iterations=100000, detect_iterations=500000, cores=0,
                            loglevel=logging.INFO):

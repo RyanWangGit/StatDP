@@ -1,27 +1,26 @@
 import numpy as np
 
 
-def noisy_max_v1a(Q, epsilon):
-    # add laplace noise
-    noisy_array = tuple(a + np.random.laplace(scale=2.0 / epsilon) for a in Q)
+def _argmax(iterable):
+    # implement numpy.argmax in pure python, faster if iterable is plain python list
+    return max(enumerate(iterable), key=lambda t: t[1])[0]
 
+
+def noisy_max_v1a(Q, epsilon):
     # find the largest noisy element and return its index
-    return np.argmax(noisy_array)
+    return _argmax(a + np.random.laplace(scale=2.0 / epsilon) for a in Q)
 
 
 def noisy_max_v1b(Q, epsilon):
-    noisy_array = tuple(a + np.random.laplace(scale=2.0 / epsilon) for a in Q)
-    return max(noisy_array)
+    return max(a + np.random.laplace(scale=2.0 / epsilon) for a in Q)
 
 
 def noisy_max_v2a(Q, epsilon):
-    noisy_array = tuple(a + np.random.exponential(scale=2.0 / epsilon) for a in Q)
-    return np.argmax(noisy_array)
+    return _argmax(a + np.random.exponential(scale=2.0 / epsilon) for a in Q)
 
 
 def noisy_max_v2b(Q, epsilon):
-    noisy_array = tuple(a + np.random.exponential(scale=2.0 / epsilon) for a in Q)
-    return max(noisy_array)
+    return max(a + np.random.exponential(scale=2.0 / epsilon) for a in Q)
 
 
 def histogram_eps(Q, epsilon):

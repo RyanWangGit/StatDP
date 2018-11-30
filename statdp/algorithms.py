@@ -6,48 +6,48 @@ def _argmax(iterable):
     return max(enumerate(iterable), key=lambda t: t[1])[0]
 
 
-def noisy_max_v1a(Q, epsilon):
+def noisy_max_v1a(queries, epsilon):
     # find the largest noisy element and return its index
-    return _argmax(a + np.random.laplace(scale=2.0 / epsilon) for a in Q)
+    return _argmax(query + np.random.laplace(scale=2.0 / epsilon) for query in queries)
 
 
-def noisy_max_v1b(Q, epsilon):
-    return max(a + np.random.laplace(scale=2.0 / epsilon) for a in Q)
+def noisy_max_v1b(queries, epsilon):
+    return max(query + np.random.laplace(scale=2.0 / epsilon) for query in queries)
 
 
-def noisy_max_v2a(Q, epsilon):
-    return _argmax(a + np.random.exponential(scale=2.0 / epsilon) for a in Q)
+def noisy_max_v2a(queries, epsilon):
+    return _argmax(query + np.random.exponential(scale=2.0 / epsilon) for query in queries)
 
 
-def noisy_max_v2b(Q, epsilon):
-    return max(a + np.random.exponential(scale=2.0 / epsilon) for a in Q)
+def noisy_max_v2b(queries, epsilon):
+    return max(query + np.random.exponential(scale=2.0 / epsilon) for query in queries)
 
 
-def histogram_eps(Q, epsilon):
-    noisy_array = tuple(a + np.random.laplace(scale=epsilon) for a in Q)
+def histogram_eps(queries, epsilon):
+    noisy_array = tuple(query + np.random.laplace(scale=epsilon) for query in queries)
     return noisy_array[0]
 
 
-def histogram(Q, epsilon):
-    noisy_array = tuple(a + np.random.laplace(scale=1.0 / epsilon) for a in Q)
+def histogram(queries, epsilon):
+    noisy_array = tuple(query + np.random.laplace(scale=1.0 / epsilon) for query in queries)
     return noisy_array[0]
 
 
-def laplace_mechanism(Q, epsilon):
-    noisy_array = tuple(a + np.random.laplace(scale=len(Q)/epsilon) for a in Q)
+def laplace_mechanism(queries, epsilon):
+    noisy_array = tuple(query + np.random.laplace(scale=len(queries)/epsilon) for query in queries)
     lower = 1 - 0.27
     upper = 1 + 0.75
     return sum(1 for element in noisy_array if lower <= element <= upper)
 
 
-def SVT(Q, epsilon, N, T):
+def SVT(queries, epsilon, N, T):
     out = []
     eta1 = np.random.laplace(scale=2.0 / epsilon)
     noisy_T = T + eta1
     c1 = 0
-    for q in Q:
+    for query in queries:
         eta2 = np.random.laplace(scale=4.0 * N / epsilon)
-        if q + eta2 >= noisy_T:
+        if query + eta2 >= noisy_T:
             out.append(True)
             c1 += 1
             if c1 >= N:
@@ -57,47 +57,47 @@ def SVT(Q, epsilon, N, T):
     return out.count(False)
 
 
-def iSVT1(Q, epsilon, N, T):
+def iSVT1(queries, epsilon, N, T):
     out = []
     delta = 1
     eta1 = np.random.laplace(scale=2.0 * delta / epsilon)
     noisy_T = T + eta1
-    for q in Q:
+    for query in queries:
         eta2 = 0
-        if (q + eta2) >= noisy_T:
+        if (query + eta2) >= noisy_T:
             out.append(True)
         else:
             out.append(False)
 
-    true_count = int(len(Q) / 2)
-    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
+    true_count = int(len(queries) / 2)
+    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(queries) - true_count)]))
 
 
-def iSVT2(Q, epsilon, N, T):
+def iSVT2(queries, epsilon, N, T):
     out = []
     delta = 1
     eta1 = np.random.laplace(scale=2.0 * delta / epsilon)
     noisy_T = T + eta1
-    for q in Q:
+    for query in queries:
         eta2 = np.random.laplace(scale=2.0 * delta / epsilon)
-        if (q + eta2) >= noisy_T:
+        if (query + eta2) >= noisy_T:
             out.append(True)
         else:
             out.append(False)
 
-    true_count = int(len(Q) / 2)
-    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
+    true_count = int(len(queries) / 2)
+    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(queries) - true_count)]))
 
 
-def iSVT3(Q, epsilon, N, T):
+def iSVT3(queries, epsilon, N, T):
     out = []
     delta = 1
     eta1 = np.random.laplace(scale=4.0 * delta / epsilon)
     noisy_T = T + eta1
     c1 = 0
-    for q in Q:
+    for query in queries:
         eta2 = np.random.laplace(scale=(4.0 * delta) / (3.0 * epsilon))
-        if q + eta2 > noisy_T:
+        if query + eta2 > noisy_T:
             out.append(True)
             c1 += 1
             if c1 >= N:
@@ -105,19 +105,19 @@ def iSVT3(Q, epsilon, N, T):
         else:
             out.append(False)
 
-    true_count = int(len(Q) / 2)
-    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(Q) - true_count)]))
+    true_count = int(len(queries) / 2)
+    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(queries) - true_count)]))
 
 
-def iSVT4(Q, epsilon, N, T):
+def iSVT4(queries, epsilon, N, T):
     out = []
     eta1 = np.random.laplace(scale=2.0 / epsilon)
     noisy_T = T + eta1
     c1 = 0
-    for q in Q:
+    for query in queries:
         eta2 = np.random.laplace(scale=2.0 * N / epsilon)
-        if q + eta2 > noisy_T:
-            out.append(q + eta2)
+        if query + eta2 > noisy_T:
+            out.append(query + eta2)
             c1 += 1
             if c1 >= N:
                 break

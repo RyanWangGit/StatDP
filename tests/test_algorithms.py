@@ -11,13 +11,14 @@ def test_noisymax():
 
 def test_sparsevector():
     assert SVT([1, 2, 3, 4], float('inf'), 1, 2.5) == 2
-    assert iSVT1([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
-    assert iSVT1([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
-    assert iSVT1([1, 2, 3, 4], float('inf'), 1, 2.5) == 0
-    assert iSVT2([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
-    assert iSVT2([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
-    assert iSVT3([1, 2, 3, 4], float('inf'), 1, 1.5) == 1
-    assert iSVT3([1, 2, 3, 4], float('inf'), 1, 3.5) == 1
+    assert iSVT1([1, 2, 3, 4], float('inf'), 1, 1.5) == 3
+    assert iSVT1([1, 2, 3, 4], float('inf'), 1, 3.5) == 3
+    assert iSVT1([1, 2, 3, 4], float('inf'), 1, 2.5) == 4
+    assert iSVT1([4, 3, 2, 1], float('inf'), 1, 2.5) == 4
+    assert iSVT2([1, 2, 3, 4], float('inf'), 1, 1.5) == 3
+    assert iSVT2([1, 2, 3, 4], float('inf'), 1, 3.5) == 3
+    assert iSVT3([1, 2, 3, 4], float('inf'), 1, 1.5) == 3
+    assert iSVT3([1, 2, 3, 4], float('inf'), 1, 3.5) == 3
     assert iSVT4([1, 2, 3, 4], float('inf'), 1, 2) == 2
 
 

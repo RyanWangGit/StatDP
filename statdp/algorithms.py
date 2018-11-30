@@ -1,9 +1,15 @@
 import numpy as np
+from itertools import zip_longest
 
 
 def _argmax(iterable):
     # implement numpy.argmax in pure python, faster if iterable is plain python list
     return max(enumerate(iterable), key=lambda t: t[1])[0]
+
+
+def _hamming_distance(result1, result2):
+    # implement hamming distance in pure python, faster than np.count_zeros if inputs are plain python list
+    return sum(res1 != res2 for res1, res2 in zip_longest(result1, result2))
 
 
 def noisy_max_v1a(queries, epsilon):
@@ -70,7 +76,7 @@ def iSVT1(queries, epsilon, N, T):
             out.append(False)
 
     true_count = int(len(queries) / 2)
-    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(queries) - true_count)]))
+    return _hamming_distance((True if i < true_count else False for i in range(len(queries))), out)
 
 
 def iSVT2(queries, epsilon, N, T):
@@ -86,7 +92,7 @@ def iSVT2(queries, epsilon, N, T):
             out.append(False)
 
     true_count = int(len(queries) / 2)
-    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(queries) - true_count)]))
+    return _hamming_distance((True if i < true_count else False for i in range(len(queries))), out)
 
 
 def iSVT3(queries, epsilon, N, T):
@@ -106,7 +112,7 @@ def iSVT3(queries, epsilon, N, T):
             out.append(False)
 
     true_count = int(len(queries) / 2)
-    return np.count_nonzero(out != ([True for _ in range(true_count)] + [False for _ in range(len(queries) - true_count)]))
+    return _hamming_distance((True if i < true_count else False for i in range(len(queries))), out)
 
 
 def iSVT4(queries, epsilon, N, T):

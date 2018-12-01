@@ -8,7 +8,6 @@ from scipy import stats
 
 
 def _hypergeometric(cx, cy, iterations):
-    np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
     return 1 - stats.hypergeom.cdf(cx, 2 * iterations, iterations, cx + cy)
 
 

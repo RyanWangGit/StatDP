@@ -1,8 +1,6 @@
 import numpy as np
 import multiprocessing as mp
 import math
-import codecs
-import os
 import functools
 from scipy import stats
 
@@ -12,7 +10,7 @@ def _hypergeometric(cx, cy, iterations):
 
 
 def _run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
-    np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
+    np.random.seed()
     cx = sum(1 for _ in range(iterations) if algorithm(d1, **kwargs) in event)
     cy = sum(1 for _ in range(iterations) if algorithm(d2, **kwargs) in event)
     return cx, cy
@@ -42,7 +40,7 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
     :param process_pool: The process pool to use, run with single process if None
     :return: p values
     """
-    np.random.seed(int(codecs.encode(os.urandom(4), 'hex'), 16))
+    np.random.seed()
     if process_pool is None:
         cx, cy = _run_algorithm(algorithm, d1, d2, kwargs, event, iterations)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)

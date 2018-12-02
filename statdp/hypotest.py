@@ -17,6 +17,14 @@ def _run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
 
 
 def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
+    """ Calculate p-value based on observed results.
+    :param cx: The observed count of running algorithm with database 1 that falls into the event
+    :param cy:The observed count of running algorithm with database 2 that falls into the event
+    :param epsilon: The epsilon to test for.
+    :param iterations: The total iterations for running algorithm.
+    :param process_pool: The process pool to run on, run in single core if None
+    :return: p-value
+    """
     # average p value
     if process_pool is None:
         return np.mean(tuple(_hypergeometric(cx, cy, iterations)
@@ -29,7 +37,7 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
 
 
 def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, process_pool=None):
-    """
+    """ Run hypothesis tests on given input and events.
     :param algorithm: The algorithm to run on
     :param kwargs: The keyword arguments the algorithm needs
     :param d1: Database 1

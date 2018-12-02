@@ -61,10 +61,6 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
         result = process_pool.map(functools.partial(_run_algorithm, algorithm, d1, d2, kwargs, event),
                                   process_iterations)
 
-        cx, cy = 0, 0
-        for process_cx, process_cy in result:
-            cx += process_cx
-            cy += process_cy
-
+        cx, cy = sum(process_cx for process_cx, _ in result), sum(process_cy for process_cy, _ in result)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
         return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)

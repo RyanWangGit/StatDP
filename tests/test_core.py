@@ -39,3 +39,14 @@ def test_noisy_max_v2a():
     assert epsilon == 0.7 and p >= 0.05, 'result {} is not expected.'.format(result[0])
     epsilon, p, *_ = result[2]
     assert epsilon == 1.5 and p >= 0.95, 'result {} is not expected.'.format(result[0])
+
+
+def test_noisy_max_v2b():
+    result = detect_counterexample(noisy_max_v2b, (0.2, 0.7, 0.8), {'epsilon': 0.7}, loglevel=logging.DEBUG)
+    assert isinstance(result, list) and len(result) == 3
+    epsilon, p, *_ = result[0]
+    assert epsilon == 0.2 and p <= 0.05, 'result {} is not expected.'.format(result[0])
+    epsilon, p, *_ = result[1]
+    assert epsilon == 0.7 and p <= 0.05, 'result {} is not expected.'.format(result[0])
+    epsilon, p, *_ = result[2]
+    assert epsilon == 0.8 and p <= 0.95, 'result {} is not expected.'.format(result[0])

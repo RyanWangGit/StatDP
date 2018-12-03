@@ -6,9 +6,7 @@ from scipy import stats
 
 
 def _hypergeometric(cx, cy, iterations):
-    # survival function = 1 - cdf, "sometimes more accurate" according to
-    # https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.hypergeom.html
-    return stats.hypergeom.sf(cx, 2 * iterations, iterations, cx + cy)
+    return 1 - stats.hypergeom.cdf(cx, 2 * iterations, iterations, cx + cy)
 
 
 def _run_algorithm(algorithm, d1, d2, kwargs, event, iterations):

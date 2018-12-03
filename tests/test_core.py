@@ -43,7 +43,7 @@ def test_noisy_max_v2a():
 
 
 def test_noisy_max_v2b():
-    assert_incorrect_algorithm(test_noisy_max_v2b)
+    assert_incorrect_algorithm(noisy_max_v2b)
 
 
 def test_SVT():

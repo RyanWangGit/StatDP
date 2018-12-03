@@ -25,7 +25,7 @@ def assert_incorrect_algorithm(algorithm, kwargs=None):
     else:
         kwargs = {'epsilon': 0.7}
     result = detect_counterexample(algorithm, 0.7, kwargs, loglevel=logging.DEBUG)
-    assert isinstance(result, list) and len(result) == 3
+    assert isinstance(result, list) and len(result) == 1
     epsilon, p, *extras = result[0]
     assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
 

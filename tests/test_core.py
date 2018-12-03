@@ -35,7 +35,7 @@ def test_detection():
     assert_incorrect_algorithm(noisy_max_v1b)
     assert_correct_algorithm(noisy_max_v2a)
     assert_incorrect_algorithm(noisy_max_v2b)
-    assert_correct_algorithm(SVT, {'N': 1, 'T': 1})
+    assert_correct_algorithm(SVT, {'N': 1, 'T': 0.5})
     assert_incorrect_algorithm(iSVT1, {'N': 1, 'T': 1})
     assert_incorrect_algorithm(iSVT2, {'N': 1, 'T': 1})
     assert_incorrect_algorithm(iSVT3, {'N': 1, 'T': 1})

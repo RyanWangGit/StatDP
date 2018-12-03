@@ -4,49 +4,47 @@ from statdp.algorithms import noisy_max_v1a, noisy_max_v1b, noisy_max_v2a, noisy
     SVT, iSVT1, iSVT2, iSVT3, iSVT4
 
 
+def assert_correct_algorithm(algorithm, kwargs=None):
+    if kwargs and isinstance(kwargs, dict):
+        kwargs.update({'epsilon': 0.7})
+    else:
+        kwargs = {'epsilon': 0.7}
+    result = detect_counterexample(algorithm, (0.6, 0.7, 0.8), kwargs, loglevel=logging.DEBUG)
+    assert isinstance(result, list) and len(result) == 3
+    epsilon, p, *extras = result[0]
+    assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+    epsilon, p, *extras = result[1]
+    assert p >= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+    epsilon, p, *extras = result[2]
+    assert p >= 0.95, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+
+
+def assert_incorrect_algorithm(algorithm, kwargs=None):
+    if kwargs and isinstance(kwargs, dict):
+        kwargs.update({'epsilon': 0.7})
+    else:
+        kwargs = {'epsilon': 0.7}
+    result = detect_counterexample(algorithm, 0.7, kwargs, loglevel=logging.DEBUG)
+    assert isinstance(result, list) and len(result) == 3
+    epsilon, p, *extras = result[0]
+    assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+
+
 def test_noisy_max_v1a():
-    result = detect_counterexample(noisy_max_v1a, 0.5, {'epsilon': 0.2}, loglevel=logging.DEBUG)
-    assert isinstance(result, list) and len(result) == 1
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.5 and p >= 0.95
-    result = detect_counterexample(noisy_max_v1a, 0.2, {'epsilon': 0.5}, loglevel=logging.DEBUG)
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.2 and p <= 0.05
-    d1, d2 = [0] + [2 for _ in range(4)], [1 for _ in range(5)]
-    result = detect_counterexample(noisy_max_v1a, 0.2, {'epsilon': 0.5},
-                                   databases=(d1, d2), loglevel=logging.DEBUG)
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.2 and p <= 0.05
+    assert_correct_algorithm(noisy_max_v1a)
 
 
 def test_noisy_max_v1b():
-    result = detect_counterexample(noisy_max_v1b, (0.2, 0.7, 0.8), {'epsilon': 0.7}, loglevel=logging.DEBUG)
-    assert isinstance(result, list) and len(result) == 3
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.2 and p <= 0.05, 'result {} is not expected.'.format(result[0])
-    epsilon, p, *_ = result[1]
-    assert epsilon == 0.7 and p <= 0.05, 'result {} is not expected.'.format(result[0])
-    epsilon, p, *_ = result[2]
-    assert epsilon == 0.8 and p <= 0.95, 'result {} is not expected.'.format(result[0])
+    assert_incorrect_algorithm(noisy_max_v1b)
 
 
 def test_noisy_max_v2a():
-    result = detect_counterexample(noisy_max_v2a, (0.2, 0.7, 1.5), {'epsilon': 0.7}, loglevel=logging.DEBUG)
-    assert isinstance(result, list) and len(result) == 3
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.2 and p <= 0.05, 'result {} is not expected.'.format(result[0])
-    epsilon, p, *_ = result[1]
-    assert epsilon == 0.7 and p >= 0.05, 'result {} is not expected.'.format(result[0])
-    epsilon, p, *_ = result[2]
-    assert epsilon == 1.5 and p >= 0.95, 'result {} is not expected.'.format(result[0])
+    assert_correct_algorithm(noisy_max_v2a)
 
 
 def test_noisy_max_v2b():
-    result = detect_counterexample(noisy_max_v2b, (0.2, 0.7, 0.8), {'epsilon': 0.7}, loglevel=logging.DEBUG)
-    assert isinstance(result, list) and len(result) == 3
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.2 and p <= 0.05, 'result {} is not expected.'.format(result[0])
-    epsilon, p, *_ = result[1]
-    assert epsilon == 0.7 and p <= 0.05, 'result {} is not expected.'.format(result[0])
-    epsilon, p, *_ = result[2]
-    assert epsilon == 0.8 and p <= 0.95, 'result {} is not expected.'.format(result[0])
+    assert_incorrect_algorithm(test_noisy_max_v2b)
+
+
+def test_SVT():
+    assert_correct_algorithm(SVT, {'N': 1, 'T': 1})

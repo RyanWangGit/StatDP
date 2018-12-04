@@ -1,4 +1,5 @@
 import logging
+from flaky import flaky
 from statdp.core import detect_counterexample
 from statdp.algorithms import noisy_max_v1a, noisy_max_v1b, noisy_max_v2a, noisy_max_v2b,\
     SVT, iSVT1, iSVT2, iSVT3, iSVT4
@@ -45,7 +46,8 @@ def test_noisy_max_v2a():
 def test_noisy_max_v2b():
     assert_incorrect_algorithm(noisy_max_v2b)
 
-
+# SVT sometimes may fail, retry 5 times claim failure
+@flaky(max_runs=5)
 def test_SVT():
     assert_correct_algorithm(SVT, {'N': 1, 'T': 0.5}, num_input=10)
 

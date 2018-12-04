@@ -39,7 +39,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
         kwargs = generate_arguments(algorithm, d1, d2, default_kwargs=default_kwargs)
         input_list = ((d1, d2, kwargs),)
     else:
-        input_list = generate_databases(algorithm, 5, default_kwargs=default_kwargs)
+        input_list = generate_databases(algorithm, 10, default_kwargs=default_kwargs)
 
     result = []
 

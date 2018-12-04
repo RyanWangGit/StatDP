@@ -30,12 +30,33 @@ def assert_incorrect_algorithm(algorithm, kwargs=None, num_input=5):
     assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
 
 
-def test_detection():
+def test_noisy_max_v1a():
     assert_correct_algorithm(noisy_max_v1a)
+
+
+def test_noisy_max_v1b():
     assert_incorrect_algorithm(noisy_max_v1b)
+
+
+def test_noisy_max_v2a():
     assert_correct_algorithm(noisy_max_v2a)
+
+
+def test_noisy_max_v2b():
     assert_incorrect_algorithm(noisy_max_v2b)
+
+
+def test_SVT():
     assert_correct_algorithm(SVT, {'N': 1, 'T': 0.5}, num_input=10)
+
+
+def test_iSVT1():
     assert_incorrect_algorithm(iSVT1, {'N': 1, 'T': 1}, num_input=10)
+
+
+def test_iSVT2():
     assert_incorrect_algorithm(iSVT2, {'N': 1, 'T': 1}, num_input=10)
+
+
+def test_iSVT3():
     assert_incorrect_algorithm(iSVT3, {'N': 1, 'T': 1}, num_input=10)

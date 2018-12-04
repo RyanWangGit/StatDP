@@ -1,25 +1,23 @@
 language: python
 
-python:
-  - "3.4"
-  - "3.5"
-  - "3.6"
+matrix:
+  include:
+    - python: 3.4
+    - python: 3.5
+    - python: 3.6
+    - python: 3.7
+      dist: xenial
 
 cache: pip
 
 install:
-  - pip install tox-travis
+  - pip install tox-travis codecov
 
 script:
   - travis_wait 180 tox
 
-jobs:
-  include:
-    - stage: codecov
-      python: 3.6
-      script:
-        - travis_wait 60 tox
-        - pip install codecov && codecov
+after_success:
+  - codecov
 
 notifications:
   email: false

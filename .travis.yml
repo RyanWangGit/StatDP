@@ -22,12 +22,10 @@ install:
   - pip install tox-travis codecov
 
 script:
-  - if [ "$ALGORITHM" = "none" ];
-    # test other function except test_core.py which takes a long time
-    then travis_wait 120 tox -- -k 'not test_core';
-    # split the algorithm tests into different jobs
-    else travis_wait 120 tox -- -k 'test_{$ALGORITHM}';
-    fi
+  # test other function except test_core.py which takes a long time
+  - if [ "$ALGORITHM" = "none" ]; then travis_wait 120 tox -- -k 'not test_core'; fi
+  # split the algorithm tests into different jobs
+  - if [ "$ALGORITHM" != "none" ]; then travis_wait 120 tox -- -k 'test_{$ALGORITHM}'; fi
 
 after_success:
   - codecov

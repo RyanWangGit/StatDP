@@ -11,8 +11,8 @@ def _hypergeometric(cx, cy, iterations):
 
 def _run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
     np.random.seed()
-    cx = sum(1 for _ in range(iterations) if algorithm(d1, **kwargs) in event)
-    cy = sum(1 for _ in range(iterations) if algorithm(d2, **kwargs) in event)
+    cx = sum(1 for _ in range(iterations) if (algorithm(d1, **kwargs) == event if isinstance(event, (int, float)) else event[0] < algorithm(d1, **kwargs) < event[1]))
+    cy = sum(1 for _ in range(iterations) if (algorithm(d2, **kwargs) == event if isinstance(event, (int, float)) else event[0] < algorithm(d2, **kwargs) < event[1]))
     return cx, cy
 
 

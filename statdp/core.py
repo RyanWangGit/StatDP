@@ -67,7 +67,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
                   .format(epsilon, p1, event, float(i + 1) / len(test_epsilon) * 100))
             logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
     finally:
-        if pool is not None:
+        if pool:
             pool.close()
         else:
             pass

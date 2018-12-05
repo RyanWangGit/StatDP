@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
-                          event_search_space=None, databases=None,
+                          event_search_space=None, databases=None, num_input=5,
                           event_iterations=100000, detect_iterations=500000, cores=0,
                           loglevel=logging.INFO):
     """
@@ -16,6 +16,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
     :param default_kwargs: The default arguments the algorithm needs except the first Queries argument.
     :param event_search_space: The search space for event selector to reduce search time, optional.
     :param databases: The databases to run for detection, optional.
+    :param num_input: The length of input to generate, not used if database param is specified.
     :param event_iterations: The iterations for event selector to run, default is 100000.
     :param detect_iterations: The iterations for detector to run, default is 500000.
     :param cores: The cores to utilize, 0 means auto-detection.
@@ -34,12 +35,15 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
                 'databases: {}\n'
                 'cores:{}\n'.format(default_kwargs, event_search_space, databases, cores))
 
+    input_list = []
     if databases is not None:
         d1, d2 = databases
         kwargs = generate_arguments(algorithm, d1, d2, default_kwargs=default_kwargs)
         input_list = ((d1, d2, kwargs),)
     else:
-        input_list = generate_databases(algorithm, 5, default_kwargs=default_kwargs)
+        num_input = (int(num_input), ) if isinstance(num_input, (int, float)) else num_input
+        for num in num_input:
+            input_list.extend(generate_databases(algorithm, num, default_kwargs=default_kwargs))
 
     result = []
 

@@ -28,7 +28,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     install_requires=['numpy', 'scipy', 'intervals', 'z3-solver'],
     extras_require={
-        'test': ['pytest-cov', 'pytest', 'coverage'],
+        'test': ['pytest-cov', 'pytest', 'coverage', 'flaky'],
     },
     entry_points={
         'console_scripts': [

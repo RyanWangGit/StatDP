@@ -1,18 +1,64 @@
+import logging
+from flaky import flaky
 from statdp.core import detect_counterexample
-from statdp.algorithms import noisy_max_v1a
+from statdp.algorithms import noisy_max_v1a, noisy_max_v1b, noisy_max_v2a, noisy_max_v2b,\
+    SVT, iSVT1, iSVT2, iSVT3, iSVT4
 
 
-def test_main():
-    import logging
-    result = detect_counterexample(noisy_max_v1a, 0.5, {'epsilon': 0.2}, loglevel=logging.DEBUG)
+def assert_correct_algorithm(algorithm, kwargs=None, num_input=5):
+    if kwargs and isinstance(kwargs, dict):
+        kwargs.update({'epsilon': 0.7})
+    else:
+        kwargs = {'epsilon': 0.7}
+    result = detect_counterexample(algorithm, (0.6, 0.7, 0.8), kwargs, num_input=num_input, loglevel=logging.DEBUG)
+    assert isinstance(result, list) and len(result) == 3
+    epsilon, p, *extras = result[0]
+    assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+    epsilon, p, *extras = result[1]
+    assert p >= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+    epsilon, p, *extras = result[2]
+    assert p >= 0.95, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+
+
+def assert_incorrect_algorithm(algorithm, kwargs=None, num_input=5):
+    if kwargs and isinstance(kwargs, dict):
+        kwargs.update({'epsilon': 0.7})
+    else:
+        kwargs = {'epsilon': 0.7}
+    result = detect_counterexample(algorithm, 0.7, kwargs, num_input=num_input, loglevel=logging.DEBUG)
     assert isinstance(result, list) and len(result) == 1
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.5 and p >= 0.95
-    result = detect_counterexample(noisy_max_v1a, 0.2, {'epsilon': 0.5}, loglevel=logging.DEBUG)
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.2 and p <= 0.05
-    d1, d2 = [0] + [2 for _ in range(4)], [1 for _ in range(5)]
-    result = detect_counterexample(noisy_max_v1a, 0.2, {'epsilon': 0.5},
-                                   databases=(d1, d2), loglevel=logging.DEBUG)
-    epsilon, p, *_ = result[0]
-    assert epsilon == 0.2 and p <= 0.05
+    epsilon, p, *extras = result[0]
+    assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+
+
+def test_noisy_max_v1a():
+    assert_correct_algorithm(noisy_max_v1a)
+
+
+def test_noisy_max_v1b():
+    assert_incorrect_algorithm(noisy_max_v1b)
+
+
+def test_noisy_max_v2a():
+    assert_correct_algorithm(noisy_max_v2a)
+
+
+def test_noisy_max_v2b():
+    assert_incorrect_algorithm(noisy_max_v2b)
+
+# SVT sometimes may fail, retry 5 times claim failure
+@flaky(max_runs=5)
+def test_SVT():
+    assert_correct_algorithm(SVT, {'N': 1, 'T': 0.5}, num_input=10)
+
+
+def test_iSVT1():
+    assert_incorrect_algorithm(iSVT1, {'N': 1, 'T': 1}, num_input=10)
+
+
+def test_iSVT2():
+    assert_incorrect_algorithm(iSVT2, {'N': 1, 'T': 1}, num_input=10)
+
+
+def test_iSVT3():
+    assert_incorrect_algorithm(iSVT3, {'N': 1, 'T': 1}, num_input=10)

@@ -1,25 +1,34 @@
 language: python
 
 python:
-  - "3.4"
-  - "3.5"
-  - "3.6"
+  - 3.4
+  - 3.5
+  - 3.6
+
+env:
+  - ALGORITHM=none
+  - ALGORITHM=noisy_max_v1a
+  - ALGORITHM=noisy_max_v1b
+  - ALGORITHM=noisy_max_v2a
+  - ALGORITHM=noisy_max_v2b
+  - ALGORITHM=SVT
+  - ALGORITHM=iSVT1
+  - ALGORITHM=iSVT2
+  - ALGORITHM=iSVT3
 
 cache: pip
 
 install:
-  - pip install tox-travis
+  - pip install tox-travis codecov
 
 script:
-  - travis_wait 60 tox
+  # test other function except test_core.py which takes a long time
+  - if [ "$ALGORITHM" = "none" ]; then travis_wait 120 tox -- -k 'not test_core'; fi
+  # split the algorithm tests into different jobs
+  - if [ "$ALGORITHM" != "none" ]; then travis_wait 120 tox -- -k "test_$ALGORITHM"; fi
 
-jobs:
-  include:
-    - stage: codecov
-      python: 3.6
-      script:
-        - travis_wait 60 tox
-        - pip install codecov && codecov
+after_success:
+  - codecov
 
 notifications:
   email: false

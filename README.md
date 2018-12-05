@@ -25,15 +25,16 @@ The `detect_counterexample` accepts multiple extra arguments to customize the pr
 
 ```python
 def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
-                           event_search_space=None, databases=None,
-                           event_iterations=100000, detect_iterations=500000, cores=0,
-                           loglevel=logging.INFO):
+                          event_search_space=None, databases=None, num_input=5,
+                          event_iterations=100000, detect_iterations=500000, cores=0,
+                          loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
     :param test_epsilon: The privacy budget to test for, can either be a number or a tuple/list.
-    :param default_kwargs: The default arguments the algorithm needs except the first Queries argument, 'epsilon' must be provided.
+    :param default_kwargs: The default arguments the algorithm needs except the first Queries argument.
     :param event_search_space: The search space for event selector to reduce search time, optional.
     :param databases: The databases to run for detection, optional.
+    :param num_input: The length of input to generate, not used if database param is specified.
     :param event_iterations: The iterations for event selector to run, default is 100000.
     :param detect_iterations: The iterations for detector to run, default is 500000.
     :param cores: The cores to utilize, 0 means auto-detection.

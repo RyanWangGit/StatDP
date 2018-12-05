@@ -1,6 +1,5 @@
 from inspect import isfunction
 import numpy as np
-from collections import Counter
 import logging
 import functools
 
@@ -8,8 +7,10 @@ logger = logging.getLogger(__name__)
 
 
 def _evaluate_event(event, result_d1, result_d2):
-    cx = sum(1 for x in result_d1 if (x == event if isinstance(event, (int, float)) else event[0] < x < event[1]))
-    cy = sum(1 for y in result_d2 if (y == event if isinstance(event, (int, float)) else event[0] < y < event[1]))
+    cx = np.count_nonzero(result_d1 == event if isinstance(event, (int, float)) else
+                          np.logical_and(result_d1 > event[0], result_d1 < event[1]))
+    cy = np.count_nonzero(result_d2 == event if isinstance(event, (int, float)) else
+                          np.logical_and(result_d2 > event[0], result_d2 < event[1]))
     cx, cy = (cx, cy) if cx > cy else (cy, cx)
     return cx, cy
 
@@ -31,28 +32,28 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
     p_values = []
 
     for (d1, d2, kwargs) in input_list:
-        result_d1 = [algorithm(d1, **kwargs) for _ in range(iterations)]
-        result_d2 = [algorithm(d2, **kwargs) for _ in range(iterations)]
+        result_d1 = np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64)
+        result_d2 = np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64)
 
         if search_space is None:
             # determine the search space based on the return type
             # a subset of results to determine return type
-            sub_result = result_d1 + result_d2
-            counter = Counter(sub_result)
+            combined_result = np.concatenate((result_d1, result_d2))
+            unique = np.unique(combined_result)
 
             # categorical output
-            if len(counter) < iterations * 0.02 * 0.1:
-                search_space = tuple(key for key in counter.keys())
+            if len(unique) < iterations * 0.02 * 0.1:
+                search_space = tuple(key for key in unique)
             else:
-                sub_result_sorted = np.sort(sub_result)
-                average = np.average(sub_result_sorted)
-                idx = np.searchsorted(sub_result_sorted, average, side='left')
+                combined_result.sort()
+                average = combined_result.mean()
+                idx = np.searchsorted(combined_result, average, side='left')
                 # find the densest 70% range
-                search_min = int(idx - 0.35 * len(sub_result_sorted)) if int(idx - 0.4 * len(sub_result_sorted)) > 0 else 0
-                search_max = int(0.7 * len(sub_result_sorted) - (idx - search_min))
+                search_min = int(idx - 0.35 * len(combined_result)) if int(idx - 0.4 * len(combined_result)) > 0 else 0
+                search_max = int(0.7 * len(combined_result) - (idx - search_min))
 
                 search_space = tuple((-float('inf'), alpha) for alpha in
-                                     np.linspace(sub_result_sorted[search_min], sub_result_sorted[search_max], num=25))
+                                     np.linspace(combined_result[search_min], combined_result[search_max], num=25))
 
             logger.info('search space is set to {0}'.format(search_space))
 

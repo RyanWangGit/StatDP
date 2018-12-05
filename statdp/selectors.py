@@ -65,7 +65,7 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
         results = list(map(partial_evaluate_event, search_space)) if process_pool is None else \
             process_pool.map(partial_evaluate_event, search_space)
 
-        input_p_values = [test_statistics(cx, cy, epsilon, iterations)
+        input_p_values = [test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
                           if cx + cy > threshold else float('inf') for (cx, cy) in results]
 
         for (s, (cx, cy), p) in zip(search_space, results, input_p_values):

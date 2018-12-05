@@ -72,7 +72,7 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
             logger.debug('d1: %s | d2: %s | event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
                          (d1, d2, s, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
 
-        input_event_pairs.extend(list((d1, d2, kwargs, event) for event in search_space))
+        input_event_pairs.extend([(d1, d2, kwargs, event) for event in search_space])
         p_values.extend(input_p_values)
 
     # find an (d1, d2, kwargs, event) pair which has minimum p value from search space

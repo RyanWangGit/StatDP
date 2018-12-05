@@ -11,8 +11,12 @@ def _hypergeometric(cx, cy, iterations):
 
 def _run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
     np.random.seed()
-    cx = sum(1 for _ in range(iterations) if (algorithm(d1, **kwargs) == event if isinstance(event, (int, float)) else event[0] < algorithm(d1, **kwargs) < event[1]))
-    cy = sum(1 for _ in range(iterations) if (algorithm(d2, **kwargs) == event if isinstance(event, (int, float)) else event[0] < algorithm(d2, **kwargs) < event[1]))
+    result_d1 = np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64)
+    result_d2 = np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64)
+    cx = np.count_nonzero(result_d1 == event if isinstance(event, (int, float)) else
+                          np.logical_and(result_d1 > event[0], result_d1 < event[1]))
+    cy = np.count_nonzero(result_d2 == event if isinstance(event, (int, float)) else
+                          np.logical_and(result_d2 > event[0], result_d2 < event[1]))
     return cx, cy
 
 

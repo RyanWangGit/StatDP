@@ -15,6 +15,7 @@ env:
   - ALGORITHM=iSVT1
   - ALGORITHM=iSVT2
   - ALGORITHM=iSVT3
+  - ALGORITHM=iSVT4
 
 cache: pip
 

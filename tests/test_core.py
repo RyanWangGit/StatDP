@@ -62,3 +62,7 @@ def test_iSVT2():
 
 def test_iSVT3():
     assert_incorrect_algorithm(iSVT3, {'N': 1, 'T': 1}, num_input=10)
+
+
+def test_iSVT4():
+    assert_incorrect_algorithm(iSVT4, {'N': 1, 'T': 1}, num_input=10)

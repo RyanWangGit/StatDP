@@ -74,12 +74,12 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
 
     # calculate p-values based on counts
     threshold = 0.001 * iterations * np.exp(epsilon)
-    input_p_values = [test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
-                      if cx + cy > threshold else float('inf') for (cx, cy) in counts]
+    input_p_values = np.fromiter((test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
+                                 if cx + cy > threshold else float('inf') for (cx, cy) in counts), dtype=np.float64)
 
     for ((d1, d2, _, event), (cx, cy), p) in zip(input_event_pairs, counts, input_p_values):
         logger.debug('d1: %s | d2: %s | event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
                      (d1, d2, event, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
 
     # find an (d1, d2, kwargs, event) pair which has minimum p value from search space
-    return min(zip(input_event_pairs, input_p_values), key=lambda zipped: zipped[1])[0]
+    return input_event_pairs[input_p_values.argmin()]

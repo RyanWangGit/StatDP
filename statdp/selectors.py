@@ -23,11 +23,11 @@ def _evaluate_input(input_triplet, algorithm, iterations, search_space):
             search_space = tuple(key for key in unique)
         else:
             combined_result.sort()
-            average = combined_result.mean()
-            idx = np.searchsorted(combined_result, average, side='left')
             # find the densest 70% range
-            search_min = int(idx - 0.35 * len(combined_result)) if int(idx - 0.4 * len(combined_result)) > 0 else 0
-            search_max = int(0.7 * len(combined_result) - (idx - search_min))
+            search_range = int(0.7 * len(combined_result))
+            search_max = min(range(search_range, len(combined_result)),
+                             key=lambda x: combined_result[x] - combined_result[x - search_range])
+            search_min = search_max - search_range
 
             search_space = tuple((-float('inf'), alpha) for alpha in
                                  np.linspace(combined_result[search_min], combined_result[search_max], num=25))

@@ -1,0 +1,49 @@
+cache:
+    - '%LOCALAPPDATA%\pip\Cache'
+build: off
+
+environment:
+  global:
+    WITH_COMPILER: 'cmd /E:ON /V:ON /C .\ci\appveyor\compiler.cmd'
+
+  matrix:
+    - TOXENV: 'py34'
+      TOXPYTHON: C:\Python34\python.exe
+      PYTHON_HOME: C:\Python34
+      PYTHON_VERSION: '3.4'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py35'
+        TOXPYTHON: C:\Python35\python.exe
+        PYTHON_HOME: C:\Python35
+        PYTHON_VERSION: '3.5'
+        PYTHON_ARCH: '32'
+
+    - TOXENV: 'py36'
+        TOXPYTHON: C:\Python36\python.exe
+        PYTHON_HOME: C:\Python36
+        PYTHON_VERSION: '3.6'
+        PYTHON_ARCH: '32'
+
+    - TOXENV: 'py37'
+        TOXPYTHON: C:\Python37\python.exe
+        PYTHON_HOME: C:\Python37
+        PYTHON_VERSION: '3.7'
+        PYTHON_ARCH: '32'
+
+init:
+    - ps: echo $env:TOXENV
+    - ps: ls C:\Python*
+
+install:
+    - '%TOXPYTHON% --version'
+    - '%PYTHON_HOME%\Scripts\pip --version'
+    - '%TOXPYTHON% -m pip install --egg tox'
+    - '%PYTHON_HOME%\Scripts\tox --version'
+
+test_script:
+    - '%WITH_COMPILER% %PYTHON_HOME%\Scripts\tox'
+
+on_failure:
+    - ps: dir "env:"
+    - ps: get-content .tox\*\log\*

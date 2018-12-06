@@ -34,8 +34,7 @@ def _evaluate_input(input_triplet, algorithm, iterations, search_space):
 
         logger.info('search space is set to {0}'.format(search_space))
 
-    input_event_pairs = []
-    counts = []
+    input_event_pairs, counts = [], []
     for event in search_space:
         cx = np.count_nonzero(result_d1 == event if isinstance(event, (int, float)) else
                               np.logical_and(result_d1 > event[0], result_d1 < event[1]))

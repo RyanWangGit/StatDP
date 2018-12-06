@@ -6,15 +6,6 @@ import functools
 logger = logging.getLogger(__name__)
 
 
-def _evaluate_event(event, result_d1, result_d2):
-    cx = np.count_nonzero(result_d1 == event if isinstance(event, (int, float)) else
-                          np.logical_and(result_d1 > event[0], result_d1 < event[1]))
-    cy = np.count_nonzero(result_d2 == event if isinstance(event, (int, float)) else
-                          np.logical_and(result_d2 > event[0], result_d2 < event[1]))
-    cx, cy = (cx, cy) if cx > cy else (cy, cx)
-    return cx, cy
-
-
 def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, process_pool=None):
     """
     :param algorithm: The algorithm to run on
@@ -60,10 +51,13 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
         threshold = 0.001 * iterations * np.exp(epsilon)
 
         # bind the result_d1 and result_d2 to _evaluate_event, leaving out `event` argument to be filled
-        partial_evaluate_event = functools.partial(_evaluate_event, result_d1=result_d1, result_d2=result_d2)
-
-        results = list(map(partial_evaluate_event, search_space)) if process_pool is None else \
-            process_pool.map(partial_evaluate_event, search_space)
+        results = []
+        for event in search_space:
+            cx = np.count_nonzero(result_d1 == event if isinstance(event, (int, float)) else
+                                  np.logical_and(result_d1 > event[0], result_d1 < event[1]))
+            cy = np.count_nonzero(result_d2 == event if isinstance(event, (int, float)) else
+                                  np.logical_and(result_d2 > event[0], result_d2 < event[1]))
+            results.append((cx, cy) if cx > cy else (cy, cx))
 
         input_p_values = [test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
                           if cx + cy > threshold else float('inf') for (cx, cy) in results]

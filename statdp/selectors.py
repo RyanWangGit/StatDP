@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def _evaluate_input(input_triplet, algorithm, iterations, search_space):
+    np.random.seed()
     d1, d2, kwargs = input_triplet
     result_d1 = np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64)
     result_d2 = np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64)
@@ -33,15 +34,16 @@ def _evaluate_input(input_triplet, algorithm, iterations, search_space):
 
         logger.info('search space is set to {0}'.format(search_space))
 
-    # bind the result_d1 and result_d2 to _evaluate_event, leaving out `event` argument to be filled
+    input_event_pairs = []
     counts = []
     for event in search_space:
         cx = np.count_nonzero(result_d1 == event if isinstance(event, (int, float)) else
                               np.logical_and(result_d1 > event[0], result_d1 < event[1]))
         cy = np.count_nonzero(result_d2 == event if isinstance(event, (int, float)) else
                               np.logical_and(result_d2 > event[0], result_d2 < event[1]))
+        input_event_pairs.append((d1, d2, kwargs, event))
         counts.append((cx, cy) if cx > cy else (cy, cx))
-    return counts, search_space
+    return input_event_pairs, counts
 
 
 def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, process_pool=None):
@@ -57,22 +59,27 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
     assert isfunction(algorithm)
     from .hypotest import test_statistics
 
-    input_event_pairs = []
-    p_values = []
+    # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
+    partial_evaluate_input = functools.partial(_evaluate_input,
+                                               algorithm=algorithm, iterations=iterations, search_space=search_space)
 
-    for (d1, d2, kwargs) in input_list:
-        counts, search_space = _evaluate_input((d1, d2, kwargs), algorithm, iterations, search_space)
-        threshold = 0.001 * iterations * np.exp(epsilon)
+    results = process_pool.map(partial_evaluate_input, input_list) if process_pool else \
+        tuple(map(partial_evaluate_input, input_list))
 
-        input_p_values = [test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
-                          if cx + cy > threshold else float('inf') for (cx, cy) in counts]
+    input_event_pairs, counts = [], []
+    # flatten the results for all input/event pairs
+    for local_input_event_pair, local_counts in results:
+        input_event_pairs.extend(local_input_event_pair)
+        counts.extend(local_counts)
 
-        for (s, (cx, cy), p) in zip(search_space, counts, input_p_values):
-            logger.debug('d1: %s | d2: %s | event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
-                         (d1, d2, s, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
+    # calculate p-values based on counts
+    threshold = 0.001 * iterations * np.exp(epsilon)
+    input_p_values = [test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
+                      if cx + cy > threshold else float('inf') for (cx, cy) in counts]
 
-        input_event_pairs.extend([(d1, d2, kwargs, event) for event in search_space])
-        p_values.extend(input_p_values)
+    for ((d1, d2, _, event), (cx, cy), p) in zip(input_event_pairs, counts, input_p_values):
+        logger.debug('d1: %s | d2: %s | event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
+                     (d1, d2, event, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
 
     # find an (d1, d2, kwargs, event) pair which has minimum p value from search space
-    return min(zip(input_event_pairs, p_values), key=lambda zipped: zipped[1])[0]
+    return min(zip(input_event_pairs, input_p_values), key=lambda zipped: zipped[1])[0]

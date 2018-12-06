@@ -38,7 +38,7 @@ init:
 install:
     - '%TOXPYTHON% --version'
     - '%PYTHON_HOME%\Scripts\pip --version'
-    - '%TOXPYTHON% -m pip install --egg tox'
+    - '%TOXPYTHON% -m pip install tox'
     - '%PYTHON_HOME%\Scripts\tox --version'
 
 test_script:

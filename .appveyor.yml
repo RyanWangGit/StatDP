@@ -3,9 +3,6 @@ cache:
 build: off
 
 environment:
-  global:
-    WITH_COMPILER: 'cmd /E:ON /V:ON /C .\ci\appveyor\compiler.cmd'
-
   matrix:
     - TOXENV: 'py34'
       TOXPYTHON: C:\Python34\python.exe
@@ -42,7 +39,7 @@ install:
     - '%PYTHON_HOME%\Scripts\tox --version'
 
 test_script:
-    - '%WITH_COMPILER% %PYTHON_HOME%\Scripts\tox'
+    - '%PYTHON_HOME%\Scripts\tox'
 
 on_failure:
     - ps: dir "env:"

@@ -57,7 +57,7 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
     :return: (d1, d2, kwargs, event) pair which has minimum p value from search space
     """
     assert isfunction(algorithm)
-    from .hypotest import test_statistics
+    from statdp.hypotest import test_statistics
 
     # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
     partial_evaluate_input = functools.partial(_evaluate_input,

@@ -57,10 +57,11 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
             # fix the database and arguments if selected for performance
             input_list = ((d1, d2, kwargs),) if len(input_list) > 1 else input_list
 
-            p1, _ = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations, process_pool=pool)
-            result.append((epsilon, p1, d1, d2, kwargs, event))
+            p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations,
+                                report_p2=False, process_pool=pool)
+            result.append((epsilon, p, d1, d2, kwargs, event))
             print('Epsilon: {} | p-value: {:5.3f} | Event: {} | {:5.1f}%'
-                  .format(epsilon, p1, event, float(i + 1) / len(test_epsilon) * 100))
+                  .format(epsilon, p, event, float(i + 1) / len(test_epsilon) * 100))
             logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
     finally:
         if pool:

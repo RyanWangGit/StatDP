@@ -81,7 +81,7 @@ def main():
 
         # dump the results to file
         with open('./{}.json'.format(algorithm.__name__), 'w') as f:
-            json.dump(f, results)
+            json.dump(results, f)
 
         logger.info('[{} / {}]: {} | Time elapsed: {}'
                     .format(i + 1, len(tasks), algorithm.__name__, time.time() - start_time))

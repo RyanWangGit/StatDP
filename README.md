@@ -1,5 +1,5 @@
 # StatDP 
-[![Build Status](https://travis-ci.com/RyanWangGit/statdp.svg?branch=master)](https://travis-ci.com/RyanWangGit/statdp)  [![codecov](https://codecov.io/gh/RyanWangGit/statdp/branch/master/graph/badge.svg)](https://codecov.io/gh/RyanWangGit/statdp)
+[![Build Status](https://travis-ci.com/RyanWangGit/statdp.svg?branch=master)](https://travis-ci.com/RyanWangGit/statdp) [![Build status](https://ci.appveyor.com/api/projects/status/b6ul9tami06i2yge/branch/master?svg=true)](https://ci.appveyor.com/project/RyanWangGit/statdp/branch/master)  [![codecov](https://codecov.io/gh/RyanWangGit/statdp/branch/master/graph/badge.svg)](https://codecov.io/gh/RyanWangGit/statdp)
 
 Statistical Counterexample Detector for Differential Privacy.
 

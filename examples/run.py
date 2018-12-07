@@ -2,8 +2,12 @@ import time
 import json
 import coloredlogs
 import logging
+import matplotlib
 from statdp import detect_counterexample
 from statdp.algorithms import *
+
+# switch matplotlib backend for running in background
+matplotlib.use('agg')
 
 coloredlogs.install('DEBUG', fmt='%(asctime)s [0x%(process)x] %(levelname)s %(message)s')
 logger = logging.getLogger(__name__)
@@ -18,9 +22,8 @@ def plot_result(xlabel, ylabel, data, title, output_filename):
     :param output_filename: The output file name.
     :return:
     """
-    import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('agg')
+
     matplotlib.rcParams['text.usetex'] = True
     matplotlib.rcParams['text.latex.preamble'] = '\\usepackage[bold]{libertine},' \
                                                  '\\usepackage[libertine]{newtxmath},' \

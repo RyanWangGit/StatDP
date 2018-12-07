@@ -40,7 +40,7 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
                                         chunksize=int(1000 / mp.cpu_count())))
 
 
-def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, process_pool=None):
+def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, report_p2=True, process_pool=None):
     """ Run hypothesis tests on given input and events.
     :param algorithm: The algorithm to run on
     :param kwargs: The keyword arguments the algorithm needs
@@ -49,6 +49,7 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
     :param event: The event set
     :param iterations: Number of iterations to run
     :param epsilon: The epsilon value to test for
+    :param report_p2: The boolean to whether report p2 or not
     :param process_pool: The process pool to use, run with single process if None
     :return: p values
     """
@@ -67,4 +68,7 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
 
         cx, cy = sum(process_cx for process_cx, _ in result), sum(process_cy for _, process_cy in result)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
-        return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
+        if report_p2:
+            return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
+        else:
+            return test_statistics(cx, cy, epsilon, iterations)

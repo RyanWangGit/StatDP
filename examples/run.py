@@ -76,7 +76,7 @@ def main():
              (SVT, {'N': 1, 'T': 0.5}),
              (iSVT1, {'T': 1, 'N': 1}), (iSVT2, {'T': 1, 'N': 1}), (iSVT3, {'T': 1, 'N': 1}), (iSVT4, {'T': 1, 'N': 1})]
 
-    for (algorithm, kwargs) in tasks:
+    for i, (algorithm, kwargs) in enumerate(tasks):
         start_time = time.time()
         results = {}
         for privacy_budget in (0.2, 0.7, 1.5):
@@ -90,7 +90,8 @@ def main():
         with open('./{}.json'.format(algorithm.__name__), 'w') as f:
             json.dump(f, results)
 
-        logger.info('Time elapsed: {}'.format(time.time() - start_time))
+        logger.info('[{} / {}]: {} | Time elapsed: {}'
+                    .format(i + 1, len(tasks), algorithm.__name__, time.time() - start_time))
 
 
 if __name__ == '__main__':

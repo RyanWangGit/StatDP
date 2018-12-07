@@ -48,11 +48,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
     result = []
 
     test_epsilon = (test_epsilon, ) if isinstance(test_epsilon, (int, float)) else test_epsilon
-    pool = None
-    if cores == 0:
-        pool = mp.Pool(mp.cpu_count())
-    elif cores != 1:
-        pool = mp.Pool(cores)
+    pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
     try:
         for i, epsilon in enumerate(test_epsilon):
             d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations,

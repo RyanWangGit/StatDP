@@ -24,11 +24,6 @@ def plot_result(xlabel, ylabel, data, title, output_filename):
     """
     import matplotlib.pyplot as plt
 
-    matplotlib.rcParams['text.usetex'] = True
-    matplotlib.rcParams['text.latex.preamble'] = '\\usepackage[bold]{libertine},' \
-                                                 '\\usepackage[libertine]{newtxmath},' \
-                                                 '\\usepackage{sfmath},' \
-                                                 '\\usepackage[T1]{fontenc}'
     matplotlib.rcParams['xtick.labelsize'] = '12'
     matplotlib.rcParams['ytick.labelsize'] = '12'
 
@@ -40,19 +35,17 @@ def plot_result(xlabel, ylabel, data, title, output_filename):
     for i, (epsilon, points) in enumerate(data.items()):
         x = [item[0] for item in points]
         p = [item[1] for item in points]
-        plt.plot(x, p, 'o-', label=r'\large{$\epsilon_0$ = ' + '{0}'.format(epsilon) + '}',
-                 markersize=6, marker=markers[i])
+        plt.plot(x, p, 'o-', label=r'$\epsilon_0$ = {0}'.format(epsilon), markersize=6, marker=markers[i])
         plt.axvline(x=float(epsilon), color=colorcycle[i], linestyle='dashed', linewidth=1.2)
 
     plt.axhline(y=0.05, color='black', linestyle='dashed', linewidth=1.2)
-    plt.xlabel('\\Large{ ' + xlabel + '}')
-    plt.ylabel('\\Large{' + ylabel + '}')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     if title is not None and not title == '':
         plt.title(title)
     plt.legend()
     plt.savefig(output_filename, bbox_inches='tight')
     plt.gcf().clear()
-    return
 
 
 def main():

@@ -68,16 +68,14 @@ def main():
         |     iSVT3     |           |        |       |
         |     iSVT4     |           |        |       |
     """
-    jobs = [(noisy_max_v1a, {}), (noisy_max_v1b, {}), (noisy_max_v2a, {}), (noisy_max_v2b, {}),
-            (histogram, {}), (histogram_eps, {}),
-            (SVT, {'N': 1, 'T': 0.5}),
-            (iSVT1, {'T': 1, 'N': 1}), (iSVT2, {'T': 1, 'N': 1}), (iSVT3, {'T': 1, 'N': 1}), (iSVT4, {'T': 1, 'N': 1})]
+    tasks = [(noisy_max_v1a, {}), (noisy_max_v1b, {}), (noisy_max_v2a, {}), (noisy_max_v2b, {}),
+             (histogram, {}), (histogram_eps, {}),
+             (SVT, {'N': 1, 'T': 0.5}),
+             (iSVT1, {'T': 1, 'N': 1}), (iSVT2, {'T': 1, 'N': 1}), (iSVT3, {'T': 1, 'N': 1}), (iSVT4, {'T': 1, 'N': 1})]
 
-    for job in jobs:
+    for (algorithm, kwargs) in tasks:
         start_time = time.time()
         results = {}
-
-        algorithm, kwargs = job
         for privacy_budget in (0.2, 0.7, 1.5):
             kwargs['epsilon'] = privacy_budget
             results[privacy_budget] = detect_counterexample(algorithm, tuple(x / 10.0 for x in range(1, 34, 1)), kwargs)

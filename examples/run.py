@@ -1,12 +1,15 @@
-from statdp import *
-from statdp.algorithms import *
-from intervals import Interval
-from math import inf
 import time
-import jsonpickle
+import json
+import coloredlogs
+import logging
+from statdp import detect_counterexample
+from statdp.algorithms import *
+
+coloredlogs.install('DEBUG', fmt='%(asctime)s [0x%(process)x] %(levelname)s %(message)s')
+logger = logging.getLogger(__name__)
 
 
-def draw_graph(xlabel, ylabel, data, title, output_filename):
+def plot_result(xlabel, ylabel, data, title, output_filename):
     """
     :param xlabel: The label for x axis.
     :param ylabel: The label for y axis.
@@ -16,23 +19,25 @@ def draw_graph(xlabel, ylabel, data, title, output_filename):
     :return:
     """
     import matplotlib
+    import matplotlib.pyplot as plt
+    matplotlib.use('agg')
     matplotlib.rcParams['text.usetex'] = True
-    matplotlib.rcParams['text.latex.preamble'] = '\\usepackage[bold]{libertine},\\usepackage[libertine]{newtxmath},\\usepackage{sfmath},\\usepackage[T1]{fontenc}'
+    matplotlib.rcParams['text.latex.preamble'] = '\\usepackage[bold]{libertine},' \
+                                                 '\\usepackage[libertine]{newtxmath},' \
+                                                 '\\usepackage{sfmath},' \
+                                                 '\\usepackage[T1]{fontenc}'
     matplotlib.rcParams['xtick.labelsize'] = '12'
     matplotlib.rcParams['ytick.labelsize'] = '12'
-
-    import matplotlib.pyplot as plt
 
     markers = ['s', 'o', '^', 'x', '*', '+', 'p']
     colorcycle = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22',
                   '#17becf']
-    plt.show()
     plt.ylim(0.0, 1.0)
 
     for i, (epsilon, points) in enumerate(data.items()):
-        x = [i[0] for i in points]
-        p = [i[1] for i in points]
-        plt.plot(x, p, 'o-', label='\\large{$\epsilon_0$ = ' + '{0}'.format(epsilon) + '}',
+        x = [item[0] for item in points]
+        p = [item[1] for item in points]
+        plt.plot(x, p, 'o-', label=r'\large{$\epsilon_0$ = ' + '{0}'.format(epsilon) + '}',
                  markersize=6, marker=markers[i])
         plt.axvline(x=float(epsilon), color=colorcycle[i], linestyle='dashed', linewidth=1.2)
 
@@ -43,102 +48,48 @@ def draw_graph(xlabel, ylabel, data, title, output_filename):
         plt.title(title)
     plt.legend()
     plt.savefig(output_filename, bbox_inches='tight')
-    plt.draw()
-    plt.pause(0.001)
     plt.gcf().clear()
     return
 
 
 def main():
-    jobs = [
-        {
-            "algorithm": noisy_max_v1a,
-            "kwargs": {},
-            "databases": ([0] + [2 for _ in range(4)], [1 for _ in range(5)]),
-            "search_space": tuple([i] for i in range(5))
-        },
-        {
-            "algorithm": noisy_max_v1b,
-            "kwargs": {},
-            "databases": ([2 for _ in range(5)], [1 for _ in range(5)]),
-            "search_space": tuple(Interval([-inf, alpha]) for alpha in range(-5, 6))
-        },
-        {
-            "algorithm": noisy_max_v2a,
-            "kwargs": {},
-            "databases": ([0] + [2 for _ in range(4)], [1 for _ in range(5)]),
-            "search_space": tuple([i] for i in range(5))
-        },
-        {
-            "algorithm": noisy_max_v2b,
-            "kwargs": {},
-            "databases": ([2] + [0 for _ in range(4)], [1 for _ in range(5)]),
-            "search_space": tuple(Interval([-inf, 1 + alpha / 10.0]) for alpha in range(0, 80, 2))
-        },
-        {
-            "algorithm": histogram,
-            "kwargs": {},
-            "databases": ([2 for _ in range(5)], [1] + [2 for _ in range(4)]),
-            "search_space": [Interval([-inf, alpha]) for alpha in range(-17, 17)]
-        },
-        {
-            "algorithm": histogram_eps,
-            "kwargs": {},
-            "databases": ([0] + [1 for _ in range(4)], [1 for _ in range(5)]),
-            "search_space": [Interval([-inf, alpha / 10]) for alpha in range(-30, 30, 2)]
-        },
-        {
-            "algorithm": iSVT1,
-            "kwargs": {'T': 1, 'N': 1},
-            "databases": ([1 for _ in range(10)], [0 for _ in range(5)] + [2 for _ in range(5)]),
-            "search_space": [[i] for i in range(10)]
-        },
-        {
-            "algorithm": iSVT2,
-            "kwargs": {'T': 1, 'N': 1},
-            "databases": ([1 for _ in range(5)] + [0 for _ in range(5)],
-                          [0 for _ in range(5)] + [1 for _ in range(5)]),
-            "search_space": [[i] for i in range(10)]
-        },
-        {
-            "algorithm": iSVT3,
-            "kwargs": {'T': 1, 'N': 1},
-            "databases": ([1 for _ in range(5)] + [0 for _ in range(5)],
-                          [0 for _ in range(5)] + [1 for _ in range(5)]),
-            "search_space": [[i] for i in range(10)]
-        },
-    ]
-
-    results = {}
-
-    start_time = time.time()
+    """The selected databases/kwargs/event found for different algorithms
+        |   Algorithm   | Databases | kwargs | Event |
+        |:-------------:|:---------:|:------:|:-----:|
+        | noisy_max_v1a |           |        |       |
+        | noisy_max_v1b |           |        |       |
+        | noisy_max_v2a |           |        |       |
+        | noisy_max_v2b |           |        |       |
+        |   histogram   |           |        |       |
+        | histogram_eps |           |        |       |
+        |      SVT      |           |        |       |
+        |     iSVT1     |           |        |       |
+        |     iSVT2     |           |        |       |
+        |     iSVT3     |           |        |       |
+        |     iSVT4     |           |        |       |
+    """
+    jobs = [(noisy_max_v1a, {}), (noisy_max_v1b, {}), (noisy_max_v2a, {}), (noisy_max_v2b, {}),
+            (histogram, {}), (histogram_eps, {}),
+            (SVT, {'N': 1, 'T': 0.5}),
+            (iSVT1, {'T': 1, 'N': 1}), (iSVT2, {'T': 1, 'N': 1}), (iSVT3, {'T': 1, 'N': 1}), (iSVT4, {'T': 1, 'N': 1})]
 
     for job in jobs:
-        results.clear()
+        start_time = time.time()
+        results = {}
 
-        algorithm, search_space,  = job['algorithm'], job['search_space']
-        databases, kwargs = job['databases'], job['kwargs']
-        for algorithm_epsilon in [0.2, 0.5, 0.7] + list(range(1, 4)):
-            kwargs['epsilon'] = algorithm_epsilon
-            results[algorithm_epsilon] = detect_counterexample(algorithm,
-                                                               [x / 10.0 for x in range(1, 34, 1)],
-                                                               kwargs,
-                                                               search_space, databases)
+        algorithm, kwargs = job
+        for privacy_budget in (0.2, 0.7, 1.5):
+            kwargs['epsilon'] = privacy_budget
+            results[privacy_budget] = detect_counterexample(algorithm, tuple(x / 10.0 for x in range(1, 34, 1)), kwargs)
 
-        draw_graph('Test $\epsilon$', 'P Value', results,
-                   algorithm.__name__.replace('_', ' ').title(),
-                   algorithm.__name__ + '.pdf')
+        plot_result(r'Test $\epsilon$', 'P Value',
+                    results, algorithm.__name__.replace('_', ' ').title(), algorithm.__name__ + '.pdf')
 
         # dump the results to file
         with open('./{}.json'.format(algorithm.__name__), 'w') as f:
-            # json.dump(results, f)
-            # cannot use json.dump since Interval class is not JSON-serializable
-            f.write(jsonpickle.encode(results))
+            json.dump(f, results)
 
-        print('{} | D1: {} | D2: {} | Time: {}'.format(algorithm.__name__, databases[0], databases[1],
-                                                       time.time() - start_time))
-
-        start_time = time.time()
+        logger.info('Time elapsed: {}'.format(time.time() - start_time))
 
 
 if __name__ == '__main__':

@@ -10,8 +10,8 @@ setup(
     description='Counterexample Detection Using Statistical Methods for Incorrect Differential-Privacy Algorithms.',
     long_description=long_description,
     url='',
-    author='Zeyu Ding/Yuin Wang/Danfeng Zhang/Daniel Kifer',
-    author_email='dxd437@psu.edu,yxwang@psu.edu,{zhang,dkifer}@cse.psu.edu',
+    author='Zeyu Ding/Yuin Wang/Guanhong Wang/Danfeng Zhang/Daniel Kifer',
+    author_email='dxd437@psu.edu,yxwang@psu.edu,gpw5092@psu.edu,{zhang,dkifer}@cse.psu.edu',
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',

@@ -29,7 +29,7 @@ def generate_databases(algorithm, num_input, default_kwargs):
 
     # assume maximum distance is 1
     d1 = [1 for _ in range(num_input)]
-    candidates = [
+    candidates = (
         (d1, [0] + [1 for _ in range(num_input - 1)]),  # one below
         (d1, [2] + [1 for _ in range(num_input - 1)]),  # one above
         (d1, [2] + [0 for _ in range(num_input - 1)]),  # one above rest below
@@ -40,11 +40,6 @@ def generate_databases(algorithm, num_input, default_kwargs):
         # x shape
         ([1 for _ in range(int(math.floor(num_input / 2.0)))] + [0 for _ in range(int(math.ceil(num_input / 2.0)))],
          [0 for _ in range(int(math.floor(num_input / 2.0)))] + [1 for _ in range(int(math.ceil(num_input / 2.0)))])
-    ]
+    )
 
-    input_list = []
-    for d1, d2 in candidates:
-        kwargs = generate_arguments(algorithm, d1, d2, default_kwargs)
-        input_list.append((d1, d2, kwargs))
-
-    return input_list
+    return tuple((d1, d2, generate_arguments(algorithm, d1, d2, default_kwargs)) for d1, d2 in candidates)

@@ -57,7 +57,10 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, repor
     if process_pool is None:
         cx, cy = _run_algorithm(algorithm, d1, d2, kwargs, event, iterations)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
-        return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
+        if report_p2:
+            return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
+        else:
+            return test_statistics(cx, cy, epsilon, iterations)
     else:
         process_iterations = [int(math.floor(float(iterations) / mp.cpu_count())) for _ in range(mp.cpu_count())]
         # add the remaining iterations to the last index
@@ -69,6 +72,7 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, repor
         cx, cy = sum(process_cx for process_cx, _ in result), sum(process_cy for _, process_cy in result)
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
         if report_p2:
-            return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
+            return test_statistics(cx, cy, epsilon, iterations, process_pool), \
+                   test_statistics(cy, cx, epsilon, iterations, process_pool)
         else:
-            return test_statistics(cx, cy, epsilon, iterations)
+            return test_statistics(cx, cy, epsilon, iterations, process_pool)

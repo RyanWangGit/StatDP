@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 def _evaluate_input(input_triplet, algorithm, iterations, search_space):
     np.random.seed()
     d1, d2, kwargs = input_triplet
-    result_d1 = np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64)
-    result_d2 = np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64)
+    result_d1 = np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)
+    result_d2 = np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)
 
     if search_space is None:
         # determine the search space based on the return type
@@ -74,7 +74,8 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
     # calculate p-values based on counts
     threshold = 0.001 * iterations * np.exp(epsilon)
     input_p_values = np.fromiter((test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
-                                 if cx + cy > threshold else float('inf') for (cx, cy) in counts), dtype=np.float64)
+                                 if cx + cy > threshold else float('inf') for (cx, cy) in counts),
+                                 dtype=np.float64, count=len(counts))
 
     for ((d1, d2, _, event), (cx, cy), p) in zip(input_event_pairs, counts, input_p_values):
         logger.debug('d1: %s | d2: %s | event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %

@@ -66,6 +66,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
     finally:
         if pool:
             pool.close()
+            pool.join()
         else:
             pass
 

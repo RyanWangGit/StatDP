@@ -4,7 +4,7 @@ from statdp.generators import generate_databases, generate_arguments
 
 def test_generate_databases():
     input_list = generate_databases(noisy_max_v1a, 5, {'epsilon': 0.5})
-    assert isinstance(input_list, list) and len(input_list) >= 1
+    assert isinstance(input_list, (list, tuple)) and len(input_list) >= 1
     for input_ in input_list:
         assert isinstance(input_, (list, tuple)) and len(input_) == 3
         d1, d2, args = input_

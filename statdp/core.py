@@ -54,9 +54,6 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
             d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations,
                                                  search_space=event_search_space, process_pool=pool)
 
-            # fix the database and arguments if selected for performance
-            input_list = ((d1, d2, kwargs),) if len(input_list) > 1 else input_list
-
             p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations,
                                 report_p2=False, process_pool=pool)
             result.append((epsilon, p, d1, d2, kwargs, event))

@@ -20,7 +20,7 @@ env:
 cache: pip
 
 install:
-  - pip install tox-travis codecov
+  - pip install tox-travis
 
 script:
   # test other function except test_core.py which takes a long time
@@ -29,7 +29,7 @@ script:
   - if [ "$ALGORITHM" != "none" ]; then travis_wait 120 tox -- -k "test_$ALGORITHM"; fi
 
 after_success:
-  - codecov
+  - pip install codecov && codecov
 
 notifications:
   email: false

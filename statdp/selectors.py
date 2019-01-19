@@ -53,7 +53,7 @@ def _evaluate_input(input_triplet, algorithm, iterations, search_space):
             search_space = tuple((-float('inf'), alpha) for alpha in
                                  np.linspace(combined_result[search_min], combined_result[search_max], num=25))
 
-        logger.info('search space is set to {0}'.format(search_space))
+        logger.debug('search space is set to {0}'.format(search_space))
 
     input_event_pairs, counts = [], []
     for event in search_space:

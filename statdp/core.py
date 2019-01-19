@@ -24,6 +24,7 @@ from statdp.hypotest import hypothesis_test
 from statdp.selectors import select_event
 import logging
 import multiprocessing as mp
+import tqdm
 logger = logging.getLogger(__name__)
 
 
@@ -48,13 +49,10 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
     default_kwargs = default_kwargs if default_kwargs else {}
 
     logging.basicConfig(level=loglevel)
-    logger.info('Starting to find counter example on algorithm {} with test epsilon {}\n'
+    logger.info('Starting to find counter example on algorithm {} with test epsilon {}'
                 .format(algorithm.__name__, test_epsilon))
-    logger.info('\nExtra arguments:\n'
-                'default_kwargs: {}\n'
-                'event_search_space: {}\n'
-                'databases: {}\n'
-                'cores:{}\n'.format(default_kwargs, event_search_space, databases, cores))
+    logger.info('Options -> default_kwargs: {} | event_search_space: {} | databases: {} | cores:{}'
+                .format(default_kwargs, event_search_space, databases, cores))
 
     input_list = []
     if databases is not None:
@@ -68,10 +66,16 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
 
     result = []
 
+    # convert int/float or iterable into tuple (so that it has length information)
     test_epsilon = (test_epsilon, ) if isinstance(test_epsilon, (int, float)) else test_epsilon
+    if isinstance(test_epsilon, (int, float)):
+        test_epsilon = (test_epsilon, )
+    elif not isinstance(test_epsilon, (tuple, list)):
+        test_epsilon = tuple(test_epsilon)
+
     pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
     try:
-        for i, epsilon in enumerate(test_epsilon):
+        for i, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test'):
             d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations,
                                                  search_space=event_search_space, process_pool=pool)
 

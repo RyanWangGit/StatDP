@@ -20,10 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import logging
+
 from flaky import flaky
+
+from statdp.algorithms import (SVT, iSVT1, iSVT2, iSVT3, iSVT4, noisy_max_v1a,
+                               noisy_max_v1b, noisy_max_v2a, noisy_max_v2b)
 from statdp.core import detect_counterexample
-from statdp.algorithms import noisy_max_v1a, noisy_max_v1b, noisy_max_v2a, noisy_max_v2b,\
-    SVT, iSVT1, iSVT2, iSVT3, iSVT4
 
 
 def assert_correct_algorithm(algorithm, kwargs=None, num_input=5):

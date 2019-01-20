@@ -19,10 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from inspect import isfunction
-import numpy as np
-import logging
 import functools
+import logging
+from inspect import isfunction
+
+import numpy as np
+import tqdm
+
+from statdp.hypotest import test_statistics
 
 logger = logging.getLogger(__name__)
 

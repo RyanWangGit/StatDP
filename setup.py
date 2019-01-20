@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 # Get the long description from the relevant file
 with open('README.md', 'r', encoding='utf-8') as f:

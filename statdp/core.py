@@ -19,12 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from statdp.generators import generate_databases, generate_arguments
-from statdp.hypotest import hypothesis_test
-from statdp.selectors import select_event
 import logging
 import multiprocessing as mp
+
 import tqdm
+
+from statdp.generators import generate_arguments, generate_databases
+from statdp.hypotest import hypothesis_test
+from statdp.selectors import select_event
+
 logger = logging.getLogger(__name__)
 
 

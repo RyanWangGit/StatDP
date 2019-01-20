@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from statdp.algorithms import noisy_max_v1a
-from statdp.generators import generate_databases, generate_arguments
+from statdp.generators import generate_arguments, generate_databases
 
 
 def test_generate_databases():

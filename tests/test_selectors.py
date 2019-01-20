@@ -32,4 +32,3 @@ def test_select_event():
     assert event == 0
     _, _, _, event = select_event(noisy_max_v1b, ((d1, d2, {'epsilon': 0.5}),), 0.5, 100000, process_pool=pool)
     assert event[0] < 0 < event[1]
-

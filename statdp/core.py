@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
                           event_search_space=None, databases=None, num_input=(5, 10),
                           event_iterations=100000, detect_iterations=500000, cores=0,
-                          loglevel=logging.INFO):
+                          quiet=False, loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
     :param test_epsilon: The privacy budget to test for, can either be a number or a tuple/list.
@@ -45,6 +45,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
     :param event_iterations: The iterations for event selector to run, default is 100000.
     :param detect_iterations: The iterations for detector to run, default is 500000.
     :param cores: The cores to utilize, 0 means auto-detection.
+    :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
     :param loglevel: The loglevel for logging package.
     :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
     """
@@ -78,15 +79,14 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
 
     pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
     try:
-        for i, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test'):
+        for i, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test', desc='Detection'):
             d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations,
                                                  search_space=event_search_space, process_pool=pool)
-
             p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations,
                                 report_p2=False, process_pool=pool)
             result.append((epsilon, p, d1, d2, kwargs, event))
-            print('Epsilon: {} | p-value: {:5.3f} | Event: {} | {:5.1f}%'
-                  .format(epsilon, p, event, float(i + 1) / len(test_epsilon) * 100))
+            tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {} | {:5.1f}%'
+                            .format(epsilon, p, event, float(i + 1) / len(test_epsilon) * 100))
             logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
     finally:
         if pool:
@@ -96,7 +96,3 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
             pass
 
     return result
-
-
-
-

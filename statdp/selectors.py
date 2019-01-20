@@ -70,7 +70,7 @@ def _evaluate_input(input_triplet, algorithm, iterations, search_space):
     return input_event_pairs, counts
 
 
-def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, process_pool=None):
+def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, process_pool=None, quiet=False):
     """
     :param algorithm: The algorithm to run on
     :param input_list: list of (d1, d2, kwargs) input pair for the algorithm to run
@@ -78,17 +78,17 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
     :param iterations: The iterations to run algorithms
     :param search_space: The result search space to run on, auto-determine based on return type if None
     :param process_pool: The process pool to use, run with single process if None
-    :return: (d1, d2, kwargs, event) pair which has minimum p value from search space
+    :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
+    :return: (d1, d2, kwargs, event) pair which has minimum p value from search space.
     """
-    from statdp.hypotest import test_statistics
     assert inspect.isfunction(algorithm)
 
     # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
     partial_evaluate_input = functools.partial(_evaluate_input,
                                                algorithm=algorithm, iterations=iterations, search_space=search_space)
 
-    results = process_pool.map(partial_evaluate_input, input_list) if process_pool else \
-        tuple(map(partial_evaluate_input, input_list))
+    results = process_pool.imap_unordered(partial_evaluate_input, input_list) if process_pool else \
+        map(partial_evaluate_input, input_list)
 
     input_event_pairs, counts = [], []
     # flatten the results for all input/event pairs
@@ -98,10 +98,13 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
 
     # calculate p-values based on counts
     threshold = 0.001 * iterations * np.exp(epsilon)
-    input_p_values = np.fromiter((test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
-                                 if cx + cy > threshold else float('inf') for (cx, cy) in counts),
-                                 dtype=np.float64, count=len(counts))
+    with tqdm.tqdm((test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
+                    if cx + cy > threshold else float('inf') for (cx, cy) in counts),
+                   desc='Evaluating events', total=len(counts), unit='event', disable=quiet) as wrapper:
+        input_p_values = np.fromiter(wrapper, dtype=np.float64, count=len(counts))
 
+    if not quiet:
+        tqdm.tqdm.write('{} / {}'.format(len(input_p_values), len(counts)))
     for ((d1, d2, _, event), (cx, cy), p) in zip(input_event_pairs, counts, input_p_values):
         logger.debug('d1: %s | d2: %s | event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
                      (d1, d2, event, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))

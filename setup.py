@@ -26,7 +26,7 @@ setup(
     ],
     keywords='Differential Privacy, Hypothesis Test, Statistics',
     packages=find_packages(exclude=['tests']),
-    install_requires=['numpy', 'scipy'],
+    install_requires=['numpy', 'scipy', 'tqdm'],
     extras_require={
         'test': ['pytest-cov', 'pytest', 'coverage', 'flaky'],
     },

@@ -21,7 +21,7 @@
 # SOFTWARE.
 import functools
 import logging
-from inspect import isfunction
+import inspect
 
 import numpy as np
 import tqdm
@@ -80,8 +80,8 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
     :param process_pool: The process pool to use, run with single process if None
     :return: (d1, d2, kwargs, event) pair which has minimum p value from search space
     """
-    assert isfunction(algorithm)
     from statdp.hypotest import test_statistics
+    assert inspect.isfunction(algorithm)
 
     # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
     partial_evaluate_input = functools.partial(_evaluate_input,

@@ -30,17 +30,6 @@ def _hypergeometric(cx, cy, iterations):
     return 1 - stats.hypergeom.cdf(cx, 2 * iterations, iterations, cx + cy)
 
 
-def _run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
-    np.random.seed()
-    result_d1 = np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)
-    result_d2 = np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)
-    cx = np.count_nonzero(result_d1 == event if isinstance(event, (int, float)) else
-                          np.logical_and(result_d1 > event[0], result_d1 < event[1]))
-    cy = np.count_nonzero(result_d2 == event if isinstance(event, (int, float)) else
-                          np.logical_and(result_d2 > event[0], result_d2 < event[1]))
-    return cx, cy
-
-
 def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
     """ Calculate p-value based on observed results.
     :param cx: The observed count of running algorithm with database 1 that falls into the event
@@ -59,6 +48,17 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
         return np.mean(process_pool.map(functools.partial(_hypergeometric, cy=cy, iterations=iterations),
                                         np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000),
                                         chunksize=int(1000 / mp.cpu_count())))
+
+
+def _run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
+    np.random.seed()
+    result_d1 = np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)
+    result_d2 = np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)
+    cx = np.count_nonzero(result_d1 == event if isinstance(event, (int, float)) else
+                          np.logical_and(result_d1 > event[0], result_d1 < event[1]))
+    cy = np.count_nonzero(result_d2 == event if isinstance(event, (int, float)) else
+                          np.logical_and(result_d2 > event[0], result_d2 < event[1]))
+    return cx, cy
 
 
 def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, report_p2=True, process_pool=None):

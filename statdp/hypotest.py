@@ -87,11 +87,15 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, repor
         # add the remaining iterations to the last index
         process_iterations[mp.cpu_count() - 1] += iterations % process_iterations[mp.cpu_count() - 1]
 
-        result = process_pool.map(functools.partial(_run_algorithm, algorithm, d1, d2, kwargs, event),
-                                  process_iterations)
-
-        cx, cy = sum(process_cx for process_cx, _ in result), sum(process_cy for _, process_cy in result)
+        # start the pool to run the algorithm and collects the statistics
+        cx, cy = 0, 0
+        for local_cx, local_cy in process_pool.imap_unordered(
+                functools.partial(_run_algorithm, algorithm, d1, d2, kwargs, event), process_iterations):
+            cx += local_cx
+            cy += local_cy
         cx, cy = (cx, cy) if cx > cy else (cy, cx)
+
+        # calculate and return p value
         if report_p2:
             return test_statistics(cx, cy, epsilon, iterations, process_pool), \
                    test_statistics(cy, cx, epsilon, iterations, process_pool)

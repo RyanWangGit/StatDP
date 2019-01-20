@@ -103,8 +103,6 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
                    desc='Evaluating events', total=len(counts), unit='event', disable=quiet) as wrapper:
         input_p_values = np.fromiter(wrapper, dtype=np.float64, count=len(counts))
 
-    if not quiet:
-        tqdm.tqdm.write('{} / {}'.format(len(input_p_values), len(counts)))
     for ((d1, d2, _, event), (cx, cy), p) in zip(input_event_pairs, counts, input_p_values):
         logger.debug('d1: %s | d2: %s | event: %s | p: %f | cx: %d | cy: %d | ratio: %f' %
                      (d1, d2, event, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))

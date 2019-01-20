@@ -85,8 +85,8 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
             p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations,
                                 report_p2=False, process_pool=pool)
             result.append((epsilon, p, d1, d2, kwargs, event))
-            tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {} | {:5.1f}%'
-                            .format(epsilon, p, event, float(i + 1) / len(test_epsilon) * 100))
+            tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {}'
+                            .format(epsilon, p, event))
             logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
     finally:
         if pool:

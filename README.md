@@ -24,20 +24,19 @@ The result is returned in variable `result`, which is stored as `[(epsilon, p, d
 The `detect_counterexample` accepts multiple extra arguments to customize the process, check the signature and notes of `detect_counterexample` method to see how to use.
 
 ```python
-def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
-                          event_search_space=None, databases=None, num_input=5,
+def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, databases=None, num_input=(5, 10),
                           event_iterations=100000, detect_iterations=500000, cores=0,
-                          loglevel=logging.INFO):
+                          quiet=False, loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
     :param test_epsilon: The privacy budget to test for, can either be a number or a tuple/list.
     :param default_kwargs: The default arguments the algorithm needs except the first Queries argument.
-    :param event_search_space: The search space for event selector to reduce search time, optional.
     :param databases: The databases to run for detection, optional.
     :param num_input: The length of input to generate, not used if database param is specified.
     :param event_iterations: The iterations for event selector to run, default is 100000.
     :param detect_iterations: The iterations for detector to run, default is 500000.
     :param cores: The cores to utilize, 0 means auto-detection.
+    :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
     :param loglevel: The loglevel for logging package.
     :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
     """
@@ -54,7 +53,7 @@ Then you can generate a figure like the iSVT 4 in our paper.
 ## Customizing the detection
 Our tool is designed to be modular and components are fully decoupled. You can write your own `input generator`/`event selector` and apply them to `hypothesis test`.
 
-In general the detection process is `generate_databases -> select_event -> hypothesis_test`, you can checkout the definition and docstrings of the functions respectively to define your own generator/selector.Basically the `detect_counterexample` function in `statdp.core` package is just shortcut function to take care of the above process for you.
+In general the detection process is `test_epsilon --> generate_databases --((d1, d2, kwargs), ...), epsilon--> select_event --(d1, d2, kwargs, event), epsilon--> hypothesis_test --> (d1, d2, kwargs, event, p-value), epsilon`, you can checkout the definition and docstrings of the functions respectively to define your own generator/selector. Basically the `detect_counterexample` function in `statdp.core` module is just shortcut function to take care of the above process for you.
 
 `hypothesis_test` function can be used universally by all algorithms, but you may need to design your own generator or selector for your own algorithm since our input generator and event selector are designed to work with numerical queries on databases.
 

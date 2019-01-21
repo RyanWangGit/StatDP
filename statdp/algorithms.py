@@ -151,4 +151,4 @@ def iSVT4(queries, epsilon, N, T):
                 break
         else:
             out.append(False)
-    return out.count(False)
+    return out.count(False), out[-1]

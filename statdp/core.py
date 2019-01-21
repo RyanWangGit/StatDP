@@ -31,15 +31,13 @@ from statdp.selectors import select_event
 logger = logging.getLogger(__name__)
 
 
-def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
-                          event_search_space=None, databases=None, num_input=(5, 10),
+def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, databases=None, num_input=(5, 10),
                           event_iterations=100000, detect_iterations=500000, cores=0,
                           quiet=False, loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
     :param test_epsilon: The privacy budget to test for, can either be a number or a tuple/list.
     :param default_kwargs: The default arguments the algorithm needs except the first Queries argument.
-    :param event_search_space: The search space for event selector to reduce search time, optional.
     :param databases: The databases to run for detection, optional.
     :param num_input: The length of input to generate, not used if database param is specified.
     :param event_iterations: The iterations for event selector to run, default is 100000.
@@ -53,10 +51,9 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
     default_kwargs = default_kwargs if default_kwargs else {}
 
     logging.basicConfig(level=loglevel)
-    logger.info('Starting to find counter example on algorithm {} with test epsilon {}'
+    logger.info('Starting to find counterexample on algorithm {} with test epsilon {}'
                 .format(algorithm.__name__, test_epsilon))
-    logger.info('Options -> default_kwargs: {} | event_search_space: {} | databases: {} | cores:{}'
-                .format(default_kwargs, event_search_space, databases, cores))
+    logger.info('Options -> default_kwargs: {} | databases: {} | cores:{}'.format(default_kwargs, databases, cores))
 
     input_list = []
     if databases is not None:
@@ -80,8 +77,8 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None,
     pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
     try:
         for i, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test', desc='Detection'):
-            d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations,
-                                                 search_space=event_search_space, process_pool=pool)
+            d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations, quiet=quiet,
+                                                 process_pool=pool)
             p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations,
                                 report_p2=False, process_pool=pool)
             result.append((epsilon, p, d1, d2, kwargs, event))

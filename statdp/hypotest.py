@@ -73,8 +73,23 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
     #   [x, x, x, ..., x],
     #   [x, x, x, ..., x]
     # ]
-    result_d1 = [np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)]
-    result_d2 = [np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)]
+
+    # get return type by a sample run
+    sample_result = algorithm(d1, **kwargs)
+    if isinstance(sample_result, (int, float)):
+        result_d1 = [np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)),
+                                 dtype=np.float64, count=iterations)]
+        result_d2 = [np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)),
+                                 dtype=np.float64, count=iterations)]
+    elif isinstance(sample_result, (tuple, list)):
+        result_d1 = np.fromiter(itertools.chain.from_iterable(algorithm(d1, **kwargs) for _ in range(iterations)),
+                                dtype=np.float64, count=iterations * len(sample_result))
+        result_d1.shape = len(sample_result), iterations
+        result_d2 = np.fromiter(itertools.chain.from_iterable(algorithm(d2, **kwargs) for _ in range(iterations)),
+                                dtype=np.float64, count=iterations * len(sample_result))
+        result_d2.shape = len(sample_result), iterations
+    else:
+        raise ValueError('Unsupported return type: {}'.format(type(sample_result)))
 
     # get desired search space for each return value
     event_search_space = []

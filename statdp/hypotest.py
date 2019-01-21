@@ -116,7 +116,13 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
 
         logger.debug('search space is set to {}'.format(' × '.join(str(event) for event in event_search_space)))
     else:
-        event_search_space.append(event)
+        # if `event` is given, it should have the corresponding events for each return value
+        if len(event) != len(result_d1):
+            raise ValueError('Given event should have the same dimension as return value.')
+        # here if the event is given, we carefully construct the search space in the following format:
+        # [first_event] × [second_event] × [third_event] × ... × [last_event]
+        # so that when the search begins, only one possible combination can happen which is the given event
+        event_search_space = ((separate_event, ) for separate_event in event)
 
     counts, input_event_pairs = [], []
     for event in itertools.product(*event_search_space):

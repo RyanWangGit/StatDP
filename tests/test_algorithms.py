@@ -40,7 +40,7 @@ def test_sparsevector():
     assert iSVT2([1, 2, 3, 4], float('inf'), 1, 3.5) == 3
     assert iSVT3([1, 2, 3, 4], float('inf'), 1, 1.5) == 3
     assert iSVT3([1, 2, 3, 4], float('inf'), 1, 3.5) == 3
-    assert iSVT4([1, 2, 3, 4], float('inf'), 1, 2) == 2
+    assert iSVT4([1, 2, 3, 4], float('inf'), 1, 2) == (2, 3.0)
 
 
 def test_histogram():

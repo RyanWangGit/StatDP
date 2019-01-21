@@ -55,7 +55,7 @@ Our tool is designed to be modular and components are fully decoupled. You can w
 
 In general the detection process is `test_epsilon --> generate_databases --((d1, d2, kwargs), ...), epsilon--> select_event --(d1, d2, kwargs, event), epsilon--> hypothesis_test --> (d1, d2, kwargs, event, p-value), epsilon`, you can checkout the definition and docstrings of the functions respectively to define your own generator/selector. Basically the `detect_counterexample` function in `statdp.core` module is just shortcut function to take care of the above process for you.
 
-`hypothesis_test` function can be used universally by all algorithms, but you may need to design your own generator or selector for your own algorithm since our input generator and event selector are designed to work with numerical queries on databases.
+`test_statistics` function in `hypotest` module can be used universally by all algorithms (this function is to calculate p-value based on the observed statistics). However, you may need to design your own generator or selector for your own algorithm, since our input generator and event selector are designed to work with numerical queries on databases.
 
 ## Citing this work
 

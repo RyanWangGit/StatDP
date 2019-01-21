@@ -47,12 +47,12 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
     # average p value
     if process_pool is None:
         return np.mean(tuple(_hypergeometric(cx, cy, iterations)
-                             for cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000)))
+                             for cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 500)))
     else:
         # bind cy and iterations to _hypergeometric function and feed different cx into it
         return np.mean(process_pool.map(functools.partial(_hypergeometric, cy=cy, iterations=iterations),
-                                        np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 1000),
-                                        chunksize=int(1000 / mp.cpu_count())))
+                                        np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 500),
+                                        chunksize=int(500 / mp.cpu_count())))
 
 
 def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):

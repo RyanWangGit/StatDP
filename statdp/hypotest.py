@@ -136,7 +136,6 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, repor
     :param process_pool: The process pool to use, run with single process if None
     :return: p values
     """
-    np.random.seed()
     if process_pool is None:
         _, ((cx, cy), *_) = run_algorithm(algorithm, d1, d2, kwargs, event, iterations)
         if report_p2:

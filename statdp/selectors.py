@@ -31,8 +31,8 @@ from statdp.hypotest import test_statistics
 logger = logging.getLogger(__name__)
 
 
-def _evaluate_input(input_triplet, algorithm, iterations, search_space):
     np.random.seed()
+def _evaluate_input(input_triplet, algorithm, iterations):
     d1, d2, kwargs = input_triplet
     result_d1 = np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)
     result_d2 = np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)), dtype=np.float64, count=iterations)
@@ -71,12 +71,12 @@ def _evaluate_input(input_triplet, algorithm, iterations, search_space):
 
 
 def select_event(algorithm, input_list, epsilon, iterations=100000, search_space=None, process_pool=None, quiet=False):
+def select_event(algorithm, input_list, epsilon, iterations=100000, process_pool=None, quiet=False):
     """
     :param algorithm: The algorithm to run on
     :param input_list: list of (d1, d2, kwargs) input pair for the algorithm to run
     :param epsilon: Test epsilon value
     :param iterations: The iterations to run algorithms
-    :param search_space: The result search space to run on, auto-determine based on return type if None
     :param process_pool: The process pool to use, run with single process if None
     :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
     :return: (d1, d2, kwargs, event) pair which has minimum p value from search space.
@@ -85,7 +85,7 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, search_space
 
     # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
     partial_evaluate_input = functools.partial(_evaluate_input,
-                                               algorithm=algorithm, iterations=iterations, search_space=search_space)
+                                               algorithm=algorithm, iterations=iterations)
 
     results = process_pool.imap_unordered(partial_evaluate_input, input_list) if process_pool else \
         map(partial_evaluate_input, input_list)

@@ -112,7 +112,7 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
 
                 event_search_space.append(
                     tuple((-float('inf'), alpha) for alpha in
-                          np.linspace(combined_result[search_min], combined_result[search_max], num=25)))
+                          np.linspace(combined_result[search_min], combined_result[search_max], num=10)))
 
         logger.debug('search space is set to {}'.format(' × '.join(str(event) for event in event_search_space)))
     else:

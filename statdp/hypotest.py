@@ -79,7 +79,7 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
 
     # get return type by a sample run
     sample_result = algorithm(d1, **kwargs)
-    if isinstance(sample_result, (int, float)):
+    if np.issubdtype(type(sample_result), np.number):
         result_d1 = [np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)),
                                  dtype=np.float64, count=iterations)]
         result_d2 = [np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)),

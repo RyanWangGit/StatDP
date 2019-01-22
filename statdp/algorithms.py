@@ -24,11 +24,6 @@ from itertools import zip_longest
 import numpy as np
 
 
-def _argmax(iterable):
-    # implement numpy.argmax in pure python, faster if iterable is plain python list
-    return max(enumerate(iterable), key=lambda t: t[1])[0]
-
-
 def _hamming_distance(result1, result2):
     # implement hamming distance in pure python, faster than np.count_zeros if inputs are plain python list
     return sum(res1 != res2 for res1, res2 in zip_longest(result1, result2))
@@ -36,36 +31,34 @@ def _hamming_distance(result1, result2):
 
 def noisy_max_v1a(queries, epsilon):
     # find the largest noisy element and return its index
-    return _argmax(query + np.random.laplace(scale=2.0 / epsilon) for query in queries)
+    return (np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=2.0 / epsilon, size=len(queries))).argmax()
 
 
 def noisy_max_v1b(queries, epsilon):
-    return max(query + np.random.laplace(scale=2.0 / epsilon) for query in queries)
+    return (np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=2.0 / epsilon, size=len(queries))).max()
 
 
 def noisy_max_v2a(queries, epsilon):
-    return _argmax(query + np.random.exponential(scale=2.0 / epsilon) for query in queries)
+    return (np.asarray(queries, dtype=np.float64) + np.random.exponential(scale=2.0 / epsilon, size=len(queries))).argmax()
 
 
 def noisy_max_v2b(queries, epsilon):
-    return max(query + np.random.exponential(scale=2.0 / epsilon) for query in queries)
+    return (np.asarray(queries, dtype=np.float64) + np.random.exponential(scale=2.0 / epsilon, size=len(queries))).max()
 
 
 def histogram_eps(queries, epsilon):
-    noisy_array = tuple(query + np.random.laplace(scale=epsilon) for query in queries)
+    noisy_array = np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=epsilon, size=len(queries))
     return noisy_array[0]
 
 
 def histogram(queries, epsilon):
-    noisy_array = tuple(query + np.random.laplace(scale=1.0 / epsilon) for query in queries)
+    noisy_array = np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=1.0 / epsilon, size=len(queries))
     return noisy_array[0]
 
 
 def laplace_mechanism(queries, epsilon):
-    noisy_array = tuple(query + np.random.laplace(scale=len(queries)/epsilon) for query in queries)
-    lower = 1 - 0.27
-    upper = 1 + 0.75
-    return sum(1 for element in noisy_array if lower <= element <= upper)
+    noisy_array = np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=len(queries) / epsilon, size=len(queries))
+    return np.count_nonzero(np.logical_and(noisy_array > 0.73, noisy_array < 1.75))
 
 
 def SVT(queries, epsilon, N, T):

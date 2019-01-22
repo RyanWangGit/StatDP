@@ -46,13 +46,15 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
     """
     # average p value
     if process_pool is None:
-        return np.mean(tuple(_hypergeometric(cx, cy, iterations)
-                             for cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 500)))
+        return np.fromiter((_hypergeometric(cx, cy, iterations)
+                            for cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 500)),
+                           dtype=np.float64, count=500).mean()
     else:
         # bind cy and iterations to _hypergeometric function and feed different cx into it
-        return np.mean(process_pool.map(functools.partial(_hypergeometric, cy=cy, iterations=iterations),
-                                        np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 500),
-                                        chunksize=int(500 / mp.cpu_count())))
+        return np.fromiter(process_pool.imap_unordered(functools.partial(_hypergeometric, cy=cy, iterations=iterations),
+                                                       np.random.binomial(cx, 1.0 / (np.exp(epsilon)), 500),
+                                                       chunksize=int(500 / mp.cpu_count())),
+                           dtype=np.float64, count=500).mean()
 
 
 def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):

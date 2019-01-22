@@ -158,7 +158,7 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, repor
     :return: p values
     """
     if process_pool is None:
-        _, ((cx, cy), *_) = run_algorithm(algorithm, d1, d2, kwargs, event, iterations)
+        ((cx, cy), *_), _ = run_algorithm(algorithm, d1, d2, kwargs, event, iterations)
         if report_p2:
             return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
         else:

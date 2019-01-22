@@ -31,33 +31,29 @@ def _hamming_distance(result1, result2):
 
 def noisy_max_v1a(queries, epsilon):
     # find the largest noisy element and return its index
-    return (np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=2.0 / epsilon, size=len(queries)))\
-        .argmax().item()
+    return (np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=2.0 / epsilon, size=len(queries))).argmax()
 
 
 def noisy_max_v1b(queries, epsilon):
-    return (np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=2.0 / epsilon, size=len(queries)))\
-        .max().item()
+    return (np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=2.0 / epsilon, size=len(queries))).max()
 
 
 def noisy_max_v2a(queries, epsilon):
-    return (np.asarray(queries, dtype=np.float64) + np.random.exponential(scale=2.0 / epsilon, size=len(queries)))\
-        .argmax().item()
+    return (np.asarray(queries, dtype=np.float64) + np.random.exponential(scale=2.0 / epsilon, size=len(queries))).argmax()
 
 
 def noisy_max_v2b(queries, epsilon):
-    return (np.asarray(queries, dtype=np.float64) + np.random.exponential(scale=2.0 / epsilon, size=len(queries)))\
-        .max().item()
+    return (np.asarray(queries, dtype=np.float64) + np.random.exponential(scale=2.0 / epsilon, size=len(queries))).max()
 
 
 def histogram_eps(queries, epsilon):
     noisy_array = np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=epsilon, size=len(queries))
-    return noisy_array[0].item()
+    return noisy_array[0]
 
 
 def histogram(queries, epsilon):
     noisy_array = np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=1.0 / epsilon, size=len(queries))
-    return noisy_array[0].item()
+    return noisy_array[0]
 
 
 def laplace_mechanism(queries, epsilon):

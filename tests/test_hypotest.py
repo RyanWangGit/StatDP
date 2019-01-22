@@ -43,7 +43,7 @@ def test_core_multi():
     pool = mp.Pool(mp.cpu_count())
     D1 = [0] + [2 for _ in range(4)]
     D2 = [1 for _ in range(5)]
-    event = 0
+    event = (0, )
     p1, p2 = hypothesis_test(noisy_max_v1a, D1, D2, {'epsilon': 0.5}, event, 0.25, 100000, process_pool=pool)
     assert 0 <= p1 <= 0.05
     assert 0.95 <= p2 <= 1.0

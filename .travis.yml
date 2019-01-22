@@ -24,7 +24,7 @@ install:
 
 script:
   # test other function except test_core.py which takes a long time
-  - if [ "$ALGORITHM" = "none" ]; then travis_wait 120 tox -- -k 'not test_core'; fi
+  - if [ "$ALGORITHM" = "none" ]; then travis_wait 120 tox -- -k 'not test_core.py'; fi
   # split the algorithm tests into different jobs
   - if [ "$ALGORITHM" != "none" ]; then travis_wait 120 tox -- -k "test_$ALGORITHM"; fi
 

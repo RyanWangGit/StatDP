@@ -132,7 +132,7 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
         cx_check, cy_check = np.full(iterations, True, dtype=np.bool), np.full(iterations, True, dtype=np.bool)
         # check for all events in the return values
         for row in range(len(result_d1)):
-            if isinstance(event[row], (int, float)):
+            if np.issubdtype(type(event[row]), np.number):
                 cx_check = np.logical_and(cx_check, result_d1[row] == event[row])
                 cy_check = np.logical_and(cy_check, result_d2[row] == event[row])
             else:

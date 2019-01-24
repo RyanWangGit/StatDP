@@ -80,17 +80,23 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
     # get return type by a sample run
     sample_result = algorithm(d1, **kwargs)
     if np.issubdtype(type(sample_result), np.number):
-        result_d1 = [np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)),
-                                 dtype=np.float64, count=iterations)]
-        result_d2 = [np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)),
-                                 dtype=np.float64, count=iterations)]
+        result_d1 = (np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)),
+                                 dtype=type(sample_result), count=iterations), )
+        result_d2 = (np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)),
+                                 dtype=type(sample_result), count=iterations), )
     elif isinstance(sample_result, (tuple, list)):
-        result_d1 = np.fromiter(itertools.chain.from_iterable(algorithm(d1, **kwargs) for _ in range(iterations)),
-                                dtype=np.float64, count=iterations * len(sample_result))
-        result_d1.shape = len(sample_result), iterations
-        result_d2 = np.fromiter(itertools.chain.from_iterable(algorithm(d2, **kwargs) for _ in range(iterations)),
-                                dtype=np.float64, count=iterations * len(sample_result))
-        result_d2.shape = len(sample_result), iterations
+        # run the algorithm and store the corresponding return value into vanilla python list first
+        result_d1, result_d2 = tuple([] for _ in range(len(sample_result))),  tuple([] for _ in range(len(sample_result)))
+        for _ in range(iterations):
+            out_1 = algorithm(d1, **kwargs)
+            out_2 = algorithm(d2, **kwargs)
+            for row, (value_1, value_2) in enumerate(zip(out_1, out_2)):
+                result_d1[row].append(value_1)
+                result_d2[row].append(value_2)
+
+        # convert the python list to numpy array
+        result_d1 = tuple(np.asarray(row) for row in result_d1)
+        result_d2 = tuple(np.asarray(row) for row in result_d2)
     else:
         raise ValueError('Unsupported return type: {}'.format(type(sample_result)))
 

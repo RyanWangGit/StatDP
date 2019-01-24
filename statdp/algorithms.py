@@ -35,6 +35,7 @@ def noisy_max_v1a(queries, epsilon):
 
 
 def noisy_max_v1b(queries, epsilon):
+    # INCORRECT: returning maximum value instead of the index
     return (np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=2.0 / epsilon, size=len(queries))).max()
 
 
@@ -43,10 +44,12 @@ def noisy_max_v2a(queries, epsilon):
 
 
 def noisy_max_v2b(queries, epsilon):
+    # INCORRECT: returning the maximum value instead of the index
     return (np.asarray(queries, dtype=np.float64) + np.random.exponential(scale=2.0 / epsilon, size=len(queries))).max()
 
 
 def histogram_eps(queries, epsilon):
+    # INCORRECT: using (epsilon) noise instead of (1 / epsilon)
     noisy_array = np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=epsilon, size=len(queries))
     return noisy_array[0]
 
@@ -84,6 +87,7 @@ def iSVT1(queries, epsilon, N, T):
     eta1 = np.random.laplace(scale=2.0 * delta / epsilon)
     noisy_T = T + eta1
     for query in queries:
+        # INCORRECT: no noise added to the queries
         eta2 = 0
         if (query + eta2) >= noisy_T:
             out.append(True)
@@ -100,9 +104,11 @@ def iSVT2(queries, epsilon, N, T):
     eta1 = np.random.laplace(scale=2.0 * delta / epsilon)
     noisy_T = T + eta1
     for query in queries:
+        # INCORRECT: noise added to queries doesn't scale with N
         eta2 = np.random.laplace(scale=2.0 * delta / epsilon)
         if (query + eta2) >= noisy_T:
             out.append(True)
+            # INCORRECT: no bounds on the True's to output
         else:
             out.append(False)
 
@@ -117,6 +123,7 @@ def iSVT3(queries, epsilon, N, T):
     noisy_T = T + eta1
     c1 = 0
     for query in queries:
+        # INCORRECT: noise added to queries doesn't scale with N
         eta2 = np.random.laplace(scale=(4.0 * delta) / (3.0 * epsilon))
         if query + eta2 > noisy_T:
             out.append(True)
@@ -138,6 +145,7 @@ def iSVT4(queries, epsilon, N, T):
     for query in queries:
         eta2 = np.random.laplace(scale=2.0 * N / epsilon)
         if query + eta2 > noisy_T:
+            # INCORRECT: Output the noisy query instead of True
             out.append(query + eta2)
             c1 += 1
             if c1 >= N:

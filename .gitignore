@@ -38,8 +38,6 @@ z3/
 
 # Result data file
 result_*.json
-debug.txt
-runo.py
 
 # Coverage reports
 .coverage.*

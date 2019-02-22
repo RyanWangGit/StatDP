@@ -62,23 +62,14 @@ In general the detection process is `test_epsilon --> generate_databases --((d1,
 You are encouraged to cite the following [paper](https://arxiv.org/pdf/1805.10277.pdf) if you use this tool for academic research:
 
 ```bibtex
-@inproceedings{Ding:2018:DVD:3243734.3243818,
- author = {Ding, Zeyu and Wang, Yuxin and Wang, Guanhong and Zhang, Danfeng and Kifer, Daniel},
- title = {Detecting Violations of Differential Privacy},
- booktitle = {Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security},
- series = {CCS '18},
- year = {2018},
- isbn = {978-1-4503-5693-0},
- location = {Toronto, Canada},
- pages = {475--489},
- numpages = {15},
- url = {http://doi.acm.org/10.1145/3243734.3243818},
- doi = {10.1145/3243734.3243818},
- acmid = {3243818},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {counterexample detection, differential privacy, statistical testing},
-} 
+@inproceedings{ding2018detecting,
+  title={Detecting Violations of Differential Privacy},
+  author={Ding, Zeyu and Wang, Yuxin and Wang, Guanhong and Zhang, Danfeng and Kifer, Daniel},
+  booktitle={Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security},
+  pages={475--489},
+  year={2018},
+  organization={ACM}
+}
 ```
 
 ## License

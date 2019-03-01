@@ -41,7 +41,7 @@ jobs:
         - git init
         - git add .
         - git commit -m "Release of StatDP."
-        - git remote set-url origin https://ryanwanggit:$GITHUB_TOKEN@github.com/cmla-psu/statdp.git
+        - git remote add origin https://ryanwanggit:$GITHUB_TOKEN@github.com/cmla-psu/statdp.git
         - git push -u --force origin master
 
 notifications:

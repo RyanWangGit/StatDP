@@ -32,5 +32,17 @@ script:
 after_success:
   - pip install codecov && codecov
 
+jobs:
+  include:
+    - stage: deploy
+      script:
+        # push to cmla-psu/statdp repository
+        - rm -rf .git
+        - git init
+        - git add .
+        - git commit -m "Release of StatDP."
+        - git remote set-url origin https://ryanwanggit:$GITHUB_TOKEN@github.com/cmla-psu/statdp.git
+        - git push -u --force origin master
+
 notifications:
   email: false

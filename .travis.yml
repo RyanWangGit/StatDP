@@ -37,14 +37,16 @@ jobs:
     - stage: deploy
       script:
         # push to cmla-psu/statdp repository
-        - rm -rf .git
-        - git init
-        - git config user.name "Ryan Wang"
-        - git config user.email "ryanwang.cs@gmail.com"
-        - git add .
-        - git commit -m "Release of StatDP."
-        - git remote add origin https://ryanwanggit:$GITHUB_TOKEN@github.com/cmla-psu/statdp.git
-        - git push -u --force origin master
+        - if [[ "$TRAVIS_BRANCH" = "master" && $TRAVIS_PULL_REQUEST = "false" ]]; then
+            rm -rf .git;
+            git init;
+            git config user.name "Yuxin (Ryan) Wang";
+            git config user.email "ryanwang.cs@gmail.com";
+            git add .;
+            git commit -m "Release of StatDP.";
+            git remote add origin https://ryanwanggit:$GITHUB_TOKEN@github.com/cmla-psu/statdp.git;
+            git push -u --force origin master;
+          fi
 
 notifications:
   email: false

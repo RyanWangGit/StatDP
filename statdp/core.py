@@ -69,10 +69,6 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
 
     # convert int/float or iterable into tuple (so that it has length information)
     test_epsilon = (test_epsilon, ) if isinstance(test_epsilon, (int, float)) else test_epsilon
-    if isinstance(test_epsilon, (int, float)):
-        test_epsilon = (test_epsilon, )
-    elif not isinstance(test_epsilon, (tuple, list)):
-        test_epsilon = tuple(test_epsilon)
 
     pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
     try:

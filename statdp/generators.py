@@ -21,8 +21,18 @@
 # SOFTWARE.
 import logging
 import math
+import enum
 
 logger = logging.getLogger(__name__)
+
+
+class Sensitivity(enum.Enum):
+    ALL_DIFFER = enum.auto()
+    ONE_DIFFER = enum.auto()
+
+
+ALL_DIFFER = Sensitivity.ALL_DIFFER
+ONE_DIFFER = Sensitivity.ONE_DIFFER
 
 
 def generate_arguments(algorithm, d1, d2, default_kwargs):
@@ -41,27 +51,35 @@ def generate_arguments(algorithm, d1, d2, default_kwargs):
     return default_kwargs
 
 
-def generate_databases(algorithm, num_input, default_kwargs):
+def generate_databases(algorithm, num_input, default_kwargs, sensitivity=ALL_DIFFER):
     """
     :param algorithm: The algorithm to test for.
     :param num_input: The number of inputs to be generated
     :param default_kwargs: The default arguments that are given or have a default value.
+    :param sensitivity: The sensitivity setting, all queries can differ by one or just one query can differ by one.
     :return: List of (d1, d2, args) with length num_input
     """
+    if isinstance(sensitivity, Sensitivity):
+        raise ValueError('sensitivity must be statdp.ALL_DIFFER or statdp.ONE_DIFFER')
 
     # assume maximum distance is 1
     d1 = [1 for _ in range(num_input)]
-    candidates = (
+    candidates = [
         (d1, [0] + [1 for _ in range(num_input - 1)]),  # one below
         (d1, [2] + [1 for _ in range(num_input - 1)]),  # one above
         (d1, [2] + [0 for _ in range(num_input - 1)]),  # one above rest below
         (d1, [0] + [2 for _ in range(num_input - 1)]),  # one below rest above
-        (d1, [2 for _ in range(int(num_input / 2))] + [0 for _ in range(num_input - int(num_input / 2))]),  # half half
-        (d1, [2 for _ in range(num_input)]),  # all above
-        (d1, [0 for _ in range(num_input)]),  # all below
-        # x shape
-        ([1 for _ in range(int(math.floor(num_input / 2.0)))] + [0 for _ in range(int(math.ceil(num_input / 2.0)))],
-         [0 for _ in range(int(math.floor(num_input / 2.0)))] + [1 for _ in range(int(math.ceil(num_input / 2.0)))])
-    )
+    ]
+
+    if sensitivity == ALL_DIFFER:
+        candidates.extend([
+            # half half
+            (d1, [2 for _ in range(int(num_input / 2))] + [0 for _ in range(num_input - int(num_input / 2))]),
+            (d1, [2 for _ in range(num_input)]),  # all above
+            (d1, [0 for _ in range(num_input)]),  # all below
+            # x shape
+            ([1 for _ in range(int(math.floor(num_input / 2.0)))] + [0 for _ in range(int(math.ceil(num_input / 2.0)))],
+             [0 for _ in range(int(math.floor(num_input / 2.0)))] + [1 for _ in range(int(math.ceil(num_input / 2.0)))])
+        ])
 
     return tuple((d1, d2, generate_arguments(algorithm, d1, d2, default_kwargs)) for d1, d2 in candidates)

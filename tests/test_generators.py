@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from statdp.algorithms import noisy_max_v1a
-from statdp.generators import generate_arguments, generate_databases
+from statdp.algorithms import noisy_max_v1a, histogram
+from statdp.generators import generate_arguments, generate_databases, ONE_DIFFER
 
 
 def test_generate_databases():
@@ -32,6 +32,17 @@ def test_generate_databases():
         assert isinstance(d1, (tuple, list)) and isinstance(d2, (tuple, list))
         assert len(d1) == 5 and len(d2) == 5
         assert isinstance(args, (tuple, list, dict))
+
+    # test ONE_DIFFER
+    input_list = generate_databases(histogram, 5, {'epsilon': 0.5}, sensitivity=ONE_DIFFER)
+    assert isinstance(input_list, (list, tuple)) and len(input_list) >= 1
+    for input_ in input_list:
+        assert isinstance(input_, (list, tuple)) and len(input_) == 3
+        d1, d2, _ = input_
+        assert isinstance(d1, (tuple, list)) and isinstance(d2, (tuple, list))
+        assert len(d1) == 5 and len(d2) == 5
+        unequal_count = sum(element1 != element2 for element1, element2 in zip(d1, d2))
+        assert unequal_count == 1
 
 
 def test_generate_arguments():

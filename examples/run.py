@@ -24,7 +24,7 @@ import json
 import coloredlogs
 import logging
 import matplotlib
-from statdp import detect_counterexample
+from statdp import detect_counterexample, ONE_DIFFER, ALL_DIFFER
 from statdp.algorithms import *
 
 # switch matplotlib backend for running in background
@@ -95,7 +95,9 @@ def main():
         results = {}
         for privacy_budget in (0.2, 0.7, 1.5):
             kwargs['epsilon'] = privacy_budget
-            results[privacy_budget] = detect_counterexample(algorithm, tuple(x / 10.0 for x in range(1, 34, 1)), kwargs)
+            sensitivity = ONE_DIFFER if 'histogram' in algorithm.__name__ else ALL_DIFFER
+            results[privacy_budget] = detect_counterexample(
+                algorithm, tuple(x / 10.0 for x in range(1, 34, 1)), kwargs, sensitivity=sensitivity)
 
         plot_result(r'Test $\epsilon$', 'P Value',
                     results, algorithm.__name__.replace('_', ' ').title(), algorithm.__name__ + '.pdf')

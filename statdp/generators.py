@@ -67,12 +67,12 @@ def generate_databases(algorithm, num_input, default_kwargs, sensitivity=ALL_DIF
     candidates = [
         (d1, [0] + [1 for _ in range(num_input - 1)]),  # one below
         (d1, [2] + [1 for _ in range(num_input - 1)]),  # one above
-        (d1, [2] + [0 for _ in range(num_input - 1)]),  # one above rest below
-        (d1, [0] + [2 for _ in range(num_input - 1)]),  # one below rest above
     ]
 
     if sensitivity == ALL_DIFFER:
         candidates.extend([
+            (d1, [2] + [0 for _ in range(num_input - 1)]),  # one above rest below
+            (d1, [0] + [2 for _ in range(num_input - 1)]),  # one below rest above
             # half half
             (d1, [2 for _ in range(int(num_input / 2))] + [0 for _ in range(num_input - int(num_input / 2))]),
             (d1, [2 for _ in range(num_input)]),  # all above

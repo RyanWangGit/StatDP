@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='StatDP',
+    name='statdp',
     version='0.1',
     description='Counterexample Detection Using Statistical Methods for Incorrect Differential-Privacy Algorithms.',
     long_description=long_description,

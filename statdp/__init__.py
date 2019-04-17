@@ -20,6 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from statdp.hypotest import hypothesis_test
-from statdp.generators import generate_arguments, generate_databases
+from statdp.generators import generate_arguments, generate_databases, ALL_DIFFER, ONE_DIFFER
 from statdp.selectors import select_event
 from statdp.core import detect_counterexample

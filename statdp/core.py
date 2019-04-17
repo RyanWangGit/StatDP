@@ -24,7 +24,7 @@ import multiprocessing as mp
 
 import tqdm
 
-from statdp.generators import generate_arguments, generate_databases
+from statdp.generators import generate_arguments, generate_databases, ALL_DIFFER, ONE_DIFFER
 from statdp.hypotest import hypothesis_test
 from statdp.selectors import select_event
 
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, databases=None, num_input=(5, 10),
-                          event_iterations=100000, detect_iterations=500000, cores=0,
+                          event_iterations=100000, detect_iterations=500000, cores=0, sensitivity=ALL_DIFFER,
                           quiet=False, loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
@@ -43,6 +43,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     :param event_iterations: The iterations for event selector to run, default is 100000.
     :param detect_iterations: The iterations for detector to run, default is 500000.
     :param cores: The cores to utilize, 0 means auto-detection.
+    :param sensitivity: The sensitivity setting, all queries can differ by one or just one query can differ by one.
     :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
     :param loglevel: The loglevel for logging package.
     :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
@@ -63,7 +64,8 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     else:
         num_input = (int(num_input), ) if isinstance(num_input, (int, float)) else num_input
         for num in num_input:
-            input_list.extend(generate_databases(algorithm, num, default_kwargs=default_kwargs))
+            input_list.extend(generate_databases(algorithm, num,
+                                                 default_kwargs=default_kwargs, sensitivity=sensitivity))
 
     result = []
 

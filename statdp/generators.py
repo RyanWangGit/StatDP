@@ -27,8 +27,8 @@ logger = logging.getLogger(__name__)
 
 
 class Sensitivity(enum.Enum):
-    ALL_DIFFER = enum.auto()
-    ONE_DIFFER = enum.auto()
+    ALL_DIFFER = 0
+    ONE_DIFFER = 1
 
 
 ALL_DIFFER = Sensitivity.ALL_DIFFER

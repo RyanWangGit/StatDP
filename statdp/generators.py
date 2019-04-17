@@ -59,7 +59,7 @@ def generate_databases(algorithm, num_input, default_kwargs, sensitivity=ALL_DIF
     :param sensitivity: The sensitivity setting, all queries can differ by one or just one query can differ by one.
     :return: List of (d1, d2, args) with length num_input
     """
-    if isinstance(sensitivity, Sensitivity):
+    if not isinstance(sensitivity, Sensitivity):
         raise ValueError('sensitivity must be statdp.ALL_DIFFER or statdp.ONE_DIFFER')
 
     # assume maximum distance is 1

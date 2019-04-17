@@ -42,6 +42,20 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     """
 ```
 
+## Install
+We do provide a docker container for experiment, use `docker pull cmlapsu/statdp` to pull the container with anaconda built in.  However, for the best performance we recommend install `statdp` in a `conda` virtual environment (or if you prefer `venv`):
+
+```bash
+# we use python 3.7, but 3.5 and above should work fine
+conda create -n statdp anaconda python=3.7
+conda activate statdp
+# install dependencies from conda for best performance
+conda install numpy scipy matplotlib sympy tqdm coloredlogs pip
+# install the remaining non-conda dependencies and statdp 
+pip install .
+```
+Then you can run `examples/benchmark.py` to run the experiments we conducted in the paper.
+
 ## Visualizing the results
 A nice python library `matplotlib` is recommended for visualizing your result. 
 

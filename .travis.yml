@@ -35,9 +35,18 @@ after_success:
 jobs:
   include:
     - stage: deploy
+      services:
+        - docker
       script:
+        # test docker build
+        - docker build . -t cmlapsu/statdp
+        - docker run -it cmlapsu/statdp python -c "import statdp"
+
+      after_success:
         # push to cmla-psu/statdp repository
         - if [[ "$TRAVIS_BRANCH" = "master" && $TRAVIS_PULL_REQUEST = "false" ]]; then
+            echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin;
+            docker push cmlapsu/shadowdp:latest;
             rm -rf .git;
             git init;
             git config user.name "Yuxin (Ryan) Wang";

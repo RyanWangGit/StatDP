@@ -30,7 +30,7 @@ from statdp.algorithms import *
 # switch matplotlib backend for running in background
 matplotlib.use('agg')
 
-coloredlogs.install('DEBUG', fmt='%(asctime)s [0x%(process)x] %(levelname)s %(message)s')
+coloredlogs.install('INFO', fmt='%(asctime)s [0x%(process)x] %(levelname)s %(message)s')
 logger = logging.getLogger(__name__)
 
 

@@ -46,7 +46,7 @@ jobs:
         # push to cmla-psu/statdp repository
         - if [[ "$TRAVIS_BRANCH" = "master" && $TRAVIS_PULL_REQUEST = "false" ]]; then
             echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin;
-            docker push cmlapsu/shadowdp:latest;
+            docker push cmlapsu/statdp:latest;
             rm -rf .git;
             git init;
             git config user.name "Yuxin (Ryan) Wang";

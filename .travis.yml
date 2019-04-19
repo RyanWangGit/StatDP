@@ -6,56 +6,49 @@ python:
   - "3.6"
   - "3.7"
 
-env:
-  - ALGORITHM=none
-  - ALGORITHM=noisy_max_v1a
-  - ALGORITHM=noisy_max_v1b
-  - ALGORITHM=noisy_max_v2a
-  - ALGORITHM=noisy_max_v2b
-  - ALGORITHM=SVT
-  - ALGORITHM=iSVT1
-  - ALGORITHM=iSVT2
-  - ALGORITHM=iSVT3
-  - ALGORITHM=iSVT4
-
 cache: pip
 
 install:
   - pip install tox-travis
 
 script:
-  # test other function except test_core.py which takes a long time
-  - if [ "$ALGORITHM" = "none" ]; then travis_wait 120 tox -- -k 'not test_core.py'; fi
-  # split the algorithm tests into different jobs
-  - if [ "$ALGORITHM" != "none" ]; then travis_wait 120 tox -- -k "test_$ALGORITHM"; fi
+  - travis_wait 120 tox
 
 after_success:
   - pip install codecov && codecov
 
 jobs:
   include:
-    - stage: deploy
+    - stage: "Deploy - Docker Hub"
+      if: branch = master AND type != pull_request
+      language: generic
+      before_install: skip
+      install: skip
       services:
         - docker
       script:
         # test docker build
         - docker build . -t cmlapsu/statdp
         - docker run -it cmlapsu/statdp python -c "import statdp"
-
       after_success:
-        # push to cmla-psu/statdp repository
-        - if [[ "$TRAVIS_BRANCH" = "master" && $TRAVIS_PULL_REQUEST = "false" ]]; then
-            echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin;
-            docker push cmlapsu/statdp:latest;
-            rm -rf .git;
-            git init;
-            git config user.name "Yuxin (Ryan) Wang";
-            git config user.email "ryanwang.cs@gmail.com";
-            git add .;
-            git commit -m "Release of StatDP.";
-            git remote add origin https://ryanwanggit:$GITHUB_TOKEN@github.com/cmla-psu/statdp.git;
-            git push -u --force origin master;
-          fi
+        - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+        - docker push cmlapsu/shadowdp:latest
+
+    - stage: "Deploy - Github"
+      if: branch = master AND type != pull_request
+      language: generic
+      before_install: skip
+      install: skip
+      # cannot use deploy: pages since it does not support custom commit message yet
+      script:
+        - rm -rf .git
+        - git init
+        - git config user.name "Yuxin (Ryan) Wang"
+        - git config user.email "ryanwang.cs@gmail.com"
+        - git add .
+        - git commit -m "Release of StatDP."
+        - git remote add origin https://ryanwanggit:$GITHUB_TOKEN@github.com/cmla-psu/statdp.git
+        - git push -u --force origin master
 
 notifications:
   email: false

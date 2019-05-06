@@ -43,7 +43,9 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
 ```
 
 ## Install
-We do provide a docker container for experiment, use `docker pull cmlapsu/statdp` to pull the container with anaconda built in.  However, for the best performance we recommend installing `statdp` in a `conda` virtual environment (or `venv` if you prefer, the setup is similar):
+We do provide a docker container for experiment, use `docker pull cmlapsu/statdp` to pull the container with anaconda built in, then run `docker run --rm --it cmlapsu/statdp`. 
+
+However, for the best performance we recommend installing `statdp` in a `conda` virtual environment (or `venv` if you prefer, the setup is similar):
 
 ```bash
 # we use python 3.7, but 3.5 and above should work fine

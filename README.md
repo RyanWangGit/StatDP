@@ -1,5 +1,5 @@
 # StatDP 
-[![Build Status](https://travis-ci.com/RyanWangGit/statdp.svg?branch=master)](https://travis-ci.com/RyanWangGit/statdp) [![Build status](https://ci.appveyor.com/api/projects/status/b6ul9tami06i2yge/branch/master?svg=true)](https://ci.appveyor.com/project/RyanWangGit/statdp/branch/master)  [![codecov](https://codecov.io/gh/RyanWangGit/statdp/branch/master/graph/badge.svg)](https://codecov.io/gh/RyanWangGit/statdp)
+[![Build Status](https://travis-ci.com/yxwangcs/statdp.svg?branch=master)](https://travis-ci.com/yxwangcs/statdp) [![Build status](https://ci.appveyor.com/api/projects/status/b6ul9tami06i2yge?svg=true)](https://ci.appveyor.com/project/yxwangcs/statdp/branch/master)  [![codecov](https://codecov.io/gh/yxwangcs/statdp/branch/master/graph/badge.svg)](https://codecov.io/gh/yxwangcs/statdp)
 
 Statistical Counterexample Detector for Differential Privacy.
 
@@ -64,7 +64,7 @@ A nice python library `matplotlib` is recommended for visualizing your result.
 There's a python code snippet at `/examples/benchmark.`(`plot_result` method) to show an example of plotting the results.
 
 Then you can generate a figure like the iSVT 4 in our paper.
-![iSVT4](https://raw.githubusercontent.com/RyanWangGit/StatDP/master/examples/iSVT4.svg?sanitize=true)
+![iSVT4](https://raw.githubusercontent.com/yxwangcs/StatDP/master/examples/iSVT4.svg?sanitize=true)
 
 ## Customizing the detection
 Our tool is designed to be modular and components are fully decoupled. You can write your own `input generator`/`event selector` and apply them to `hypothesis test`.
@@ -89,4 +89,4 @@ You are encouraged to cite the following [paper](https://arxiv.org/pdf/1805.1027
 ```
 
 ## License
-[MIT](https://github.com/RyanWangGit/StatDP/blob/master/LICENSE).
+[MIT](https://github.com/yxwangcs/statdp/blob/master/LICENSE).

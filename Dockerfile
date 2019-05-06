@@ -30,6 +30,5 @@ RUN conda install --yes numpy scipy matplotlib sympy tqdm coloredlogs pip
 # install the remaining non-conda dependencies and statdp
 RUN pip install .
 
-# test run
-CMD ["python", "-c", "import statdp"]
+# run bash
 CMD ["bash"]

@@ -31,4 +31,4 @@ RUN conda install --yes numpy scipy matplotlib sympy tqdm coloredlogs pip
 RUN pip install .
 
 # run bash
-CMD ["bash"]
+CMD ["/bin/bash"]

@@ -30,7 +30,8 @@ RUN conda install --yes numpy scipy matplotlib sympy tqdm coloredlogs pip
 # install the remaining non-conda dependencies and statdp
 RUN pip install .
 
-ENTRYPOINT /
+# remove ENTRYPOINT from parent image
+ENTRYPOINT []
 
 # run bash
 CMD ["/bin/bash"]

@@ -26,7 +26,7 @@ COPY . /statdp
 WORKDIR /statdp
 
 # install dependencies from conda for best performance
-RUN conda install --yes numpy scipy matplotlib sympy tqdm coloredlogs pip && conda clean
+RUN conda install --yes numpy scipy matplotlib sympy tqdm coloredlogs pip && conda clean --all
 # install the remaining non-conda dependencies and statdp
 RUN pip install .
 

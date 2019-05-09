@@ -27,7 +27,8 @@ from statdp.algorithms import (SVT, iSVT1, iSVT2, iSVT3, iSVT4, noisy_max_v1a,
                                noisy_max_v1b, noisy_max_v2a, noisy_max_v2b)
 from statdp.core import detect_counterexample
 
-
+# due to the statistical and randomized nature, use flaky to allow maximum 5 runs of failures.
+@flaky(max_runs=5)
 def assert_correct_algorithm(algorithm, kwargs=None, num_input=5):
     if kwargs and isinstance(kwargs, dict):
         kwargs.update({'epsilon': 0.7})
@@ -43,6 +44,7 @@ def assert_correct_algorithm(algorithm, kwargs=None, num_input=5):
     assert p >= 0.95, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
 
 
+@flaky(max_runs=5)
 def assert_incorrect_algorithm(algorithm, kwargs=None, num_input=5):
     if kwargs and isinstance(kwargs, dict):
         kwargs.update({'epsilon': 0.7})
@@ -69,8 +71,7 @@ def test_noisy_max_v2a():
 def test_noisy_max_v2b():
     assert_incorrect_algorithm(noisy_max_v2b)
 
-# SVT sometimes may fail, retry 5 times claim failure
-@flaky(max_runs=5)
+
 def test_SVT():
     assert_correct_algorithm(SVT, {'N': 1, 'T': 0.5}, num_input=10)
 

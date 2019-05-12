@@ -29,9 +29,3 @@ WORKDIR /statdp
 RUN conda install --yes numpy scipy matplotlib sympy tqdm coloredlogs pip && conda clean --all
 # install the remaining non-conda dependencies and statdp
 RUN pip install --no-cache-dir .
-
-# remove ENTRYPOINT from parent image
-ENTRYPOINT []
-
-# run bash
-CMD ["/bin/bash"]

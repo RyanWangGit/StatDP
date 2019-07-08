@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2018 Yuxin (Ryan) Wang
+# Copyright (c) 2018-2019 Yuxin (Ryan) Wang
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,8 @@ logger = logging.getLogger(__name__)
 
 
 def _hypergeometric(cx, cy, iterations):
-    return 1 - stats.hypergeom.cdf(cx, 2 * iterations, iterations, cx + cy)
+    # here we use `cx - 1` because pvalue should be P(random variable >= test_statistic) rather than > test_statistic
+    return 1 - stats.hypergeom.cdf(cx - 1, 2 * iterations, iterations, cx + cy)
 
 
 def test_statistics(cx, cy, epsilon, iterations, process_pool=None):

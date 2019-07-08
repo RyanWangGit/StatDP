@@ -61,7 +61,7 @@ Then you can run `examples/benchmark.py` to run the experiments we conducted in 
 ## Visualizing the results
 A nice python library `matplotlib` is recommended for visualizing your result. 
 
-There's a python code snippet at `/examples/benchmark.`(`plot_result` method) to show an example of plotting the results.
+There's a python code snippet at `/examples/benchmark.py`(`plot_result` method) to show an example of plotting the results.
 
 Then you can generate a figure like the iSVT 4 in our paper.
 ![iSVT4](https://raw.githubusercontent.com/yxwangcs/StatDP/master/examples/iSVT4.svg?sanitize=true)

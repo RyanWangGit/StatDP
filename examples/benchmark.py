@@ -64,7 +64,8 @@ def plot_result(xlabel, ylabel, data, title, output_filename):
     plt.ylabel(ylabel)
     if title is not None and not title == '':
         plt.title(title)
-    plt.legend()
+    legend = plt.legend()
+    legend.get_frame().set_linewidth(0.0)
     plt.savefig(output_filename, bbox_inches='tight')
     plt.gcf().clear()
 

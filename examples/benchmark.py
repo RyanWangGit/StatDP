@@ -58,7 +58,7 @@ def plot_result(xlabel, ylabel, data, title, output_filename):
         x = [item[0] for item in points]
         p = [item[1] for item in points]
         plt.axvline(x=float(epsilon), color=colorcycle[i], linestyle='dashed', linewidth=1.2)
-        plt.plot(x, p, 'o-', label=r'$\epsilon_0$ = {0}'.format(epsilon), markersize=6, marker=markers[i], linewidth=2)
+        plt.plot(x, p, 'o-', label=r'$\epsilon_0$ = {0}'.format(epsilon), markersize=8, marker=markers[i], linewidth=2)
 
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)

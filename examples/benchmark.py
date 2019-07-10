@@ -38,7 +38,7 @@ def plot_result(xlabel, ylabel, data, title, output_filename):
     """
     :param xlabel: The label for x axis.
     :param ylabel: The label for y axis.
-    :param data: The input data sets to plots. e.g., {algorithm_epsilon: test_result}
+    :param data: The input data sets to plots. e.g., {algorithm_epsilon: [(test_epsilon, pvalue), ...]}
     :param title: The title of the figure.
     :param output_filename: The output file name.
     :return:

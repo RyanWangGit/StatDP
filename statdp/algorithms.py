@@ -59,11 +59,6 @@ def histogram(queries, epsilon):
     return noisy_array[0]
 
 
-def laplace_mechanism(queries, epsilon):
-    noisy_array = np.asarray(queries, dtype=np.float64) + np.random.laplace(scale=len(queries) / epsilon, size=len(queries))
-    return np.count_nonzero(np.logical_and(noisy_array > 0.73, noisy_array < 1.75))
-
-
 def SVT(queries, epsilon, N, T):
     out = []
     eta1 = np.random.laplace(scale=2.0 / epsilon)

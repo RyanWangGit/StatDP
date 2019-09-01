@@ -48,7 +48,3 @@ def test_histogram():
     assert isinstance(histogram([1, 2], 1), float)
     assert histogram_eps([1, 2], 0) == 1
     assert isinstance(histogram_eps([1, 2], 1), float)
-
-
-def test_laplace_mechanism():
-    assert laplace_mechanism([1, 2, 3], float('inf')) == 1

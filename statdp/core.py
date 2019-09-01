@@ -74,13 +74,15 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
 
     pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
     try:
-        for _, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test', desc='Detection'):
+        for _, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test', desc='Detection',
+                                    disable=quiet):
             d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations, quiet=quiet,
                                                  process_pool=pool)
             p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations, report_p2=False,
                                 process_pool=pool)
             result.append((epsilon, p, d1, d2, kwargs, event))
-            tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {}'.format(epsilon, p, event))
+            if not quiet:
+                tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {}'.format(epsilon, p, event))
             logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
     finally:
         if pool:

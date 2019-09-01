@@ -70,6 +70,8 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
     :param iterations: The iterations to run.
     :return: [(cx, cy), ...], [(d1, d2, kwargs, event), ...]
     """
+    if not callable(algorithm):
+        raise ValueError('Algorithm must be callable')
     np.random.seed()
     # support multiple return values, each return value is stored as a row in result_d1 / result_d2
     # e.g if an algorithm returns (1, 1), result_d1 / result_d2 would be like

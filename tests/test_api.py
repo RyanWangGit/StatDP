@@ -25,7 +25,7 @@ from flaky import flaky
 
 from statdp.algorithms import (SVT, iSVT1, iSVT2, iSVT3, iSVT4, noisy_max_v1a,
                                noisy_max_v1b, noisy_max_v2a, noisy_max_v2b)
-from statdp.core import detect_counterexample
+from statdp.api import detect_counterexample
 
 
 # due to the statistical and randomized nature, use flaky to allow maximum 5 runs of failures.

@@ -19,74 +19,106 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import numpy as np
+import itertools
 import logging
-import multiprocessing as mp
 
-import tqdm
-
-from statdp.generators import generate_arguments, generate_databases, ALL_DIFFER, ONE_DIFFER
-from statdp.hypotest import hypothesis_test
-from statdp.selectors import select_event
 
 logger = logging.getLogger(__name__)
 
 
-def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, databases=None, num_input=(5, 10),
-                          event_iterations=100000, detect_iterations=500000, cores=0, sensitivity=ALL_DIFFER,
-                          quiet=False, loglevel=logging.INFO):
+def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
+    """ Run the algorithm for :iteration: times, count and return the number of iterations in :event:,
+    event search space is auto-generated if not specified.
+    :param algorithm: The algorithm to run.
+    :param d1: The D1 input to run.
+    :param d2: The D2 input to run.
+    :param kwargs: The keyword arguments for the algorithm.
+    :param event: The event to test, auto generate event search space if None.
+    :param iterations: The iterations to run.
+    :return: [(cx, cy), ...], [(d1, d2, kwargs, event), ...]
     """
-    :param algorithm: The algorithm to test for.
-    :param test_epsilon: The privacy budget to test for, can either be a number or a tuple/list.
-    :param default_kwargs: The default arguments the algorithm needs except the first Queries argument.
-    :param databases: The databases to run for detection, optional.
-    :param num_input: The length of input to generate, not used if database param is specified.
-    :param event_iterations: The iterations for event selector to run, default is 100000.
-    :param detect_iterations: The iterations for detector to run, default is 500000.
-    :param cores: The cores to utilize, 0 means auto-detection.
-    :param sensitivity: The sensitivity setting, all queries can differ by one or just one query can differ by one.
-    :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
-    :param loglevel: The loglevel for logging package.
-    :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
-    """
-    # initialize an empty default kwargs if None is given
-    default_kwargs = default_kwargs if default_kwargs else {}
+    if not callable(algorithm):
+        raise ValueError('Algorithm must be callable')
+    np.random.seed()
+    # support multiple return values, each return value is stored as a row in result_d1 / result_d2
+    # e.g if an algorithm returns (1, 1), result_d1 / result_d2 would be like
+    # [
+    #   [x, x, x, ..., x],
+    #   [x, x, x, ..., x]
+    # ]
 
-    logging.basicConfig(level=loglevel)
-    logger.info('Start detection for counterexample on algorithm {} with test epsilon {}'
-                .format(algorithm.__name__, test_epsilon))
-    logger.info('Options -> default_kwargs: {} | databases: {} | cores:{}'.format(default_kwargs, databases, cores))
+    # get return type by a sample run
+    sample_result = algorithm(d1, **kwargs)
+    if np.issubdtype(type(sample_result), np.number):
+        result_d1 = (np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)),
+                                 dtype=type(sample_result), count=iterations), )
+        result_d2 = (np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)),
+                                 dtype=type(sample_result), count=iterations), )
+    elif isinstance(sample_result, (tuple, list)):
+        # run the algorithm and store the corresponding return value into vanilla python list first
+        result_d1, result_d2 = tuple([] for _ in range(len(sample_result))),  tuple([] for _ in range(len(sample_result)))
+        for _ in range(iterations):
+            out_1 = algorithm(d1, **kwargs)
+            out_2 = algorithm(d2, **kwargs)
+            for row, (value_1, value_2) in enumerate(zip(out_1, out_2)):
+                result_d1[row].append(value_1)
+                result_d2[row].append(value_2)
 
-    input_list = []
-    if databases is not None:
-        d1, d2 = databases
-        kwargs = generate_arguments(algorithm, d1, d2, default_kwargs=default_kwargs)
-        input_list = ((d1, d2, kwargs),)
+        # convert the python list to numpy array
+        result_d1 = tuple(np.asarray(row) for row in result_d1)
+        result_d2 = tuple(np.asarray(row) for row in result_d2)
     else:
-        num_input = (int(num_input), ) if isinstance(num_input, (int, float)) else num_input
-        for num in num_input:
-            input_list.extend(
-                generate_databases(algorithm, num, default_kwargs=default_kwargs, sensitivity=sensitivity))
+        raise ValueError('Unsupported return type: {}'.format(type(sample_result)))
 
-    result = []
+    # get desired search space for each return value
+    event_search_space = []
+    if event is None:
+        for row in range(len(result_d1)):
+            # determine the event search space based on the return type
+            combined_result = np.concatenate((result_d1[row], result_d2[row]))
+            unique = np.unique(combined_result)
 
-    # convert int/float or iterable into tuple (so that it has length information)
-    test_epsilon = (test_epsilon, ) if isinstance(test_epsilon, (int, float)) else test_epsilon
+            # categorical output
+            if len(unique) < iterations * 0.002:
+                event_search_space.append(tuple(key for key in unique))
+            else:
+                combined_result.sort()
+                # find the densest 70% range
+                search_range = int(0.7 * len(combined_result))
+                search_max = min(range(search_range, len(combined_result)),
+                                 key=lambda x: combined_result[x] - combined_result[x - search_range])
+                search_min = search_max - search_range
 
-    pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
-    try:
-        for _, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test', desc='Detection',
-                                    disable=quiet):
-            d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations, quiet=quiet,
-                                                 process_pool=pool)
-            p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations, report_p2=False,
-                                process_pool=pool)
-            result.append((epsilon, p, d1, d2, kwargs, event))
-            if not quiet:
-                tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {}'.format(epsilon, p, event))
-            logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
-    finally:
-        if pool:
-            pool.close()
-            pool.join()
+                event_search_space.append(
+                    tuple((-float('inf'), alpha) for alpha in
+                          np.linspace(combined_result[search_min], combined_result[search_max], num=10)))
 
-    return result
+        logger.debug('search space is set to {}'.format(' × '.join(str(event) for event in event_search_space)))
+    else:
+        # if `event` is given, it should have the corresponding events for each return value
+        if len(event) != len(result_d1):
+            raise ValueError('Given event should have the same dimension as return value.')
+        # here if the event is given, we carefully construct the search space in the following format:
+        # [first_event] × [second_event] × [third_event] × ... × [last_event]
+        # so that when the search begins, only one possible combination can happen which is the given event
+        event_search_space = ((separate_event, ) for separate_event in event)
+
+    counts, input_event_pairs = [], []
+    for event in itertools.product(*event_search_space):
+        cx_check, cy_check = np.full(iterations, True, dtype=np.bool), np.full(iterations, True, dtype=np.bool)
+        # check for all events in the return values
+        for row in range(len(result_d1)):
+            if np.issubdtype(type(event[row]), np.number):
+                cx_check = np.logical_and(cx_check, result_d1[row] == event[row])
+                cy_check = np.logical_and(cy_check, result_d2[row] == event[row])
+            else:
+                cx_check = np.logical_and(cx_check, np.logical_and(result_d1[row] > event[row][0],
+                                                                   result_d1[row] < event[row][1]))
+                cy_check = np.logical_and(cy_check, np.logical_and(result_d2[row] > event[row][0],
+                                                                   result_d2[row] < event[row][1]))
+
+        cx, cy = np.count_nonzero(cx_check), np.count_nonzero(cy_check)
+        counts.append((cx, cy) if cx > cy else (cy, cx))
+        input_event_pairs.append((d1, d2, kwargs, event))
+    return counts, input_event_pairs

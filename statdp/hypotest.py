@@ -20,13 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import functools
-import itertools
 import logging
 import math
 import multiprocessing as mp
 
 import numpy as np
 from scipy import stats
+
+from statdp.core import run_algorithm
 
 logger = logging.getLogger(__name__)
 
@@ -57,103 +58,6 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
                                                        np.random.binomial(cx, 1.0 / (np.exp(epsilon)), sample_num),
                                                        chunksize=int(sample_num / mp.cpu_count())),
                            dtype=np.float64, count=sample_num).mean()
-
-
-def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
-    """ Run the algorithm for :iteration: times, count and return the number of iterations in :event:,
-    event search space is auto-generated if not specified.
-    :param algorithm: The algorithm to run.
-    :param d1: The D1 input to run.
-    :param d2: The D2 input to run.
-    :param kwargs: The keyword arguments for the algorithm.
-    :param event: The event to test, auto generate event search space if None.
-    :param iterations: The iterations to run.
-    :return: [(cx, cy), ...], [(d1, d2, kwargs, event), ...]
-    """
-    if not callable(algorithm):
-        raise ValueError('Algorithm must be callable')
-    np.random.seed()
-    # support multiple return values, each return value is stored as a row in result_d1 / result_d2
-    # e.g if an algorithm returns (1, 1), result_d1 / result_d2 would be like
-    # [
-    #   [x, x, x, ..., x],
-    #   [x, x, x, ..., x]
-    # ]
-
-    # get return type by a sample run
-    sample_result = algorithm(d1, **kwargs)
-    if np.issubdtype(type(sample_result), np.number):
-        result_d1 = (np.fromiter((algorithm(d1, **kwargs) for _ in range(iterations)),
-                                 dtype=type(sample_result), count=iterations), )
-        result_d2 = (np.fromiter((algorithm(d2, **kwargs) for _ in range(iterations)),
-                                 dtype=type(sample_result), count=iterations), )
-    elif isinstance(sample_result, (tuple, list)):
-        # run the algorithm and store the corresponding return value into vanilla python list first
-        result_d1, result_d2 = tuple([] for _ in range(len(sample_result))),  tuple([] for _ in range(len(sample_result)))
-        for _ in range(iterations):
-            out_1 = algorithm(d1, **kwargs)
-            out_2 = algorithm(d2, **kwargs)
-            for row, (value_1, value_2) in enumerate(zip(out_1, out_2)):
-                result_d1[row].append(value_1)
-                result_d2[row].append(value_2)
-
-        # convert the python list to numpy array
-        result_d1 = tuple(np.asarray(row) for row in result_d1)
-        result_d2 = tuple(np.asarray(row) for row in result_d2)
-    else:
-        raise ValueError('Unsupported return type: {}'.format(type(sample_result)))
-
-    # get desired search space for each return value
-    event_search_space = []
-    if event is None:
-        for row in range(len(result_d1)):
-            # determine the event search space based on the return type
-            combined_result = np.concatenate((result_d1[row], result_d2[row]))
-            unique = np.unique(combined_result)
-
-            # categorical output
-            if len(unique) < iterations * 0.002:
-                event_search_space.append(tuple(key for key in unique))
-            else:
-                combined_result.sort()
-                # find the densest 70% range
-                search_range = int(0.7 * len(combined_result))
-                search_max = min(range(search_range, len(combined_result)),
-                                 key=lambda x: combined_result[x] - combined_result[x - search_range])
-                search_min = search_max - search_range
-
-                event_search_space.append(
-                    tuple((-float('inf'), alpha) for alpha in
-                          np.linspace(combined_result[search_min], combined_result[search_max], num=10)))
-
-        logger.debug('search space is set to {}'.format(' × '.join(str(event) for event in event_search_space)))
-    else:
-        # if `event` is given, it should have the corresponding events for each return value
-        if len(event) != len(result_d1):
-            raise ValueError('Given event should have the same dimension as return value.')
-        # here if the event is given, we carefully construct the search space in the following format:
-        # [first_event] × [second_event] × [third_event] × ... × [last_event]
-        # so that when the search begins, only one possible combination can happen which is the given event
-        event_search_space = ((separate_event, ) for separate_event in event)
-
-    counts, input_event_pairs = [], []
-    for event in itertools.product(*event_search_space):
-        cx_check, cy_check = np.full(iterations, True, dtype=np.bool), np.full(iterations, True, dtype=np.bool)
-        # check for all events in the return values
-        for row in range(len(result_d1)):
-            if np.issubdtype(type(event[row]), np.number):
-                cx_check = np.logical_and(cx_check, result_d1[row] == event[row])
-                cy_check = np.logical_and(cy_check, result_d2[row] == event[row])
-            else:
-                cx_check = np.logical_and(cx_check, np.logical_and(result_d1[row] > event[row][0],
-                                                                   result_d1[row] < event[row][1]))
-                cy_check = np.logical_and(cy_check, np.logical_and(result_d2[row] > event[row][0],
-                                                                   result_d2[row] < event[row][1]))
-
-        cx, cy = np.count_nonzero(cx_check), np.count_nonzero(cy_check)
-        counts.append((cx, cy) if cx > cy else (cy, cx))
-        input_event_pairs.append((d1, d2, kwargs, event))
-    return counts, input_event_pairs
 
 
 def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, report_p2=True, process_pool=None):

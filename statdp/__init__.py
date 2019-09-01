@@ -22,4 +22,4 @@
 from statdp.hypotest import hypothesis_test
 from statdp.generators import generate_arguments, generate_databases, ALL_DIFFER, ONE_DIFFER
 from statdp.selectors import select_event
-from statdp.core import detect_counterexample
+from statdp.api import detect_counterexample

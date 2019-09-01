@@ -52,7 +52,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     default_kwargs = default_kwargs if default_kwargs else {}
 
     logging.basicConfig(level=loglevel)
-    logger.info('Starting to find counterexample on algorithm {} with test epsilon {}'
+    logger.info('Start detection for counterexample on algorithm {} with test epsilon {}'
                 .format(algorithm.__name__, test_epsilon))
     logger.info('Options -> default_kwargs: {} | databases: {} | cores:{}'.format(default_kwargs, databases, cores))
 
@@ -64,8 +64,8 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     else:
         num_input = (int(num_input), ) if isinstance(num_input, (int, float)) else num_input
         for num in num_input:
-            input_list.extend(generate_databases(algorithm, num,
-                                                 default_kwargs=default_kwargs, sensitivity=sensitivity))
+            input_list.extend(
+                generate_databases(algorithm, num, default_kwargs=default_kwargs, sensitivity=sensitivity))
 
     result = []
 
@@ -74,20 +74,17 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
 
     pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
     try:
-        for i, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test', desc='Detection'):
+        for _, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test', desc='Detection'):
             d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations, quiet=quiet,
                                                  process_pool=pool)
-            p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations,
-                                report_p2=False, process_pool=pool)
+            p = hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, detect_iterations, report_p2=False,
+                                process_pool=pool)
             result.append((epsilon, p, d1, d2, kwargs, event))
-            tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {}'
-                            .format(epsilon, p, event))
+            tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {}'.format(epsilon, p, event))
             logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
     finally:
         if pool:
             pool.close()
             pool.join()
-        else:
-            pass
 
     return result

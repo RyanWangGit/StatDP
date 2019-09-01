@@ -21,7 +21,6 @@
 # SOFTWARE.
 import functools
 import logging
-import inspect
 
 import numpy as np
 import tqdm
@@ -46,8 +45,8 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, process_pool
     :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
     :return: (d1, d2, kwargs, event) pair which has minimum p value from search space.
     """
-    if not inspect.isfunction(algorithm):
-        raise ValueError('Algorithm must be runnable')
+    if not callable(algorithm):
+        raise ValueError('Algorithm must be callable')
 
     # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
     partial_evaluate_input = functools.partial(_evaluate_input,

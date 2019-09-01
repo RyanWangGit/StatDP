@@ -78,8 +78,7 @@ def SVT(queries, epsilon, N, T):
 
 def iSVT1(queries, epsilon, N, T):
     out = []
-    delta = 1
-    eta1 = np.random.laplace(scale=2.0 * delta / epsilon)
+    eta1 = np.random.laplace(scale=2.0 / epsilon)
     noisy_T = T + eta1
     for query in queries:
         # INCORRECT: no noise added to the queries
@@ -95,12 +94,11 @@ def iSVT1(queries, epsilon, N, T):
 
 def iSVT2(queries, epsilon, N, T):
     out = []
-    delta = 1
-    eta1 = np.random.laplace(scale=2.0 * delta / epsilon)
+    eta1 = np.random.laplace(scale=2.0 / epsilon)
     noisy_T = T + eta1
     for query in queries:
         # INCORRECT: noise added to queries doesn't scale with N
-        eta2 = np.random.laplace(scale=2.0 * delta / epsilon)
+        eta2 = np.random.laplace(scale=2.0 / epsilon)
         if (query + eta2) >= noisy_T:
             out.append(True)
             # INCORRECT: no bounds on the True's to output
@@ -113,13 +111,12 @@ def iSVT2(queries, epsilon, N, T):
 
 def iSVT3(queries, epsilon, N, T):
     out = []
-    delta = 1
-    eta1 = np.random.laplace(scale=4.0 * delta / epsilon)
+    eta1 = np.random.laplace(scale=4.0 / epsilon)
     noisy_T = T + eta1
     c1 = 0
     for query in queries:
         # INCORRECT: noise added to queries doesn't scale with N
-        eta2 = np.random.laplace(scale=(4.0 * delta) / (3.0 * epsilon))
+        eta2 = np.random.laplace(scale=4.0 / (3.0 * epsilon))
         if query + eta2 > noisy_T:
             out.append(True)
             c1 += 1

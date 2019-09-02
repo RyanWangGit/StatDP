@@ -81,7 +81,7 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
 
             # categorical output
             if len(unique) < iterations * 0.002:
-                event_search_space.append(tuple(key for key in unique))
+                event_search_space.append(tuple(int(key) for key in unique))
             else:
                 combined_result.sort()
                 # find the densest 70% range
@@ -91,7 +91,7 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, iterations):
                 search_min = search_max - search_range
 
                 event_search_space.append(
-                    tuple((-float('inf'), alpha) for alpha in
+                    tuple((-float('inf'), float(alpha)) for alpha in
                           np.linspace(combined_result[search_min], combined_result[search_max], num=10)))
 
         logger.debug('search space is set to {}'.format(' × '.join(str(event) for event in event_search_space)))

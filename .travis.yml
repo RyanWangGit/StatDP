@@ -9,6 +9,8 @@ python:
 cache: pip
 
 install:
+  - sudo apt update
+  - sudo apt install libgsl-dev
   - pip install tox-travis
 
 script:

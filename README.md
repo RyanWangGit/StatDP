@@ -58,6 +58,13 @@ pip install .
 ```
 Then you can run `examples/benchmark.py` to run the experiments we conducted in the paper.
 
+### Gnu Scientific Library (GSL) Support (Optional)
+We try to use GSL's `gsl_cdf_hypergeometric_P` in place of `scipy.stats.hypergeom.cdf` if GSL library is detected (by using `gsl-config --prefix`), since the former has much less overhead.
+
+In Linux you can use system package manager to install GSL (e.g., `sudo apt-get install libgsl-dev`), in MacOS you can use [homebrew](https://brew.sh/) to install gsl (`brew install gsl`), in Windows you can use [NuGet](https://www.nuget.org/packages/gsl-msvc14-x64/) or compile from source.
+
+Note that GSL installation is optional but highly encouraged since `gsl_cdf_hypergeometric_P` has much better performance (~100x) than `scipy.stats.hypergeom.cdf`, see [this post](https://stackoverflow.com/a/42832257/5148356) for detailed experiments.
+
 ## Visualizing the results
 A nice python library `matplotlib` is recommended for visualizing your result. 
 

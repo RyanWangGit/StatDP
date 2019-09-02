@@ -25,6 +25,12 @@ FROM continuumio/miniconda3
 COPY . /statdp
 WORKDIR /statdp
 
+# install gsl
+RUN apt update -y && \
+    apt install -y --no-install-recommends libgsl-devel && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
 # install dependencies from conda for best performance
 RUN conda install --yes numpy scipy matplotlib sympy tqdm coloredlogs pip && conda clean --all
 # install the remaining non-conda dependencies and statdp

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 cdf = None
 use_gsl = True
 if shutil.which('gsl-config'):
-    proc = subprocess.run(['gsl-config', '--prefix'], capture_output=True)
+    proc = subprocess.run(['gsl-config', '--prefix'], stdout=subprocess.PIPE)
     lib_path = os.path.join(proc.stdout.decode('utf-8').strip(), 'lib')
     ext = '.dylib' if 'darwin' in sys.platform else ('.so' if 'linux' in sys.platform else '.dll')
     lib_path = os.path.join(lib_path, 'x86_64-linux-gnu') if 'linux' in sys.platform else lib_path

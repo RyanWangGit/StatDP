@@ -25,16 +25,16 @@ import math
 import multiprocessing as mp
 
 import numpy as np
-from scipy import stats
 
 from statdp.core import run_algorithm
+import statdp._hypergeom as hypergeom
 
 logger = logging.getLogger(__name__)
 
 
 def _hypergeometric(cx, cy, iterations):
     # here we use `cx - 1` because pvalue should be P(random variable >= test_statistic) rather than > test_statistic
-    return 1 - stats.hypergeom.cdf(cx - 1, 2 * iterations, iterations, cx + cy)
+    return 1 - hypergeom.cdf(cx - 1, 2 * iterations, iterations, cx + cy)
 
 
 def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
@@ -48,7 +48,7 @@ def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
     """
     # average p value
     sample_num = 200
-    if process_pool is None:
+    if process_pool is None or hypergeom.use_gsl:
         return np.fromiter((_hypergeometric(cx, cy, iterations)
                             for cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), sample_num)),
                            dtype=np.float64, count=sample_num).mean()

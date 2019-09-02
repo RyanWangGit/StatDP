@@ -16,6 +16,7 @@ if shutil.which('gsl-config'):
     proc = subprocess.run(['gsl-config', '--prefix'], capture_output=True)
     lib_path = os.path.join(proc.stdout.decode('utf-8').strip(), 'lib')
     ext = '.dylib' if 'darwin' in sys.platform else ('.so' if 'linux' in sys.platform else '.dll')
+    lib_path = os.path.join(lib_path, 'x86_64-linux-gnu') if 'linux' in sys.platform else lib_path
     # load libgslcblas first
     ctypes.CDLL(os.path.join(lib_path, 'libgslcblas{}'.format(ext)), mode=ctypes.RTLD_GLOBAL)
     # load libgsl

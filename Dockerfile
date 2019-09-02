@@ -27,7 +27,7 @@ WORKDIR /statdp
 
 # install gsl
 RUN apt update -y && \
-    apt install -y --no-install-recommends libgsl-devel && \
+    apt install -y --no-install-recommends libgsl-dev && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 

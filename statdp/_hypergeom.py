@@ -16,18 +16,23 @@ if shutil.which('gsl-config'):
     proc = subprocess.run(['gsl-config', '--prefix'], stdout=subprocess.PIPE)
     lib_path = os.path.join(proc.stdout.decode('utf-8').strip(), 'lib')
     ext = '.dylib' if 'darwin' in sys.platform else ('.so' if 'linux' in sys.platform else '.dll')
-    lib_path = os.path.join(lib_path, 'x86_64-linux-gnu') if 'linux' in sys.platform else lib_path
-    # load libgslcblas first
-    ctypes.CDLL(os.path.join(lib_path, 'libgslcblas{}'.format(ext)), mode=ctypes.RTLD_GLOBAL)
-    # load libgsl
-    libgsl = ctypes.CDLL(os.path.join(lib_path, 'libgsl{}'.format(ext)))
-    hyper = libgsl.gsl_cdf_hypergeometric_P
-    hyper.restype = ctypes.c_double
+    if not os.path.exists(os.path.join(lib_path, 'libgslcblas{}'.format(ext))):
+        lib_path = os.path.join(lib_path, 'x86_64-linux-gnu')
+        if not (os.path.exists(lib_path) and os.path.exists(os.path.join(lib_path, 'libgslcblas{}'.format(ext)))):
+            # libgsl not found, fall back to scipy implementation
+            use_gsl = False
+            cdf = hypergeom.cdf
 
-    def cdf(k, M, n, N):
-        return float(hyper(ctypes.c_int(k), ctypes.c_int(n), ctypes.c_int(M - n), ctypes.c_int(N)))
+    # libgsl found
+    if not cdf:
+        # load libgslcblas first
+        ctypes.CDLL(os.path.join(lib_path, 'libgslcblas{}'.format(ext)), mode=ctypes.RTLD_GLOBAL)
+        # load libgsl
+        libgsl = ctypes.CDLL(os.path.join(lib_path, 'libgsl{}'.format(ext)))
+        hyper = libgsl.gsl_cdf_hypergeometric_P
+        hyper.restype = ctypes.c_double
 
-# fall back to scipy implementation
-if not cdf:
-    use_gsl = False
-    cdf = hypergeom.cdf
+        def cdf(k, M, n, N):
+            return float(hyper(ctypes.c_int(k), ctypes.c_int(n), ctypes.c_int(M - n), ctypes.c_int(N)))
+
+

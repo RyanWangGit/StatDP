@@ -1,0 +1,79 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        python-version: [3.5, 3.6, 3.7]
+    runs-on: ${{ matrix.os }}
+    env:
+      # TODO: remove this when github actions support "if" in expressions
+      PYTHON_VERSION: ${{ matrix.python-version }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@master
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install GSL (Ubuntu)
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+        sudo apt-get -y update
+        sudo apt-get install libgsl-dev
+    - name: Install GSL (macOS)
+      if: startsWith(matrix.os, 'macOS')
+      run: |
+        brew update
+        brew install gsl
+    - name: Update pip
+      run: |
+        python -m pip install --upgrade pip
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with tox
+      shell: bash
+      run: |
+        pip install tox
+        # remove the "." in the python version
+        tox -e "py${PYTHON_VERSION//.}"
+  
+  deploy_docker:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - name: Docker build
+        run: docker build . -t cmlapsu/statdp
+      - name: Test docker build
+        run: docker run -it cmlapsu/statdp python -c "import statdp"
+      - name: Upload to Docker Hub
+        if: success()
+        run: | 
+          echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push cmlapsu/statdp:latest
+  
+  deploy_github:
+    needs: [build, deploy_docker]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - name: Upload to cmla-psu github repository
+        run: |
+          rm -rf .git
+          git init
+          git config user.name "Yuxin Wang"
+          git config user.email "ryanwang.cs@gmail.com"
+          git add .
+          git commit -m "Release of StatDP."
+          git remote add origin https://yxwangcs:${{ secrets.GITHUB_DEPLOY_TOKEN }}@github.com/cmla-psu/statdp.git
+          git push -u --force origin master

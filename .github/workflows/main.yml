@@ -51,6 +51,9 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     steps:
       - uses: actions/checkout@master
       - name: Docker build
@@ -67,6 +70,8 @@ jobs:
     needs: [build, deploy_docker]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_DEPLOY_TOKEN }}
     steps:
       - uses: actions/checkout@master
       - name: Upload to cmla-psu github repository
@@ -77,5 +82,5 @@ jobs:
           git config user.email "ryanwang.cs@gmail.com"
           git add .
           git commit -m "Release of StatDP."
-          git remote add origin https://yxwangcs:${{ secrets.GITHUB_DEPLOY_TOKEN }}@github.com/cmla-psu/statdp.git
+          git remote add origin https://yxwangcs:$GITHUB_TOKEN@github.com/cmla-psu/statdp.git
           git push -u --force origin master

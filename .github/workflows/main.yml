@@ -56,7 +56,7 @@ jobs:
       - name: Docker build
         run: docker build . -t cmlapsu/statdp
       - name: Test docker build
-        run: docker run -it cmlapsu/statdp python -c "import statdp"
+        run: docker run cmlapsu/statdp python -c "import statdp"
       - name: Upload to Docker Hub
         if: success()
         run: | 

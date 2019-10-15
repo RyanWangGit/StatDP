@@ -1,5 +1,5 @@
 # StatDP 
-[![Build Status](https://travis-ci.com/yxwangcs/statdp.svg?branch=master)](https://travis-ci.com/yxwangcs/statdp) [![Build status](https://ci.appveyor.com/api/projects/status/d2q47f1j8hil5ka9?svg=true)](https://ci.appveyor.com/project/yxwangcs/statdp/branch/master)  [![codecov](https://codecov.io/gh/yxwangcs/statdp/branch/master/graph/badge.svg)](https://codecov.io/gh/yxwangcs/statdp)
+[![Github Actions](https://github.com/yxwangcs/statdp/workflows/build/badge.svg)](https://github.com/yxwangcs/statdp/actions?workflow=build) [![codecov](https://codecov.io/gh/yxwangcs/statdp/branch/master/graph/badge.svg)](https://codecov.io/gh/yxwangcs/statdp)
 
 Statistical Counterexample Detector for Differential Privacy.
 

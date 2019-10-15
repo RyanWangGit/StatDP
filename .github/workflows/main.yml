@@ -52,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     steps:
+      - uses: actions/checkout@master
       - name: Docker build
         run: docker build . -t cmlapsu/statdp
       - name: Test docker build
@@ -67,6 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     steps:
+      - uses: actions/checkout@master
       - name: Upload to cmla-psu github repository
         run: |
           rm -rf .git

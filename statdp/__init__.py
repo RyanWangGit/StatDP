@@ -27,7 +27,6 @@ import tqdm
 from statdp.generators import generate_arguments, generate_databases, ALL_DIFFER, ONE_DIFFER
 from statdp.hypotest import hypothesis_test
 from statdp.selectors import select_event
-from statdp._hypergeom import use_gsl
 
 logger = logging.getLogger(__name__)
 
@@ -56,15 +55,6 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     logger.info('Start detection for counterexample on algorithm {} with test epsilon {}'
                 .format(algorithm.__name__, test_epsilon))
     logger.info('Options -> default_kwargs: {} | databases: {} | cores:{}'.format(default_kwargs, databases, cores))
-
-    # log warnings about gsl installation
-    if use_gsl:
-        logger.info('Found GSL installation, using GSL implementation of hypergeom.cdf for better performance.')
-    else:
-        logger.warning(
-            'Did not find Gnu Scientific Library (GSL) installation, falling back to scipy implementation of '
-            'hypergeom.cdf. Note that GSL provides much faster implementation than scipy which can '
-            'significantly increase detection performance.')
 
     input_list = []
     if databases is not None:

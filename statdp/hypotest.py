@@ -25,6 +25,7 @@ import math
 import multiprocessing as mp
 
 import numpy as np
+import numba
 
 from statdp.core import run_algorithm
 import statdp._hypergeom as hypergeom
@@ -32,32 +33,21 @@ import statdp._hypergeom as hypergeom
 logger = logging.getLogger(__name__)
 
 
-def _hypergeometric(cx, cy, iterations):
-    # here we use `cx - 1` because pvalue should be P(random variable >= test_statistic) rather than > test_statistic
-    return 1 - hypergeom.cdf(cx - 1, 2 * iterations, iterations, cx + cy)
-
-
-def test_statistics(cx, cy, epsilon, iterations, process_pool=None):
+@numba.njit
+def test_statistics(cx, cy, epsilon, iterations):
     """ Calculate p-value based on observed results.
     :param cx: The observed count of running algorithm with database 1 that falls into the event
     :param cy:The observed count of running algorithm with database 2 that falls into the event
     :param epsilon: The epsilon to test for.
     :param iterations: The total iterations for running algorithm.
-    :param process_pool: The process pool to run on, run in single core if None
     :return: p-value
     """
     # average p value
     sample_num = 200
-    if process_pool is None or hypergeom.use_gsl:
-        return np.fromiter((_hypergeometric(cx, cy, iterations)
-                            for cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), sample_num)),
-                           dtype=np.float64, count=sample_num).mean()
-    else:
-        # bind cy and iterations to _hypergeometric function and feed different cx into it
-        return np.fromiter(process_pool.imap_unordered(functools.partial(_hypergeometric, cy=cy, iterations=iterations),
-                                                       np.random.binomial(cx, 1.0 / (np.exp(epsilon)), sample_num),
-                                                       chunksize=int(sample_num / mp.cpu_count())),
-                           dtype=np.float64, count=sample_num).mean()
+    p_value = 0
+    for new_cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), sample_num):
+        p_value += hypergeom.sf(new_cx - 1, 2 * iterations, iterations, new_cx + cy)
+    return p_value / sample_num
 
 
 def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, report_p2=True, process_pool=None):
@@ -94,7 +84,6 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, repor
 
         # calculate and return p value
         if report_p2:
-            return test_statistics(cx, cy, epsilon, iterations, process_pool), \
-                   test_statistics(cy, cx, epsilon, iterations, process_pool)
+            return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
         else:
-            return test_statistics(cx, cy, epsilon, iterations, process_pool)
+            return test_statistics(cx, cy, epsilon, iterations)

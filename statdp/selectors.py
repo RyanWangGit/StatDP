@@ -64,7 +64,7 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, process_pool
 
     # calculate p-values based on counts
     threshold = 0.001 * iterations * np.exp(epsilon)
-    p_values_generator = (test_statistics(cx, cy, epsilon, iterations, process_pool=process_pool)
+    p_values_generator = (test_statistics(cx, cy, epsilon, iterations)
                           if cx + cy > threshold else float('inf') for (cx, cy) in counts)
 
     # wrap the tqdm around the generator for progress information

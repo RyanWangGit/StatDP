@@ -52,7 +52,7 @@ However, for the best performance we recommend installing `statdp` in a `conda` 
 conda create -n statdp anaconda python=3.7
 conda activate statdp
 # install dependencies from conda for best performance
-conda install numpy scipy matplotlib sympy tqdm coloredlogs pip
+conda install numpy numba matplotlib sympy tqdm coloredlogs pip
 # install the remaining non-conda dependencies and statdp 
 pip install .
 ```

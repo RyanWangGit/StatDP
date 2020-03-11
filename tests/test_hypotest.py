@@ -21,7 +21,8 @@
 # SOFTWARE.
 from numpy.testing import assert_almost_equal
 from statdp.algorithms import noisy_max_v1a
-from statdp.hypotest import hypothesis_test, test_statistics
+# need to rename test_statistics function to prevent pytest from recognizing it as a test procedure
+from statdp.hypotest import hypothesis_test, test_statistics as statdp_test_statistics
 
 
 def test_core_single():
@@ -59,6 +60,6 @@ def test_core_multi():
 
 def test_test_statistics():
     # test both JIT'ed version and original python version of test_statistics function
-    for func in (test_statistics, test_statistics.py_func):
+    for func in (statdp_test_statistics, statdp_test_statistics.py_func):
         assert_almost_equal(func(1000, 1000, 1, 2000), 1)
         assert_almost_equal(func(1999, 1, 1, 2000), 0)

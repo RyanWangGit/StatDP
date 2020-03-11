@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""This module tests both the JIT'ed version and the original python version of each function."""
 import statdp._hypergeom as hypergeom
 from scipy.stats import hypergeom as reference
 
@@ -27,26 +28,29 @@ from numpy.ma.testutils import assert_almost_equal
 
 def test_precision():
     M, n, N = 2500, 50, 500
-    value = hypergeom.pmf(2, M, n, N)
-    assert_almost_equal(value, 0.0010114963068932233, 11)
+    for pmf in (hypergeom.pmf, hypergeom.pmf.py_func):
+        value = pmf(2, M, n, N)
+        assert_almost_equal(value, 0.0010114963068932233, 11)
 
 
 def test_pmf():
-    assert_almost_equal(hypergeom.pmf(0, 2, 1, 0), 1.0, 11)
-    assert_almost_equal(hypergeom.pmf(1, 2, 1, 0), 0.0, 11)
-    assert_almost_equal(hypergeom.pmf(0, 2, 0, 2), 1.0, 11)
-    assert_almost_equal(hypergeom.pmf(1, 2, 1, 0), 0.0, 11)
-    for M in range(1000, 10000, 500):
-        for n in range(1000, M, 500):
-            for N in range(10, 1000, 50):
-                for k in range(10, N, 30):
-                    assert_almost_equal(hypergeom.pmf(k, M, n, N), reference.pmf(k, M, n, N), 9)
+    for pmf in (hypergeom.pmf, hypergeom.pmf.py_func):
+        assert_almost_equal(pmf(0, 2, 1, 0), 1.0, 11)
+        assert_almost_equal(pmf(1, 2, 1, 0), 0.0, 11)
+        assert_almost_equal(pmf(0, 2, 0, 2), 1.0, 11)
+        assert_almost_equal(pmf(1, 2, 1, 0), 0.0, 11)
+        for M in range(1000, 10000, 500):
+            for n in range(1000, M, 500):
+                for N in range(10, 1000, 50):
+                    for k in range(10, N, 30):
+                        assert_almost_equal(pmf(k, M, n, N), reference.pmf(k, M, n, N), 9)
 
 
 def test_sf():
-    # we test the values from our hypergeom module with the one from scipy
-    for M in range(1000, 10000, 500):
-        for n in range(1000, M, 500):
-            for N in range(10, 1000, 50):
-                for k in range(10, N, 30):
-                    assert_almost_equal(hypergeom.sf(k, M, n, N), reference.sf(k, M, n, N), 9)
+    for sf in (hypergeom.sf, hypergeom.sf.py_func):
+        # we test the values from our hypergeom module with the one from scipy
+        for M in range(1000, 10000, 500):
+            for n in range(1000, M, 500):
+                for N in range(10, 1000, 50):
+                    for k in range(10, N, 30):
+                        assert_almost_equal(sf(k, M, n, N), reference.sf(k, M, n, N), 9)

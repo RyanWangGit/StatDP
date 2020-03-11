@@ -19,8 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from numpy.testing import assert_almost_equal
 from statdp.algorithms import noisy_max_v1a
-from statdp.hypotest import hypothesis_test
+from statdp.hypotest import hypothesis_test, test_statistics
 
 
 def test_core_single():
@@ -54,3 +55,10 @@ def test_core_multi():
     p1, p2 = hypothesis_test(noisy_max_v1a, D1, D2, {'epsilon': 0.5}, event, 0.75, 100000, process_pool=pool)
     assert 0.95 <= p1 <= 1.0
     assert 0.95 <= p2 <= 1.0
+
+
+def test_test_statistics():
+    # test both JIT'ed version and original python version of test_statistics function
+    for func in (test_statistics, test_statistics.py_func):
+        assert_almost_equal(func(1000, 1000, 1, 2000), 1)
+        assert_almost_equal(func(1999, 1, 1, 2000), 0)

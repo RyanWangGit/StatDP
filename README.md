@@ -53,8 +53,8 @@ conda create -n statdp anaconda python=3.7
 conda activate statdp
 # install dependencies from conda for best performance
 conda install numpy numba matplotlib sympy tqdm coloredlogs pip
-# install icc_rt compiler for best performance with numba, this requires using numba's channel
-conda install -c numba icc_rt
+# install icc_rt compiler for best performance with numba, this requires using intel's channel
+conda install -c intel icc_rt
 # install the remaining non-conda dependencies and statdp 
 pip install .
 ```

@@ -26,6 +26,6 @@ COPY . /statdp
 WORKDIR /statdp
 
 # install dependencies from conda for best performance
-RUN conda install --yes numpy scipy matplotlib sympy tqdm numba icc_rt coloredlogs pip && conda clean --all
+RUN conda install --yes numpy scipy matplotlib sympy tqdm numba coloredlogs pip && conda install --yes -c intel icc_rt && conda clean --all
 # install the remaining non-conda dependencies and statdp
 RUN pip install --no-cache-dir .

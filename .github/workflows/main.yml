@@ -70,7 +70,7 @@ jobs:
       - name: Install StatDP
         shell: bash -l {0}
         run: |
-          conda install --yes numpy numba matplotlib sympy tqdm coloredlogs pip
+          conda install --yes numpy numba matplotlib sympy tqdm coloredlogs pip codecov
           conda install -c intel icc_rt
           pip install .[test]
       - name: Test with pytest

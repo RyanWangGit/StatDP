@@ -56,6 +56,9 @@ def test_core_multi():
     p1, p2 = hypothesis_test(noisy_max_v1a, D1, D2, {'epsilon': 0.5}, event, 0.75, 100000, process_pool=pool)
     assert 0.95 <= p1 <= 1.0
     assert 0.95 <= p2 <= 1.0
+    p1 = hypothesis_test(noisy_max_v1a, D1, D2, {'epsilon': 0.5}, event, 0.75, 100000,
+                         process_pool=pool, report_p2=False)
+    assert 0.95 <= p1 <= 1.0
 
 
 def test_test_statistics():

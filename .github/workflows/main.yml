@@ -3,41 +3,84 @@ name: build
 on: [push, pull_request]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.x
+      - name: Lint with flake8
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
   build:
+    needs: [lint]
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        python-version: [3.5, 3.6, 3.7]
+        python-version: [3.6, 3.7]
     runs-on: ${{ matrix.os }}
     env:
       PYTHON_VERSION: ${{ matrix.python-version }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
     steps:
-    - uses: actions/checkout@master
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@master
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Update pip
-      run: |
-        python -m pip install --upgrade pip
-    - name: Lint with flake8
-      run: |
-        pip install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with tox
-      shell: bash
-      run: |
-        pip install tox
-        # remove the "." in the python version
-        tox -e "py${PYTHON_VERSION//.}"
-  
+      - uses: actions/checkout@master
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@master
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tox
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox
+      - name: Test with tox
+        shell: bash
+        run: |
+          # remove the "." in the python version
+          tox -e "py${PYTHON_VERSION//.}"
+
+  anaconda:
+    needs: [lint]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - uses: actions/checkout@master
+        # TODO: replace with official github actions in the future
+      - name: Set up Anaconda Python
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          activate-environment: statdp
+          python-version: 3.7
+          auto-update-conda: true
+      - name: List anaconda info
+        shell: sh -l {0}
+        run: |
+          conda info
+          conda env list
+      - name: Install StatDP
+        shell: bash -l {0}
+        run: |
+          conda install --yes numpy numba matplotlib sympy tqdm coloredlogs pip codecov
+          conda install -c intel icc_rt
+          pip install .[test]
+      - name: Test with pytest
+        shell: bash -l {0}
+        run: |
+          pytest tests/ --durations=0 --cov=./
+          codecov
+
   deploy_docker:
-    needs: [build]
+    needs: [build, anaconda]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     env:

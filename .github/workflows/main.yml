@@ -69,9 +69,6 @@ jobs:
           pip install tox
           # Install tox-conda for tox compatibility with Anaconda
           pip install tox-conda
-      - name: Install SQLite 3 on Windows
-        if: startsWith(matrix.os, 'windows')
-        run: choco install sqlite
       - name: Test with tox
         shell: bash
         run: tox -e py37

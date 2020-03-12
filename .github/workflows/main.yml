@@ -57,16 +57,19 @@ jobs:
       - uses: actions/checkout@master
         # TODO: replace with official github actions in the future
       - name: Set up Anaconda Python
-        uses: s-weigand/setup-conda@v1
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          activate-environment: statdp
+          python-version: 3.7
+          auto-update-conda: true
       - name: List anaconda info
+        shell: sh -l {0}
         run: |
           conda info
           conda env list
       - name: Install StatDP
-        shell: bash
+        shell: bash -l {0}
         run: |
-          conda create -n statdp anaconda python=3.7
-          conda activate statdp
           conda install --yes numpy numba matplotlib sympy tqdm coloredlogs pip
           conda install -c intel icc_rt
           pip install .

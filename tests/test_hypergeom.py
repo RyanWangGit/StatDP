@@ -21,7 +21,9 @@
 # SOFTWARE.
 """This module tests both the JIT'ed version and the original python version of each function."""
 import statdp._hypergeom as hypergeom
+import numpy as np
 from scipy.stats import hypergeom as reference
+from scipy.special import comb
 
 from numpy.ma.testutils import assert_almost_equal
 
@@ -31,6 +33,13 @@ def test_precision():
     for pmf in (hypergeom.pmf, hypergeom.pmf.py_func):
         value = pmf(2, M, n, N)
         assert_almost_equal(value, 0.0010114963068932233, 11)
+
+
+def test_ln_binomial():
+    for ln_binomial in (hypergeom._ln_binomial, hypergeom._ln_binomial.py_func):
+        assert_almost_equal(np.log(comb(200, 100)), ln_binomial(200, 100), 11)
+        assert_almost_equal(np.log(comb(5, 3)), ln_binomial(5, 3), 11)
+        assert_almost_equal(np.log(comb(67, 32)), ln_binomial(67, 32), 11)
 
 
 def test_pmf():

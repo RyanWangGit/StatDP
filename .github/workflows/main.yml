@@ -72,7 +72,7 @@ jobs:
         run: |
           conda install --yes numpy numba matplotlib sympy tqdm coloredlogs pip
           conda install -c intel icc_rt
-          pip install -e .
+          pip install .[test]
       - name: Test with pytest
         shell: bash
         run: |

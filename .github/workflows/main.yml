@@ -62,7 +62,7 @@ jobs:
         run: |
           conda info
           conda env list
-      - name: Install tox
+      - name: Install StatDP
         shell: bash
         run: |
           conda create -n statdp anaconda python=3.7

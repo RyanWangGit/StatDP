@@ -49,8 +49,7 @@ jobs:
     needs: [lint]
     strategy:
       matrix:
-        # TODO: "fix ImportError: DLL load failed: The specified module could not be found" on windows-latest
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -66,13 +65,16 @@ jobs:
       - name: Install tox
         shell: bash
         run: |
-          conda install --yes pip wheel setuptools
-          pip install tox
-          # Install tox-conda for tox compatibility with Anaconda
-          pip install tox-conda
-      - name: Test with tox
+          conda create -n statdp anaconda python=3.7
+          conda activate statdp
+          conda install --yes numpy numba matplotlib sympy tqdm coloredlogs pip
+          conda install -c intel icc_rt
+          pip install .
+      - name: Test with pytest
         shell: bash
-        run: tox -e py37
+        run: |
+          pytest tests/ --durations=0 --cov=./
+          codecov
 
   deploy_docker:
     needs: [build, anaconda]

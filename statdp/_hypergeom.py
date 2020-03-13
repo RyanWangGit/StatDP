@@ -80,9 +80,9 @@ def sf(k, M, n, N):
     if N > M:
         raise ValueError('The number of draws (N) is larger than the total number of objects (M)')
     if k >= min(n, N):
-        return 1
-    elif k < 0:
         return 0
+    elif k < 0:
+        return 1
     # calculating the pmf is expensive, use the following recursive definition for performance:
     # P(X=i) = (i / (n - i + 1)) * ((M - n + i - N) / (N - i + 1)) * P(X=i+1)
     # P(X=i) = ((n - i) / (i + 1)) * ((N - i) / (M - n + i + 1 - N)) * P(X=i-1)

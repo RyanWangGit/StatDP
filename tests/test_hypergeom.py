@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2018-2020 Yuxin Wang
+# Copyright (c) 2020 Yuxin Wang
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """This module tests both the JIT'ed version and the original python version of each function."""
-import statdp._hypergeom as hypergeom
 import numpy as np
 from scipy.stats import hypergeom as reference
 from scipy.special import comb
-
 from numpy.ma.testutils import assert_almost_equal
+import pytest
+import statdp._hypergeom as hypergeom
 
 
 def test_precision():
@@ -40,6 +40,10 @@ def test_ln_binomial():
         assert_almost_equal(np.log(comb(200, 100)), ln_binomial(200, 100), 11)
         assert_almost_equal(np.log(comb(5, 3)), ln_binomial(5, 3), 11)
         assert_almost_equal(np.log(comb(67, 32)), ln_binomial(67, 32), 11)
+        assert ln_binomial(100, 0) == 0
+        assert ln_binomial(100, 100) == 0
+        with pytest.raises(ValueError):
+            ln_binomial(200, 300)
 
 
 def test_pmf():
@@ -53,6 +57,9 @@ def test_pmf():
                 for N in range(10, 1000, 50):
                     for k in range(10, N, 30):
                         assert_almost_equal(pmf(k, M, n, N), reference.pmf(k, M, n, N), 9)
+        with pytest.raises(ValueError):
+            # number of draws is greater than the total number of objects
+            pmf(1, 100, 20, 300)
 
 
 def test_sf():
@@ -63,3 +70,11 @@ def test_sf():
                 for N in range(10, 1000, 50):
                     for k in range(10, N, 30):
                         assert_almost_equal(sf(k, M, n, N), reference.sf(k, M, n, N), 9)
+
+        # k >= min(n, N)
+        assert sf(20, 100, 5, 10) == 0
+        # k < 0
+        assert sf(-1, 100, 5, 10) == 1
+        with pytest.raises(ValueError):
+            # number of draws is greater than the total number of objects
+            sf(1, 100, 20, 300)

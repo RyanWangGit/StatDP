@@ -20,12 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """This module tests both the JIT'ed version and the original python version of each function."""
-import statdp._hypergeom as hypergeom
 import numpy as np
 from scipy.stats import hypergeom as reference
 from scipy.special import comb
-
 from numpy.ma.testutils import assert_almost_equal
+import statdp._hypergeom as hypergeom
 
 
 def test_precision():

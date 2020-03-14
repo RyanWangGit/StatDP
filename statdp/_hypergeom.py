@@ -27,7 +27,8 @@ https://en.wikipedia.org/wiki/Hypergeometric_distribution
 https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.hypergeom.html
 https://github.com/distributions-io/hypergeometric-cdf/blob/bf59133188731fe0631f1f03a8ac641ad35470bf/lib/number.js
 https://stackoverflow.com/a/47725299/5148356
-Wu, Trong. "An accurate computation of the hypergeometric distribution function." ACM Transactions on Mathematical Software (TOMS) 19.1 (1993): 33-43.
+Wu, Trong. "An accurate computation of the hypergeometric distribution function."
+ACM Transactions on Mathematical Software (TOMS) 19.1 (1993): 33-43.
 """
 
 import math

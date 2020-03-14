@@ -53,7 +53,7 @@ def plot_result(xlabel, ylabel, data, title, output_filename):
     colorcycle = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22',
                   '#17becf']
     plt.ylim(0.0, 1.0)
-    
+
     plt.axhline(y=0.05, color='black', linestyle='dashed', linewidth=1.2)
     for i, (epsilon, points) in enumerate(data.items()):
         x = [item[0] for item in points]

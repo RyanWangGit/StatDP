@@ -89,4 +89,3 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
             pool.close()
             pool.join()
     return result
-

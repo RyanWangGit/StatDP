@@ -25,7 +25,8 @@ import coloredlogs
 import logging
 import matplotlib
 from statdp import detect_counterexample, ONE_DIFFER, ALL_DIFFER
-from statdp.algorithms import *
+from statdp.algorithms import noisy_max_v1a, noisy_max_v1b, noisy_max_v2a, noisy_max_v2b, SVT, iSVT1,\
+    iSVT2, iSVT3, iSVT4, histogram, histogram_eps
 
 # switch matplotlib backend for running in background
 matplotlib.use('agg')

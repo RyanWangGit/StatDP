@@ -111,7 +111,7 @@ jobs:
           rm -rf .git
           git init
           git config user.name "Yuxin Wang"
-          git config user.email "ryanwang.cs@gmail.com"
+          git config user.email "yuxinwang.dev@gmail.com"
           git add .
           git commit -m "Release of StatDP."
           git remote add origin https://yxwangcs:$CMLAPSU_DEPLOY_TOKEN@github.com/cmla-psu/statdp.git

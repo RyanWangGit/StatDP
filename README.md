@@ -6,14 +6,16 @@ Statistical Counterexample Detector for Differential Privacy.
 ## Usage
 We assume your algorithm implementation has the folllowing signature: `(prng, queries, epsilon, ...)` (Pseudo-random generator, list of queries, privacy budget and extra arguments).
 
-Throughout your algorithm, the provided pseudo-random generator in the argument (i.e., `prng`) must be used to get any random number for better scalability with multiple cores. It is an instance of [`numpy.random.Generator`](https://numpy.org/doc/stable/reference/random/generator.html]) which supports a collection of standard distributions.
+Throughout your algorithm, any random number must be generated through the provided generator (i.e., `prng`) for better scalability with multiple cores. It is an instance of [`numpy.random.Generator`](https://numpy.org/doc/stable/reference/random/generator.html]) which supports a collection of standard distributions.
 
 Then you can simply call the detection tool with automatic database generation and event selection:
 ```python
 from statdp import detect_counterexample
 
 def your_algorithm(prng, queries, epsilon, ...):
-     # your algorithm implementation here
+    # your algorithm implementation here
+    # prng must be used instead of np.random
+    prng.laplace(loc=0, scale=1 / epsilon)
  
 if __name__ == '__main__':
     # algorithm privacy budget argument(`epsilon`) is needed

@@ -36,13 +36,13 @@ def _evaluate_input(input_triplet, algorithm, iterations):
     return run_algorithm(algorithm, d1, d2, kwargs, None, iterations)
 
 
-def select_event(algorithm, input_list, epsilon, iterations=100000, process_pool=None, quiet=False):
+def select_event(algorithm, input_list, epsilon, iterations, process_pool, quiet=False):
     """
-    :param algorithm: The algorithm to run on
-    :param input_list: list of (d1, d2, kwargs) input pair for the algorithm to run
-    :param epsilon: Test epsilon value
-    :param iterations: The iterations to run algorithms
-    :param process_pool: The process pool to use, run with single process if None
+    :param algorithm: The algorithm to run on.
+    :param input_list: list of (d1, d2, kwargs) input pair for the algorithm to run.
+    :param epsilon: Test epsilon value.
+    :param iterations: The iterations to run algorithms.
+    :param process_pool: The multiprocessing.Pool() to use.
     :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
     :return: (d1, d2, kwargs, event) pair which has minimum p value from search space.
     """
@@ -50,15 +50,11 @@ def select_event(algorithm, input_list, epsilon, iterations=100000, process_pool
         raise ValueError('Algorithm must be callable')
 
     # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
-    partial_evaluate_input = functools.partial(_evaluate_input,
-                                               algorithm=algorithm, iterations=iterations)
-
-    results = process_pool.imap_unordered(partial_evaluate_input, input_list) if process_pool else \
-        map(partial_evaluate_input, input_list)
+    partial_evaluate_input = functools.partial(_evaluate_input, algorithm=algorithm, iterations=iterations)
 
     counts, input_event_pairs = [], []
     # flatten the results for all input/event pairs
-    for local_counts, local_input_event_pair in results:
+    for local_counts, local_input_event_pair in process_pool.imap_unordered(partial_evaluate_input, input_list):
         counts.extend(local_counts)
         input_event_pairs.extend(local_input_event_pair)
 

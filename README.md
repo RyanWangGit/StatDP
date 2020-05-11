@@ -29,7 +29,7 @@ The `detect_counterexample` accepts multiple extra arguments to customize the pr
 
 ```python
 def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, databases=None, num_input=(5, 10),
-                          event_iterations=100000, detect_iterations=500000, cores=0,
+                          event_iterations=100000, detect_iterations=500000, cores=None, sensitivity=ALL_DIFFER,
                           quiet=False, loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
@@ -37,10 +37,11 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     :param default_kwargs: The default arguments the algorithm needs except the first Queries argument.
     :param databases: The databases to run for detection, optional.
     :param num_input: The length of input to generate, not used if database param is specified.
-    :param event_iterations: The iterations for event selector to run, default is 100000.
-    :param detect_iterations: The iterations for detector to run, default is 500000.
-    :param cores: The cores to utilize, 0 means auto-detection.
-    :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
+    :param event_iterations: The iterations for event selector to run.
+    :param detect_iterations: The iterations for detector to run.
+    :param cores: The number of max processes to set for multiprocessing.Pool(), os.cpu_count() is used if None.
+    :param sensitivity: The sensitivity setting, all queries can differ by one or just one query can differ by one.
+    :param quiet: Do not print progress bar or messages, logs are not affected.
     :param loglevel: The loglevel for logging package.
     :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
     """

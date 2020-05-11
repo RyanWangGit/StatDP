@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, databases=None, num_input=(5, 10),
-                          event_iterations=100000, detect_iterations=500000, cores=0, sensitivity=ALL_DIFFER,
+                          event_iterations=100000, detect_iterations=500000, cores=None, sensitivity=ALL_DIFFER,
                           quiet=False, loglevel=logging.INFO):
     """
     :param algorithm: The algorithm to test for.
@@ -40,11 +40,11 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     :param default_kwargs: The default arguments the algorithm needs except the first Queries argument.
     :param databases: The databases to run for detection, optional.
     :param num_input: The length of input to generate, not used if database param is specified.
-    :param event_iterations: The iterations for event selector to run, default is 100000.
-    :param detect_iterations: The iterations for detector to run, default is 500000.
-    :param cores: The cores to utilize, 0 means auto-detection.
+    :param event_iterations: The iterations for event selector to run.
+    :param detect_iterations: The iterations for detector to run.
+    :param cores: The number of max processes to set for multiprocessing.Pool(), os.cpu_count() is used if None.
     :param sensitivity: The sensitivity setting, all queries can differ by one or just one query can differ by one.
-    :param quiet: Do not print progress bar or messages, logs are not affected, default is False.
+    :param quiet: Do not print progress bar or messages, logs are not affected.
     :param loglevel: The loglevel for logging package.
     :return: [(epsilon, p, d1, d2, kwargs, event)] The epsilon-p pairs along with databases/arguments/selected event.
     """
@@ -72,8 +72,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     # convert int/float or iterable into tuple (so that it has length information)
     test_epsilon = (test_epsilon, ) if isinstance(test_epsilon, (int, float)) else test_epsilon
 
-    pool = mp.Pool(mp.cpu_count()) if cores == 0 else (mp.Pool(cores) if cores != 1 else None)
-    try:
+    with mp.Pool(cores) as pool:
         for _, epsilon in tqdm.tqdm(enumerate(test_epsilon), total=len(test_epsilon), unit='test', desc='Detection',
                                     disable=quiet):
             d1, d2, kwargs, event = select_event(algorithm, input_list, epsilon, event_iterations, quiet=quiet,
@@ -84,8 +83,5 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
             if not quiet:
                 tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {}'.format(epsilon, p, event))
             logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
-    finally:
-        if pool:
-            pool.close()
-            pool.join()
-    return result
+
+        return result

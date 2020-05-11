@@ -63,27 +63,25 @@ def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, proce
     :param report_p2: The boolean to whether report p2 or not.
     :return: p values.
     """
-    if process_pool is None:
-        ((cx, cy), *_), _ = run_algorithm(algorithm, d1, d2, kwargs, event, iterations)
-        if report_p2:
-            return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
-        else:
-            return test_statistics(cx, cy, epsilon, iterations)
+    # use undocumented mp.Pool._processes to get the number of max processes for the pool, this is unstable and
+    # may break in the future, therefore we fall back to mp.cpu_count() if it is not accessible
+    core_count = process_pool._processes if process_pool._processes and isinstance(process_pool._processes, int) \
+        else mp.cpu_count()
+    process_iterations = [int(math.floor(float(iterations) / core_count)) for _ in range(core_count)]
+    # add the remaining iterations to the last index
+    process_iterations[core_count - 1] += iterations % process_iterations[core_count - 1]
+
+    # start the pool to run the algorithm and collects the statistics
+    cx, cy = 0, 0
+    # fill in other arguments for running the algorithm, leaving `iterations` to be filled
+    runner = functools.partial(run_algorithm, algorithm, d1, d2, kwargs, event)
+    for ((local_cx, local_cy), *_), _ in process_pool.imap_unordered(runner, process_iterations):
+        cx += local_cx
+        cy += local_cy
+    cx, cy = (cx, cy) if cx > cy else (cy, cx)
+
+    # calculate and return p value
+    if report_p2:
+        return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
     else:
-        process_iterations = [int(math.floor(float(iterations) / mp.cpu_count())) for _ in range(mp.cpu_count())]
-        # add the remaining iterations to the last index
-        process_iterations[mp.cpu_count() - 1] += iterations % process_iterations[mp.cpu_count() - 1]
-
-        # start the pool to run the algorithm and collects the statistics
-        cx, cy = 0, 0
-        for ((local_cx, local_cy), *_), _ in process_pool.imap_unordered(
-                functools.partial(run_algorithm, algorithm, d1, d2, kwargs, event), process_iterations):
-            cx += local_cx
-            cy += local_cy
-        cx, cy = (cx, cy) if cx > cy else (cy, cx)
-
-        # calculate and return p value
-        if report_p2:
-            return test_statistics(cx, cy, epsilon, iterations), test_statistics(cy, cx, epsilon, iterations)
-        else:
-            return test_statistics(cx, cy, epsilon, iterations)
+        return test_statistics(cx, cy, epsilon, iterations)

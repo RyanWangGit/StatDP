@@ -50,15 +50,11 @@ def select_event(algorithm, input_list, epsilon, iterations, process_pool, quiet
         raise ValueError('Algorithm must be callable')
 
     # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
-    partial_evaluate_input = functools.partial(_evaluate_input,
-                                               algorithm=algorithm, iterations=iterations)
-
-    results = process_pool.imap_unordered(partial_evaluate_input, input_list) if process_pool else \
-        map(partial_evaluate_input, input_list)
+    partial_evaluate_input = functools.partial(_evaluate_input, algorithm=algorithm, iterations=iterations)
 
     counts, input_event_pairs = [], []
     # flatten the results for all input/event pairs
-    for local_counts, local_input_event_pair in results:
+    for local_counts, local_input_event_pair in process_pool.imap_unordered(partial_evaluate_input, input_list):
         counts.extend(local_counts)
         input_event_pairs.extend(local_input_event_pair)
 

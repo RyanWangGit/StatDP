@@ -31,6 +31,7 @@ from statdp.core import run_algorithm
 import statdp._hypergeom as hypergeom
 
 logger = logging.getLogger(__name__)
+_prng = np.random.default_rng()
 
 
 @numba.njit
@@ -45,7 +46,8 @@ def test_statistics(cx, cy, epsilon, iterations):
     # average p value
     sample_num = 200
     p_value = 0
-    for new_cx in np.random.binomial(cx, 1.0 / (np.exp(epsilon)), sample_num):
+
+    for new_cx in _prng.binomial(cx, 1.0 / (np.exp(epsilon)), sample_num):
         p_value += hypergeom.sf(new_cx - 1, 2 * iterations, iterations, new_cx + cy)
     return p_value / sample_num
 

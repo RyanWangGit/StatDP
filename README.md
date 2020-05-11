@@ -4,13 +4,15 @@
 Statistical Counterexample Detector for Differential Privacy.
 
 ## Usage
-You have to define your algorithm with the first argument being `Queries`.
+We assume your algorithm implementation has the folllowing signature: `(prng, queries, epsilon, ...)` (Pseudo-random generator, list of queries, privacy budget and extra arguments).
+
+Throughout your algorithm, the provided pseudo-random generator in the argument (i.e., `prng`) must be used to get any random number for better scalability with multiple cores. It is an instance of [`numpy.random.Generator`](https://numpy.org/doc/stable/reference/random/generator.html]) which supports a collection of standard distributions.
 
 Then you can simply call the detection tool with automatic database generation and event selection:
 ```python
 from statdp import detect_counterexample
 
-def your_algorithm(Q, epsilon, ...):
+def your_algorithm(prng, queries, epsilon, ...):
      # your algorithm implementation here
  
 if __name__ == '__main__':
@@ -72,7 +74,11 @@ Then you can generate a figure like the iSVT 4 in our paper.
 ## Customizing the detection
 Our tool is designed to be modular and components are fully decoupled. You can write your own `input generator`/`event selector` and apply them to `hypothesis test`.
 
-In general the detection process is `test_epsilon --> generate_databases --((d1, d2, kwargs), ...), epsilon--> select_event --(d1, d2, kwargs, event), epsilon--> hypothesis_test --> (d1, d2, kwargs, event, p-value), epsilon`, you can checkout the definition and docstrings of the functions respectively to define your own generator/selector. Basically the `detect_counterexample` function in `statdp.core` module is just shortcut function to take care of the above process for you.
+In general the detection process is 
+
+`test_epsilon --> generate_databases --((d1, d2, kwargs), ...), epsilon--> select_event --(d1, d2, kwargs, event), epsilon--> hypothesis_test --> (d1, d2, kwargs, event, p-value), epsilon`
+ 
+You can checkout the definition and docstrings of the functions respectively to define your own generator/selector. Basically the `detect_counterexample` function in `statdp.core` module is just shortcut function to take care of the above process for you.
 
 `test_statistics` function in `hypotest` module can be used universally by all algorithms (this function is to calculate p-value based on the observed statistics). However, you may need to design your own generator or selector for your own algorithm, since our input generator and event selector are designed to work with numerical queries on databases.
 

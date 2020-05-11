@@ -20,21 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import logging
-
+import pytest
 from flaky import flaky
-
 from statdp.algorithms import (SVT, iSVT1, iSVT2, iSVT3, iSVT4, noisy_max_v1a,
-                               noisy_max_v1b, noisy_max_v2a, noisy_max_v2b)
-from statdp import detect_counterexample
+                               noisy_max_v1b, noisy_max_v2a, noisy_max_v2b, histogram, histogram_eps)
+from statdp import detect_counterexample, ALL_DIFFER, ONE_DIFFER
+
+correct_algorithms = (
+    (noisy_max_v1a, {}, 5, ALL_DIFFER),
+    (noisy_max_v2a, {}, 5, ALL_DIFFER),
+    (SVT, {'N': 1, 'T': 0.5}, 10, ALL_DIFFER),
+    (histogram, {}, 5, ONE_DIFFER)
+)
+incorrect_algorithms = (
+    (noisy_max_v1b, {}, 5, ALL_DIFFER),
+    (noisy_max_v2b, {}, 5, ALL_DIFFER),
+    (iSVT1, {'N': 1, 'T': 1}, 10, ALL_DIFFER),
+    (iSVT2, {'N': 1, 'T': 1}, 10, ALL_DIFFER),
+    (iSVT3, {'N': 1, 'T': 1}, 10, ALL_DIFFER),
+    (iSVT4, {'N': 1, 'T': 1}, 10, ALL_DIFFER),
+    (histogram_eps, {}, 5, ONE_DIFFER)
+)
 
 
-# due to the statistical and randomized nature, use flaky to allow maximum 5 runs of failures.
-def assert_correct_algorithm(algorithm, kwargs=None, num_input=5):
-    if kwargs and isinstance(kwargs, dict):
-        kwargs.update({'epsilon': 0.7})
-    else:
-        kwargs = {'epsilon': 0.7}
-    result = detect_counterexample(algorithm, (0.6, 0.7, 0.8), kwargs, num_input=num_input, loglevel=logging.DEBUG)
+@pytest.mark.parametrize('algorithm', correct_algorithms,
+                         ids=[algorithm[0].__name__ for algorithm in correct_algorithms])
+@flaky(max_runs=5)  # due to the statistical and randomized nature, use flaky to allow maximum 5 runs of failures
+def test_correct_algorithm(algorithm):
+    func, kwargs, num_input, sensitivity = algorithm
+    kwargs.update({'epsilon': 0.7})
+    result = detect_counterexample(func, (0.6, 0.7, 0.8), kwargs,
+                                   num_input=num_input, loglevel=logging.DEBUG, sensitivity=sensitivity)
     assert isinstance(result, list) and len(result) == 3
     epsilon, p, *extras = result[0]
     assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
@@ -44,57 +60,14 @@ def assert_correct_algorithm(algorithm, kwargs=None, num_input=5):
     assert p >= 0.95, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
 
 
-def assert_incorrect_algorithm(algorithm, kwargs=None, num_input=5):
-    if kwargs and isinstance(kwargs, dict):
-        kwargs.update({'epsilon': 0.7})
-    else:
-        kwargs = {'epsilon': 0.7}
-    result = detect_counterexample(algorithm, 0.7, kwargs, num_input=num_input, loglevel=logging.DEBUG)
+@pytest.mark.parametrize('algorithm', incorrect_algorithms,
+                         ids=[algorithm[0].__name__ for algorithm in incorrect_algorithms])
+@flaky(max_runs=5)
+def test_incorrect_algorithm(algorithm):
+    func, kwargs, num_input, sensitivity = algorithm
+    kwargs.update({'epsilon': 0.7})
+    result = detect_counterexample(func, 0.7, kwargs,
+                                   num_input=num_input, loglevel=logging.DEBUG, sensitivity=sensitivity)
     assert isinstance(result, list) and len(result) == 1
     epsilon, p, *extras = result[0]
     assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
-
-
-@flaky(max_runs=5)
-def test_noisy_max_v1a():
-    assert_correct_algorithm(noisy_max_v1a)
-
-
-@flaky(max_runs=5)
-def test_noisy_max_v1b():
-    assert_incorrect_algorithm(noisy_max_v1b)
-
-
-@flaky(max_runs=5)
-def test_noisy_max_v2a():
-    assert_correct_algorithm(noisy_max_v2a)
-
-
-@flaky(max_runs=5)
-def test_noisy_max_v2b():
-    assert_incorrect_algorithm(noisy_max_v2b)
-
-
-@flaky(max_runs=5)
-def test_SVT():
-    assert_correct_algorithm(SVT, {'N': 1, 'T': 0.5}, num_input=10)
-
-
-@flaky(max_runs=5)
-def test_iSVT1():
-    assert_incorrect_algorithm(iSVT1, {'N': 1, 'T': 1}, num_input=10)
-
-
-@flaky(max_runs=5)
-def test_iSVT2():
-    assert_incorrect_algorithm(iSVT2, {'N': 1, 'T': 1}, num_input=10)
-
-
-@flaky(max_runs=5)
-def test_iSVT3():
-    assert_incorrect_algorithm(iSVT3, {'N': 1, 'T': 1}, num_input=10)
-
-
-@flaky(max_runs=5)
-def test_iSVT4():
-    assert_incorrect_algorithm(iSVT4, {'N': 1, 'T': 1}, num_input=10)

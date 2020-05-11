@@ -21,42 +21,26 @@
 # SOFTWARE.
 import multiprocessing as mp
 from numpy.testing import assert_almost_equal
+import pytest
 from statdp.algorithms import noisy_max_v1a
 # need to rename test_statistics function to prevent pytest from recognizing it as a test procedure
 from statdp.hypotest import hypothesis_test, test_statistics as statdp_test_statistics
 
 
-def test_core_single():
-    with mp.Pool(1) as pool:
+@pytest.mark.parametrize('process_pool', (mp.Pool(1), mp.Pool()), ids=('SingleCore', 'MultiCore'))
+def test_hypothesis_test(process_pool):
+    with process_pool:
         d1, d2 = [0] + [2 for _ in range(4)], [1 for _ in range(5)]
         event = (0,)
-        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.25, 100000, pool)
+        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.25, 100000, process_pool)
         assert 0 <= p1 <= 0.05
         assert 0.95 <= p2 <= 1.0
-        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.5, 100000, pool)
+        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.5, 100000, process_pool)
         assert 0.05 <= p1 <= 1.0
         assert 0.95 <= p2 <= 1.0
-        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.75, 100000, pool)
+        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.75, 100000, process_pool)
         assert 0.95 <= p1 <= 1.0
         assert 0.95 <= p2 <= 1.0
-
-
-def test_core_multi():
-    with mp.Pool() as pool:
-        d1, d2 = [0] + [2 for _ in range(4)], [1 for _ in range(5)]
-        event = (0,)
-        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.25, 100000, pool)
-        assert 0 <= p1 <= 0.05
-        assert 0.95 <= p2 <= 1.0
-        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.5, 100000, pool)
-        assert 0.05 <= p1 <= 1.0
-        assert 0.05 <= p1 <= 1.0
-        assert 0.95 <= p2 <= 1.0
-        p1, p2 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.75, 100000, pool)
-        assert 0.95 <= p1 <= 1.0
-        assert 0.95 <= p2 <= 1.0
-        p1 = hypothesis_test(noisy_max_v1a, d1, d2, {'epsilon': 0.5}, event, 0.75, 100000, pool, report_p2=False)
-        assert 0.95 <= p1 <= 1.0
 
 
 def test_test_statistics():

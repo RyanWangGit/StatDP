@@ -50,18 +50,18 @@ def test_statistics(cx, cy, epsilon, iterations):
     return p_value / sample_num
 
 
-def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, report_p2=True, process_pool=None):
+def hypothesis_test(algorithm, d1, d2, kwargs, event, epsilon, iterations, process_pool, report_p2=True):
     """ Run hypothesis tests on given input and events.
-    :param algorithm: The algorithm to run on
-    :param kwargs: The keyword arguments the algorithm needs
-    :param d1: Database 1
-    :param d2: Database 2
-    :param event: The event set
-    :param iterations: Number of iterations to run
-    :param epsilon: The epsilon value to test for
-    :param report_p2: The boolean to whether report p2 or not
-    :param process_pool: The process pool to use, run with single process if None
-    :return: p values
+    :param algorithm: The algorithm to run on.
+    :param kwargs: The keyword arguments the algorithm needs.
+    :param d1: Database 1.
+    :param d2: Database 2.
+    :param event: The event set.
+    :param iterations: Number of iterations to run.
+    :param epsilon: The epsilon value to test for.
+    :param process_pool: The multiprocessing.Pool() to use.
+    :param report_p2: The boolean to whether report p2 or not.
+    :return: p values.
     """
     if process_pool is None:
         ((cx, cy), *_), _ = run_algorithm(algorithm, d1, d2, kwargs, event, iterations)

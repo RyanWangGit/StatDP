@@ -25,10 +25,10 @@ from statdp.selectors import select_event
 
 
 def test_select_event():
-    pool = mp.Pool()
-    d1 = [0] + [2 for _ in range(4)]
-    d2 = [1 for _ in range(5)]
-    _, _, _, event = select_event(noisy_max_v1a, ((d1, d2, {'epsilon': 0.5}),), 0.5, 100000, pool)
-    assert event == (0, )
-    _, _, _, event = select_event(noisy_max_v1b, ((d1, d2, {'epsilon': 0.5}),), 0.5, 100000, pool)
-    assert event[0][0] < 0 < event[0][1]
+    with mp.Pool() as pool:
+        d1 = [0] + [2 for _ in range(4)]
+        d2 = [1 for _ in range(5)]
+        _, _, _, event = select_event(noisy_max_v1a, ((d1, d2, {'epsilon': 0.5}),), 0.5, 100000, pool)
+        assert event == (0, )
+        _, _, _, event = select_event(noisy_max_v1b, ((d1, d2, {'epsilon': 0.5}),), 0.5, 100000, pool)
+        assert event[0][0] < 0 < event[0][1]

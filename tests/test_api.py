@@ -45,7 +45,8 @@ incorrect_algorithms = (
 
 @pytest.mark.parametrize('algorithm', correct_algorithms,
                          ids=[algorithm[0].__name__ for algorithm in correct_algorithms])
-@flaky(max_runs=5)  # due to the statistical and randomized nature, use flaky to allow maximum 5 runs of failures
+# due to the statistical and randomized nature, use flaky to allow maximum 5 runs of failures
+@flaky(max_runs=5)
 def test_correct_algorithm(algorithm):
     func, kwargs, num_input, sensitivity = algorithm
     kwargs.update({'epsilon': 0.7})
@@ -71,3 +72,12 @@ def test_incorrect_algorithm(algorithm):
     assert isinstance(result, list) and len(result) == 1
     epsilon, p, *extras = result[0]
     assert p <= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)
+
+
+@flaky(max_runs=5)
+def test_large_iterations():
+    result = detect_counterexample(SVT, 0.7, {'T': 0.5, 'N': 1, 'epsilon': 0.7},
+                                   num_input=10, loglevel=logging.DEBUG, sensitivity=ALL_DIFFER,
+                                   event_iterations=int(2e6), detect_iterations=int(5e6))
+    epsilon, p, *extras = result[0]
+    assert p >= 0.05, 'epsilon: {}, p-value: {} is not expected. extra info: {}'.format(epsilon, p, extras)

@@ -52,26 +52,25 @@ def select_event(algorithm, input_list, epsilon, iterations, process_pool, quiet
     # fill in other arguments for _evaluate_input function, leaving out `input` to be filled
     partial_evaluate_input = functools.partial(_evaluate_input, algorithm=algorithm, iterations=iterations)
 
-    counts, input_event_pairs = [], []
+    threshold = 0.001 * iterations * np.exp(epsilon)
+
+    event_evaluator = tqdm.tqdm(process_pool.imap_unordered(partial_evaluate_input, input_list),
+                                desc='Finding best inputs/events', total=len(input_list), unit='input', disable=quiet)
     # flatten the results for all input/event pairs
-    for local_counts, local_input_event_pair in process_pool.imap_unordered(partial_evaluate_input, input_list):
+    counts, input_event_pairs, p_values = [], [], []
+    for local_counts, local_input_event_pair in event_evaluator:
+        # put the results in the list for later references
         counts.extend(local_counts)
         input_event_pairs.extend(local_input_event_pair)
 
-    # calculate p-values based on counts
-    threshold = 0.001 * iterations * np.exp(epsilon)
-    p_values_generator = (test_statistics(cx, cy, epsilon, iterations)
-                          if cx + cy > threshold else float('inf') for (cx, cy) in counts)
-
-    # wrap the tqdm around the generator for progress information
-    with tqdm.tqdm(p_values_generator, desc='Evaluating events', total=len(counts), unit='event', disable=quiet) \
-            as wrapper:
-        input_p_values = np.fromiter(wrapper, dtype=np.float64, count=len(counts))
+        # calculate p-values based on counts
+        for (cx, cy) in local_counts:
+            p_values.append(test_statistics(cx, cy, epsilon, iterations) if cx + cy > threshold else float('inf'))
 
     # log the information for debug purposes
-    for ((d1, d2, kwargs, event), (cx, cy), p) in zip(input_event_pairs, counts, input_p_values):
+    for ((d1, d2, kwargs, event), (cx, cy), p) in zip(input_event_pairs, counts, p_values):
         logger.debug('d1: {} | d2: {} | kwargs: {} | event: {} | p-value: {:5.3f} | cx: {} | cy: {} | ratio: {:5.3f}'
                      .format(d1, d2, kwargs, event, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
 
     # find an (d1, d2, kwargs, event) pair which has minimum p value from search space
-    return input_event_pairs[input_p_values.argmin()]
+    return input_event_pairs[np.asarray(p_values).argmin()]

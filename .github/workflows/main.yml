@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        python-version: [3.6, 3.7]
+        python-version: [3.6, 3.7, 3.8]
     runs-on: ${{ matrix.os }}
     env:
       PYTHON_VERSION: ${{ matrix.python-version }}
@@ -59,7 +59,7 @@ jobs:
         uses: goanpeca/setup-miniconda@v1
         with:
           activate-environment: statdp
-          python-version: 3.7
+          python-version: 3.8
           auto-update-conda: true
       - name: List anaconda info
         shell: bash -l {0}

@@ -19,8 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""This module implements the cdf (cumulative density function) of hypergeometric distribution.
-Thanks for the very efficient JIT compiler numba which uses LLVM,
+"""This module implements the sf (survival function) of hypergeometric distribution. Note that sf(x) = 1 - cdf(x)
+where cdf is the cumulative density function, but implementation-wise it gives a better precision than (1 - cdf).
+We try to mimic the interfaces of the counterparts in scipy (scipy.stats.hypergeom.sf and scipy.stats.hypergeom.pmf).
+However, our implementation is much more efficient thanks to the JIT compiler numba, without loss of too
+much precision. (difference with scipy is < 10^-9, see tests/test_hypergeom.py)
 
 References:
 https://en.wikipedia.org/wiki/Hypergeometric_distribution
@@ -71,7 +74,7 @@ def pmf(k, M, n, N):
 @numba.njit(numba.float64(numba.int_, numba.int_, numba.int_, numba.int_))
 def sf(k, M, n, N):
     """returns the survival function of hypergeometric distribution for given parameters. This equals (1 - cdf) but we
-    try to be more precise than (1 - cdf). This interface mimics scipy's hypergeom.sf.
+    try to be more precise than (1 - cdf). This interface mimics scipy.stats.hypergeom.sf.
     :param k: input value
     :param M: the total number of objects
     :param n: the total number of Type 1 objects

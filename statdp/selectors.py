@@ -69,8 +69,8 @@ def select_event(algorithm, input_list, epsilon, iterations, process_pool, quiet
 
     # log the information for debug purposes
     for ((d1, d2, kwargs, event), (cx, cy), p) in zip(input_event_pairs, counts, p_values):
-        logger.debug('d1: {} | d2: {} | kwargs: {} | event: {} | p-value: {:5.3f} | cx: {} | cy: {} | ratio: {:5.3f}'
-                     .format(d1, d2, kwargs, event, p, cx, cy, float(cy) / cx if cx != 0 else float('inf')))
+        logger.debug(f"d1: {d1} | d2: {d2} | kwargs: {kwargs} | event: {event} | p-value: {p:5.3f} | "
+                     f"cx: {cx} | cy: {cy} | ratio: {float(cy) / cx if cx != 0 else float('inf'):5.3f}")
 
     # find an (d1, d2, kwargs, event) pair which has minimum p value from search space
     return input_event_pairs[np.asarray(p_values).argmin()]

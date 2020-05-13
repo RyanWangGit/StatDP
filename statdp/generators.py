@@ -45,7 +45,7 @@ def generate_arguments(algorithm, d1, d2, default_kwargs):
     """
     arguments = algorithm.__code__.co_varnames[:algorithm.__code__.co_argcount]
     if arguments[2] not in default_kwargs:
-        logger.error('The third argument {} (privacy budget) is not provided!'.format(arguments[1]))
+        logger.error(f'The third argument {arguments[2]} (privacy budget) is not provided!')
         return None
 
     return default_kwargs

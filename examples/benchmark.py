@@ -38,11 +38,11 @@ coloredlogs.install('INFO', fmt='%(asctime)s [0x%(process)x] %(levelname)s %(mes
 logger = logging.getLogger(__name__)
 
 
-def plot_result(xlabel, ylabel, data, title, output_filename):
-    """
+def plot_result(data, xlabel, ylabel, title, output_filename):
+    """plot the results similar to the figures in our paper
+    :param data: The input data sets to plots. e.g., {algorithm_epsilon: [(test_epsilon, pvalue), ...]}
     :param xlabel: The label for x axis.
     :param ylabel: The label for y axis.
-    :param data: The input data sets to plots. e.g., {algorithm_epsilon: [(test_epsilon, pvalue), ...]}
     :param title: The title of the figure.
     :param output_filename: The output file name.
     :return: None
@@ -108,7 +108,7 @@ def main():
             kwargs[algorithm.__code__.co_varnames[2]] = privacy_budget
             results[privacy_budget] = detect_counterexample(algorithm, test_privacy, kwargs, sensitivity=sensitivity)
 
-        plot_result(r'Test $\epsilon$', 'P Value', results,
+        plot_result(results, r'Test $\epsilon$', 'P Value',
                     algorithm.__name__.replace('_', ' ').title(), algorithm.__name__ + '.pdf')
 
         # dump the results to file

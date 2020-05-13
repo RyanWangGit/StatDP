@@ -38,7 +38,7 @@ z3/
 *.pdf
 
 # Result data file
-result_*.json
+*.json
 
 # Coverage reports
 .coverage.*

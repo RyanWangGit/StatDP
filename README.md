@@ -53,8 +53,8 @@ We do provide a docker container for experiment, use `docker pull cmlapsu/statdp
 However, for the best performance we recommend installing `statdp` in a `conda` virtual environment (or `venv` if you prefer, the setup is similar):
 
 ```bash
-# we use python 3.7, but 3.6 and above should work fine
-conda create -n statdp anaconda python=3.7
+# we use python 3.8, but 3.6 and above should work fine
+conda create -n statdp anaconda python=3.8
 conda activate statdp
 # install dependencies from conda for best performance
 conda install numpy numba matplotlib sympy tqdm coloredlogs pip

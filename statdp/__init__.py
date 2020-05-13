@@ -52,9 +52,8 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
     default_kwargs = default_kwargs if default_kwargs else {}
 
     logging.basicConfig(level=loglevel)
-    logger.info('Start detection for counterexample on algorithm {} with test epsilon {}'
-                .format(algorithm.__name__, test_epsilon))
-    logger.info('Options -> default_kwargs: {} | databases: {} | cores:{}'.format(default_kwargs, databases, cores))
+    logger.info(f'Start detection for counterexample on {algorithm.__name__} with test epsilon {test_epsilon}')
+    logger.info(f'Options -> default_kwargs: {default_kwargs} | databases: {databases} | cores:{cores}')
 
     input_list = []
     if databases is not None:
@@ -81,7 +80,7 @@ def detect_counterexample(algorithm, test_epsilon, default_kwargs=None, database
                                 process_pool=pool)
             result.append((epsilon, float(p), d1, d2, kwargs, event))
             if not quiet:
-                tqdm.tqdm.write('Epsilon: {} | p-value: {:5.3f} | Event: {}'.format(epsilon, p, event))
-            logger.debug('D1: {} | D2: {} | kwargs: {}'.format(d1, d2, kwargs))
+                tqdm.tqdm.write(f'Epsilon: {epsilon} | p-value: {p:5.3f} | Event: {event}')
+            logger.debug(f'D1: {d1} | D2: {d2} | kwargs: {kwargs}')
 
         return result

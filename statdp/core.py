@@ -80,7 +80,7 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, total_iterations):
                     result_d1[row][iteration_number] = value_1
                     result_d2[row][iteration_number] = value_2
         else:
-            raise ValueError('Unsupported return type: {}'.format(type(sample_result)))
+            raise ValueError(f'Unsupported return type: {type(sample_result)}')
 
         # if possible events are not determined yet
         if not all_possible_events:
@@ -107,7 +107,7 @@ def run_algorithm(algorithm, d1, d2, kwargs, event, total_iterations):
                             tuple((-float('inf'), float(alpha)) for alpha in
                                   np.linspace(combined_result[search_min], combined_result[search_max], num=10)))
 
-                logger.debug('search space is set to {}'.format(' × '.join(str(event) for event in event_search_space)))
+                logger.debug(f"search space is set to {' × '.join(str(event) for event in event_search_space)}")
             else:
                 # if `event` is given, it should have the corresponding events for each return value
                 if len(event) != len(result_d1):

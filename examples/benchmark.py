@@ -21,6 +21,7 @@
 # SOFTWARE.
 import time
 import json
+import pathlib
 import coloredlogs
 import logging
 import matplotlib
@@ -108,14 +109,26 @@ def main():
             kwargs[algorithm.__code__.co_varnames[2]] = privacy_budget
             results[privacy_budget] = detect_counterexample(algorithm, test_privacy, kwargs, sensitivity=sensitivity)
 
-        plot_result(results, r'Test $\epsilon$', 'P Value',
-                    algorithm.__name__.replace('_', ' ').title(), algorithm.__name__ + '.pdf')
-
         # dump the results to file
-        with open(f'./{algorithm.__name__}.json', 'w') as f:
+        json_file = pathlib.Path.cwd() / f'{algorithm.__name__}.json'
+        if json_file.exists():
+            logger.warning(f'{algorithm.__name__}.json already exists, note that it will be over-written')
+            json_file.unlink()
+
+        with json_file.open('w') as f:
             json.dump(results, f)
 
-        logger.info(f'[{i + 1} / {len(tasks)}]: {algorithm.__name__} | Time elapsed: {time.time() - start_time}')
+        # plot and save to file
+        plot_file = pathlib.Path.cwd() / f'{algorithm.__name__}.pdf'
+        if plot_file.exists():
+            logger.warning(f'{algorithm.__name__}.pdf already exists, it will be over-written')
+            plot_file.unlink()
+
+        plot_result(results, r'Test $\epsilon$', 'P Value', algorithm.__name__.replace('_', ' ').title(), plot_file)
+
+        total_time, total_detections = time.time() - start_time, len(claimed_privacy) * len(test_privacy)
+        logger.info(f'[{i + 1} / {len(tasks)}]: {algorithm.__name__} | Time elapsed: {total_time:5.3f}s | '
+                    f'Average time per detection: {total_time / total_detections:5.3f}s')
 
 
 if __name__ == '__main__':

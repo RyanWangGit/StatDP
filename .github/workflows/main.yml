@@ -108,6 +108,8 @@ jobs:
       - uses: actions/checkout@master
       - name: Upload to cmla-psu github repository
         run: |
+          # remove github workflow configurations
+          rm -rf .github
           rm -rf .git
           git init
           git config user.name "Yuxin Wang"
